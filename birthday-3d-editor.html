@@ -148,9 +148,11 @@
       <p class="hint">The link opens the invitation with <em>your</em> details — no files, no apps. The QR opens the same link when scanned.</p>
       <div class="btnrow">
         <button class="btn" id="copyBtn" type="button">🔗 Copy invitation link</button>
+        <button class="btn ghost" id="shortBtn" type="button">✂️ Short link (no photos)</button>
         <button class="btn gold" id="qrBtn" type="button">⬇ Download stylish QR</button>
         <button class="btn ghost" id="resetBtn" type="button" style="flex:0 1 auto">Reset</button>
       </div>
+      <p class="hint" id="linkSize" style="margin:8px 0 0"></p>
       <div class="okline" id="statusOk"></div>
       <div class="warn" id="statusWarn"></div>
       <textarea id="linkBox" readonly placeholder="Your personal invitation link will appear here…"></textarea>
@@ -498,7 +500,7 @@ root.qrVersionFor = function (text) { return pickVersion(utf8Bytes(text).length)
 "use strict";
 var DEFAULT_HOSTED = "https://syedmanan7.github.io/digieman-apps/birthday-3d-invite.html";
 var LS_KEY = "bday3d-editor-v1";
-var MAX_SIDE = 900, JPEG_Q = 0.72, WARN_BYTES = 1200000;
+var MAX_SIDE = 800, JPEG_Q = 0.65, WARN_BYTES = 60000;
 
 var state = { name:"", age:"", dateText:"28 September 2026", venue:"",
               fromName:"with love from family", photos:[], hostedUrl:DEFAULT_HOSTED };
@@ -585,7 +587,8 @@ function processImageFile(file, done){
         var wh = fitWithin(img.naturalWidth||img.width||1, img.naturalHeight||img.height||1, MAX_SIDE);
         var c = document.createElement("canvas"); c.width = wh[0]; c.height = wh[1];
         c.getContext("2d").drawImage(img, 0, 0, wh[0], wh[1]);
-        uri = c.toDataURL("image/jpeg", JPEG_Q);
+        uri = c.toDataURL("image/webp", JPEG_Q);
+        if (!uri || uri.indexOf("data:image/webp") !== 0) uri = c.toDataURL("image/jpeg", JPEG_Q);
       }catch(e){}
       uploading--; done(uri); schedulePreview(); save(); renderThumbs(); updateSizeWarn();
     };
@@ -640,10 +643,12 @@ function renderThumbs(){
 function totalBytes(){ return b64urlEncode(JSON.stringify(payloadObj(true))).length; }
 function updateSizeWarn(){
   var w = $("sizeWarn"), n = totalBytes();
+  var kb = Math.max(1, Math.round(n/1024));
+  var ls = $("linkSize");
+  if (ls) ls.textContent = "Link size: ~" + kb + " KB" + (n > WARN_BYTES ? " — too long to send via WhatsApp" : "");
   if (n > WARN_BYTES){
     w.classList.add("show");
-    w.textContent = "Heads up: your invitation data is about " + (n/1048576).toFixed(1) +
-      " MB. Very long links can be awkward in some chat apps — try fewer photos.";
+    w.textContent = "This link is too long to send via WhatsApp (over ~65,000 characters). Use fewer photos, or share the short text-only link from step 5 below.";
   } else w.classList.remove("show");
 }
 
@@ -653,12 +658,16 @@ function statusWarn(msg){ var e=$("statusWarn"); e.textContent=msg; e.classList.
 function clearStatus(){ $("statusOk").classList.remove("show"); $("statusWarn").classList.remove("show"); }
 
 /* ---------- share actions ---------- */
-function copyLink(){
+function copyLink(withPhotos){
   clearStatus();
-  var link = shareLink(true);
+  var full = withPhotos !== false;
+  var link = shareLink(full);
   $("linkBox").value = link;
+  if (full && link.length > WARN_BYTES){
+    statusWarn("This link is too long for WhatsApp — remove a photo or use the short text-only link instead. It's in the box below if you still want it.");
+  }
   function done(ok){
-    if (ok) statusOk("Invitation link copied — paste it into WhatsApp. ✓");
+    if (ok) statusOk(full ? "Invitation link copied — paste it into WhatsApp. ✓" : "Short text-only link copied — no photos, works everywhere. ✓");
     else statusWarn("Couldn't auto-copy — the link is in the box below, long-press to copy it.");
   }
   if (navigator.clipboard && navigator.clipboard.writeText){
@@ -813,7 +822,8 @@ function bind(){
   $("galleryBtn").onclick = function(){ $("galleryInput").click(); };
   $("coverInput").addEventListener("change", function(e){ addPhotos(e.target.files, true); e.target.value=""; });
   $("galleryInput").addEventListener("change", function(e){ addPhotos(e.target.files, false); e.target.value=""; });
-  $("copyBtn").onclick = copyLink;
+  $("copyBtn").onclick = function(){ copyLink(true); };
+  $("shortBtn").onclick = function(){ copyLink(false); };
   $("qrBtn").onclick = downloadQR;
   $("resetBtn").onclick = function(){
     if(!confirm("Reset everything to defaults? Your text and photos will be cleared.")) return;
