@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1B2A4A">
+<title>Bill Payment Tracker</title>
+<style>
+:root{
+  --navy:#1B2A4A; --navy-2:#263B61; --navy-soft:#E4E9F2; --navy-text:#3D4E73;
+  --ivory:#F7F4EC; --card:#FFFFFF; --line:#E6E0CF;
+  --gold:#C9A227; --gold-soft:#F8F0D8; --gold-text:#7A5F14;
+  --coral:#E2574C; --coral-soft:#FBE7E5; --coral-text:#B23A32;
+  --green-soft:#E2F3E9; --green-text:#1E7A46;
+  --ink:#23272F; --muted:#6E7480;
+  --shadow:0 1px 3px rgba(27,42,74,.10), 0 6px 18px rgba(27,42,74,.06);
+  --radius:12px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--ivory);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Noto Sans",sans-serif;
+  font-size:16px;line-height:1.5}
+.app{display:flex;flex-direction:column;min-height:100vh}
+
+/* ---------- Sidebar / top bar ---------- */
+.sidebar{background:var(--navy);color:#F2F0E6;padding:16px;display:flex;flex-direction:column;gap:14px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-mark{width:44px;height:44px;border-radius:10px;background:var(--gold);color:var(--navy);
+  display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;flex-shrink:0}
+.brand h1{margin:0;font-size:19px;letter-spacing:.02em}
+.brand p{margin:0;font-size:12.5px;color:#B9C2D6;letter-spacing:.08em;text-transform:uppercase}
+.nav{display:flex;gap:8px}
+.nav-btn{flex:1;background:transparent;border:1px solid rgba(255,255,255,.18);color:#EDEBE0;
+  border-radius:9px;padding:10px 6px;font-size:14px;font-weight:600;cursor:pointer;transition:background .15s}
+.nav-btn:hover{background:rgba(255,255,255,.08)}
+.nav-btn.active{background:var(--gold);border-color:var(--gold);color:var(--navy)}
+.add-bill{width:100%}
+.side-foot{margin-top:auto;font-size:12px;color:#9AA5BE;text-align:center}
+
+/* ---------- Main ---------- */
+main{flex:1;padding:20px 16px 64px;max-width:1120px;width:100%;margin:0 auto}
+.view-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:4px 0 16px}
+.view-head h2{margin:0;font-size:24px;color:var(--navy);letter-spacing:.01em}
+.view-head p{margin:2px 0 0;color:var(--muted);font-size:14px}
+.hidden{display:none!important}
+
+/* ---------- Banners ---------- */
+.banner{border-radius:var(--radius);padding:14px 16px;margin-bottom:16px;display:flex;gap:12px;align-items:flex-start;box-shadow:var(--shadow)}
+.banner .b-ico{font-size:20px;line-height:1.2;flex-shrink:0}
+.banner h3{margin:0 0 2px;font-size:15.5px}
+.banner p{margin:0;font-size:14px}
+.banner-overdue{background:var(--coral-soft);border-left:6px solid var(--coral)}
+.banner-overdue h3{color:var(--coral-text)}
+.banner-duesoon{background:var(--gold-soft);border-left:6px solid var(--gold)}
+.banner-duesoon h3{color:var(--gold-text)}
+.banner-calm{background:#fff;border-left:6px solid var(--navy);box-shadow:var(--shadow)}
+
+/* ---------- Stat cards ---------- */
+.stats{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:20px}
+.stat{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px;border-top:4px solid var(--gold)}
+.stat .s-label{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:700}
+.stat .s-value{font-size:30px;font-weight:800;color:var(--navy);margin:4px 0 2px;font-variant-numeric:tabular-nums}
+.stat .s-sub{font-size:13px;color:var(--muted)}
+.stat-overdue{border-top-color:var(--coral)}
+.stat-overdue .s-value{color:var(--coral)}
+
+/* ---------- Panels / tables ---------- */
+.panel{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:20px}
+.panel-head{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.panel-head h3{margin:0;font-size:16.5px;color:var(--navy)}
+.panel-head .count{font-size:13px;color:var(--muted)}
+.tbl-wrap{overflow-x:auto}
+table.tbl{width:100%;border-collapse:collapse;font-size:14.5px}
+.tbl th{background:var(--navy);color:#fff;text-align:left;padding:11px 14px;font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;white-space:nowrap}
+.tbl td{padding:13px 14px;border-top:1px solid var(--line);vertical-align:middle}
+.tbl tbody tr:first-child td{border-top:none}
+.tbl tr.row-overdue{background:linear-gradient(90deg,rgba(226,87,76,.07),rgba(226,87,76,.015))}
+.bill-name{font-weight:700;color:var(--navy)}
+.bill-sub{font-size:12.5px;color:var(--muted);margin-top:2px}
+.amt{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.due-date{white-space:nowrap}
+.cat{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--navy-text);white-space:nowrap}
+.cat i{width:11px;height:11px;border-radius:50%;display:inline-block;flex-shrink:0}
+.recur{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--muted);white-space:nowrap}
+.badge{display:inline-block;padding:4px 12px;border-radius:999px;font-size:12.5px;font-weight:700;white-space:nowrap}
+.badge-paid{background:var(--green-soft);color:var(--green-text)}
+.badge-overdue{background:var(--coral);color:#fff}
+.badge-duesoon{background:var(--gold-soft);color:var(--gold-text);border:1px solid var(--gold)}
+.badge-scheduled{background:var(--navy-soft);color:var(--navy-text)}
+.row-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+
+/* ---------- Buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 18px;border-radius:9px;
+  border:1px solid transparent;font-size:14.5px;font-weight:700;cursor:pointer;transition:transform .05s, box-shadow .15s;text-decoration:none}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--navy);color:#fff}
+.btn-primary:hover{background:var(--navy-2)}
+.btn-gold{background:var(--gold);color:var(--navy)}
+.btn-gold:hover{filter:brightness(1.06)}
+.btn-ghost{background:transparent;border-color:#CFC8B0;color:var(--navy)}
+.btn-ghost:hover{background:#fff}
+.btn-sm{padding:7px 12px;font-size:13px;border-radius:7px}
+.btn-danger-o{background:transparent;border-color:#E8A49E;color:var(--coral-text)}
+.btn-danger-o:hover{background:var(--coral-soft)}
+.btn-danger-o.armed{background:var(--coral);border-color:var(--coral);color:#fff}
+.btn-pay{background:var(--gold-soft);border-color:var(--gold);color:var(--gold-text)}
+.btn-pay:hover{background:var(--gold);color:var(--navy)}
+
+/* ---------- Filters ---------- */
+.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:14px}
+.filter-group{display:flex;flex-direction:column;gap:4px}
+.filter-group label{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.filter-group select{padding:10px 12px;border:1px solid #D8D2BE;border-radius:9px;background:#fff;font-size:14.5px;color:var(--ink);min-width:170px}
+.filter-count{margin-left:auto;font-size:13.5px;color:var(--muted);align-self:center}
+
+/* ---------- Empty states ---------- */
+.empty{padding:44px 20px;text-align:center;color:var(--muted)}
+.empty .e-ico{font-size:34px;display:block;margin-bottom:10px}
+.empty h4{margin:0 0 6px;color:var(--navy);font-size:17px}
+.empty p{margin:0 0 14px;font-size:14px}
+
+/* ---------- Modal ---------- */
+.overlay{position:fixed;inset:0;background:rgba(27,42,74,.55);display:flex;align-items:flex-start;justify-content:center;
+  padding:24px 14px;z-index:50;overflow-y:auto}
+.modal{background:#fff;border-radius:14px;box-shadow:0 18px 50px rgba(0,0,0,.25);width:100%;max-width:480px;padding:22px;margin-top:4vh}
+.modal h2{margin:0 0 4px;color:var(--navy);font-size:20px}
+.modal .m-sub{margin:0 0 16px;color:var(--muted);font-size:13.5px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12.5px;font-weight:700;color:var(--navy);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em}
+.field input,.field select{width:100%;padding:12px;border:1px solid #D8D2BE;border-radius:9px;font-size:16px;background:#fff;color:var(--ink)}
+.field input:focus,.field select:focus{outline:2px solid var(--gold);border-color:var(--gold)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-err{color:var(--coral-text);font-size:13.5px;min-height:20px;margin:2px 0 8px;font-weight:600}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:6px}
+
+/* ---------- Toast ---------- */
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--navy);color:#fff;
+  padding:12px 22px;border-radius:999px;font-size:14.5px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.25);z-index:99;border:1px solid var(--gold)}
+
+/* ---------- Footer ---------- */
+.app-foot{text-align:center;color:var(--muted);font-size:12.5px;padding:18px 10px 4px}
+
+/* ---------- Due-soon quick list ---------- */
+.quick-row{display:flex;align-items:center;gap:12px;padding:12px 18px;border-top:1px solid var(--line)}
+.quick-row:first-of-type{border-top:none}
+.quick-row .q-main{flex:1;min-width:0}
+.quick-row .q-name{font-weight:700;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.quick-row .q-sub{font-size:12.5px;color:var(--muted)}
+.quick-row.is-overdue{background:linear-gradient(90deg,rgba(226,87,76,.08),transparent)}
+
+/* ---------- Desktop ---------- */
+@media(min-width:960px){
+  .app{flex-direction:row}
+  .sidebar{width:252px;flex-shrink:0;position:sticky;top:0;height:100vh;padding:22px 18px}
+  .nav{flex-direction:column}
+  .nav-btn{text-align:left;padding:12px 14px}
+  main{padding:32px 36px 80px}
+  .stats{grid-template-columns:repeat(3,1fr)}
+  .view-head h2{font-size:28px}
+}
+
+/* ---------- Mobile: table -> stacked cards ---------- */
+@media(max-width:959px){
+  .tbl thead{display:none}
+  .tbl,.tbl tbody,.tbl tr,.tbl td{display:block;width:100%}
+  .tbl{background:transparent;box-shadow:none}
+  .tbl tr{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    margin-bottom:12px;box-shadow:var(--shadow);padding:6px 2px}
+  .tbl tr.row-overdue{border-left:5px solid var(--coral)}
+  .tbl td{border:none;padding:7px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .tbl td::before{content:attr(data-label);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;flex-shrink:0}
+  .tbl td.cell-main{flex-direction:column;align-items:flex-start;gap:2px}
+  .tbl td.cell-main::before{display:none}
+  .tbl td.cell-actions{justify-content:flex-end}
+  .tbl td.cell-actions::before{display:none}
+  .tbl td .amt{font-size:17px}
+  .quick-row{flex-wrap:wrap}
+  .filter-count{margin-left:0;width:100%}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-mark">&#9670;</span>
+      <div><h1>Bill Ledger</h1><p>Payment Tracker</p></div>
+    </div>
+    <nav class="nav" aria-label="Views">
+      <button class="nav-btn active" data-view="dashboard">&#9783; Dashboard</button>
+      <button class="nav-btn" data-view="bills">&#9638; Bills</button>
+      <button class="nav-btn" data-view="history">&#8635; History</button>
+    </nav>
+    <button id="add-bill-btn" class="btn btn-gold add-bill">+ Add Bill</button>
+    <div class="side-foot">Your data never leaves this browser</div>
+  </aside>
+
+  <main>
+    <!-- DASHBOARD -->
+    <section id="view-dashboard" class="view">
+      <div class="view-head">
+        <div><h2>Dashboard</h2><p>What needs your attention right now</p></div>
+      </div>
+      <div id="dash-banners"></div>
+      <div class="stats" id="dash-stats"></div>
+      <div class="panel">
+        <div class="panel-head"><h3>Due soon &amp; overdue</h3><span class="count" id="duesoon-count"></span></div>
+        <div id="duesoon-list"></div>
+      </div>
+      <div class="app-foot">All amounts in USD &middot; dates shown in your local timezone</div>
+    </section>
+
+    <!-- BILLS -->
+    <section id="view-bills" class="view hidden">
+      <div class="view-head">
+        <div><h2>All Bills</h2><p>Add, edit, filter and track every bill</p></div>
+        <button class="btn btn-primary" id="add-bill-btn-2">+ Add Bill</button>
+      </div>
+      <div class="filters">
+        <div class="filter-group">
+          <label for="filter-cat">Category</label>
+          <select id="filter-cat"></select>
+        </div>
+        <div class="filter-group">
+          <label for="filter-status">Status</label>
+          <select id="filter-status">
+            <option value="all">All statuses</option>
+            <option value="overdue">Overdue</option>
+            <option value="duesoon">Due soon (7 days)</option>
+            <option value="scheduled">Scheduled</option>
+            <option value="paid">Paid</option>
+            <option value="unpaid">Unpaid (all)</option>
+          </select>
+        </div>
+        <span class="filter-count" id="bills-count"></span>
+      </div>
+      <div class="panel">
+        <div class="tbl-wrap">
+          <table class="tbl" id="bills-table">
+            <thead><tr>
+              <th>Bill</th><th>Amount</th><th>Due date</th><th>Repeats</th><th>Status</th><th style="text-align:right">Actions</th>
+            </tr></thead>
+            <tbody id="bills-tbody"></tbody>
+          </table>
+        </div>
+        <div id="bills-empty"></div>
+      </div>
+    </section>
+
+    <!-- HISTORY -->
+    <section id="view-history" class="view hidden">
+      <div class="view-head">
+        <div><h2>Payment History</h2><p>Every payment you recorded &mdash; undo any entry</p></div>
+      </div>
+      <div class="panel">
+        <div class="tbl-wrap">
+          <table class="tbl" id="history-table">
+            <thead><tr>
+              <th>Bill</th><th>Amount</th><th>Was due</th><th>Paid on</th><th style="text-align:right">Action</th>
+            </tr></thead>
+            <tbody id="history-tbody"></tbody>
+          </table>
+        </div>
+        <div id="history-empty"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- ADD / EDIT MODAL -->
+<div id="modal-overlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal">
+    <h2 id="modal-title">Add Bill</h2>
+    <p class="m-sub" id="modal-sub">Fill in the details below.</p>
+    <form id="bill-form" novalidate>
+      <div class="field">
+        <label for="f-name">Bill name</label>
+        <input type="text" id="f-name" maxlength="80" placeholder="e.g. Electricity, Rent, Netflix" autocomplete="off">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="f-amount">Amount (USD)</label>
+          <input type="number" id="f-amount" min="0.01" step="0.01" placeholder="0.00" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label for="f-due">Due date</label>
+          <input type="date" id="f-due">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="f-category">Category</label>
+          <select id="f-category"></select>
+        </div>
+        <div class="field">
+          <label for="f-recur">Repeats</label>
+          <select id="f-recur">
+            <option value="none">One-time</option>
+            <option value="monthly">Monthly</option>
+            <option value="quarterly">Quarterly</option>
+            <option value="yearly">Yearly</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-err" id="form-err"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="modal-cancel">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="modal-save">Save Bill</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden" role="status"></div>
+
+<script>
+'use strict';
+/* =========================================================
+   Bill Payment Tracker — single-file interactive app.
+   All data lives in localStorage under the key "billTrackerApp".
+   ========================================================= */
+var STORE_KEY = 'billTrackerApp';
+
+var CATS = [
+  {name:'Housing',        color:'#5B6BC4'},
+  {name:'Utilities',      color:'#2E86C1'},
+  {name:'Subscriptions',  color:'#8E44AD'},
+  {name:'Food & Dining',  color:'#D94F7E'},
+  {name:'Transport',      color:'#27AE60'},
+  {name:'Insurance',      color:'#B8860B'},
+  {name:'Health',         color:'#5D6D7E'},
+  {name:'Other',          color:'#95A5A6'}
+];
+var RECUR_LABEL = {none:'One-time', monthly:'Monthly', quarterly:'Quarterly', yearly:'Yearly'};
+
+/* ---------- tiny helpers ---------- */
+function $(s){ return document.querySelector(s); }
+function $all(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); }
+function esc(s){
+  return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+function uid(){ return 'b' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+function catColor(n){
+  for (var i = 0; i < CATS.length; i++) if (CATS[i].name === n) return CATS[i].color;
+  return '#95A5A6';
+}
+
+/* ---------- date helpers (local timezone, date-only) ---------- */
+function parseDay(s){ var p = s.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+function dayStr(d){
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function todayStr(){ return dayStr(new Date()); }
+function diffDays(a, b){ return Math.round((parseDay(a) - parseDay(b)) / 86400000); } /* a minus b */
+function fmtDate(s){
+  return parseDay(s).toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'});
+}
+function fmtMoney(n){
+  var v = Number(n);
+  if (!isFinite(v)) v = 0;
+  return '$' + v.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+function addMonthsClamped(s, n){
+  var d = parseDay(s), day = d.getDate();
+  d.setDate(1); d.setMonth(d.getMonth() + n);
+  var last = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+  d.setDate(Math.min(day, last));
+  return dayStr(d);
+}
+function advanceDue(dueDate, recur){
+  if (recur === 'monthly')   return addMonthsClamped(dueDate, 1);
+  if (recur === 'quarterly') return addMonthsClamped(dueDate, 3);
+  if (recur === 'yearly')    return addMonthsClamped(dueDate, 12);
+  return dueDate;
+}
+function fmtDateTime(iso){
+  var d = new Date(iso);
+  return d.toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'}) + ', ' +
+         d.toLocaleTimeString(undefined, {hour:'numeric', minute:'2-digit'});
+}
+
+/* ---------- state ---------- */
+function defaultState(){ return {bills:[], history:[]}; }
+function loadState(){
+  try {
+    var raw = localStorage.getItem(STORE_KEY);
+    if (raw) {
+      var s = JSON.parse(raw);
+      if (s && Array.isArray(s.bills) && Array.isArray(s.history)) return s;
+    }
+  } catch (e) { /* corrupted storage -> start fresh */ }
+  return defaultState();
+}
+var state = loadState();
+function save(){ try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {} }
+
+var ui = { view:'dashboard', fcat:'all', fstatus:'all' };
+var editingId = null;
+var deleteArmTimer = null;
+
+/* ---------- derived ---------- */
+function billStatus(b){
+  if (b.paid) return 'paid';
+  var d = diffDays(b.dueDate, todayStr());
+  if (d < 0) return 'overdue';
+  if (d <= 7) return 'duesoon';
+  return 'scheduled';
+}
+function dueText(b){
+  var d = diffDays(b.dueDate, todayStr());
+  if (d < 0) { var n = Math.abs(d); return n + ' day' + (n === 1 ? '' : 's') + ' overdue'; }
+  if (d === 0) return 'Due today';
+  if (d === 1) return 'Due tomorrow';
+  return 'Due in ' + d + ' days';
+}
+function findBill(id){
+  for (var i = 0; i < state.bills.length; i++) if (state.bills[i].id === id) return state.bills[i];
+  return null;
+}
+function statusBadge(b){
+  var s = billStatus(b);
+  if (s === 'paid')     return '<span class="badge badge-paid">Paid</span>';
+  if (s === 'overdue')  return '<span class="badge badge-overdue">' + esc(dueText(b)) + '</span>';
+  if (s === 'duesoon')  return '<span class="badge badge-duesoon">' + esc(dueText(b)) + '</span>';
+  return '<span class="badge badge-scheduled">Scheduled</span>';
+}
+function catChip(cat){
+  return '<span class="cat"><i style="background:' + esc(catColor(cat)) + '"></i>' + esc(cat) + '</span>';
+}
+
+/* ---------- actions ---------- */
+function markPaid(id){
+  var b = findBill(id);
+  if (!b || b.paid) return;
+  var entry = {
+    id: uid(), billId: b.id, billName: b.name, amount: b.amount,
+    category: b.category, dueDate: b.dueDate, prevDueDate: b.dueDate,
+    paidAt: new Date().toISOString()
+  };
+  state.history.unshift(entry);
+  if (b.recurrence && b.recurrence !== 'none') {
+    /* recurring: auto-generate the next due date, keep tracking it */
+    b.dueDate = advanceDue(b.dueDate, b.recurrence);
+    toast('Paid! Next due date set to ' + fmtDate(b.dueDate) + '.');
+  } else {
+    b.paid = true;
+    toast('Bill marked as paid.');
+  }
+  save(); renderAll();
+}
+function markUnpaid(id){
+  var b = findBill(id);
+  if (!b || !b.paid) return;
+  b.paid = false;
+  save(); renderAll();
+  toast('Bill marked as unpaid.');
+}
+function undoPayment(histId){
+  var idx = -1;
+  for (var i = 0; i < state.history.length; i++) if (state.history[i].id === histId) { idx = i; break; }
+  if (idx < 0) return;
+  var e = state.history[idx];
+  var b = findBill(e.billId);
+  if (b) { b.paid = false; b.dueDate = e.prevDueDate; }
+  state.history.splice(idx, 1);
+  save(); renderAll();
+  toast('Payment undone.');
+}
+function deleteBill(id){
+  state.bills = state.bills.filter(function(b){ return b.id !== id; });
+  save(); renderAll();
+  toast('Bill deleted.');
+}
+
+/* ---------- modal ---------- */
+function openModal(editId){
+  editingId = editId || null;
+  var form = $('#bill-form');
+  form.reset();
+  $('#form-err').textContent = '';
+  if (editId) {
+    var b = findBill(editId);
+    if (!b) return;
+    $('#modal-title').textContent = 'Edit Bill';
+    $('#modal-sub').textContent = 'Update the details below.';
+    $('#f-name').value = b.name;
+    $('#f-amount').value = b.amount;
+    $('#f-due').value = b.dueDate;
+    $('#f-category').value = b.category;
+    $('#f-recur').value = b.recurrence || 'none';
+    $('#modal-save').textContent = 'Save Changes';
+  } else {
+    $('#modal-title').textContent = 'Add Bill';
+    $('#modal-sub').textContent = 'Fill in the details below.';
+    $('#f-due').value = todayStr();
+    $('#modal-save').textContent = 'Save Bill';
+  }
+  $('#modal-overlay').classList.remove('hidden');
+  setTimeout(function(){ $('#f-name').focus(); }, 50);
+}
+function closeModal(){ $('#modal-overlay').classList.add('hidden'); editingId = null; }
+
+function saveFromForm(){
+  var name = $('#f-name').value.trim();
+  var amount = parseFloat($('#f-amount').value);
+  var due = $('#f-due').value;
+  var cat = $('#f-category').value;
+  var recur = $('#f-recur').value;
+  var err = $('#form-err');
+  if (!name) { err.textContent = 'Please enter a bill name.'; return; }
+  if (!isFinite(amount) || amount <= 0) { err.textContent = 'Please enter an amount greater than 0.'; return; }
+  if (!due) { err.textContent = 'Please pick a due date.'; return; }
+  amount = Math.round(amount * 100) / 100;
+  if (editingId) {
+    var b = findBill(editingId);
+    if (b) { b.name = name; b.amount = amount; b.dueDate = due; b.category = cat; b.recurrence = recur; }
+    toast('Bill updated.');
+  } else {
+    state.bills.push({id: uid(), name: name, amount: amount, dueDate: due, category: cat, recurrence: recur, paid: false});
+    toast('Bill added.');
+  }
+  save(); closeModal(); renderAll();
+}
+
+/* ---------- views ---------- */
+function showView(name){
+  ui.view = name;
+  $all('.nav-btn').forEach(function(btn){ btn.classList.toggle('active', btn.getAttribute('data-view') === name); });
+  $all('.view').forEach(function(v){ v.classList.add('hidden'); });
+  $('#view-' + name).classList.remove('hidden');
+  window.scrollTo(0, 0);
+}
+
+function monthName(){
+  return new Date().toLocaleDateString(undefined, {month:'long'});
+}
+
+function renderDashboard(){
+  var today = todayStr();
+  var unpaid = state.bills.filter(function(b){ return !b.paid; });
+  var overdue = unpaid.filter(function(b){ return diffDays(b.dueDate, today) < 0; });
+  var dueSoonOnly = unpaid.filter(function(b){ var d = diffDays(b.dueDate, today); return d >= 0 && d <= 7; });
+  var sum = function(arr){ return arr.reduce(function(t, b){ return t + Number(b.amount); }, 0); };
+
+  /* banners */
+  var html = '';
+  if (overdue.length) {
+    html += '<div class="banner banner-overdue"><span class="b-ico">!</span><div>' +
+      '<h3>' + overdue.length + ' overdue bill' + (overdue.length === 1 ? '' : 's') + ' &middot; ' + esc(fmtMoney(sum(overdue))) + ' outstanding</h3>' +
+      '<p>These are past their due date. Pay them first to avoid late fees.</p></div></div>';
+  }
+  if (dueSoonOnly.length) {
+    html += '<div class="banner banner-duesoon"><span class="b-ico">&#9673;</span><div>' +
+      '<h3>' + dueSoonOnly.length + ' bill' + (dueSoonOnly.length === 1 ? '' : 's') + ' due in the next 7 days &middot; ' + esc(fmtMoney(sum(dueSoonOnly))) + '</h3>' +
+      '<p>Coming up soon &mdash; make sure the money is set aside.</p></div></div>';
+  }
+  if (!overdue.length && !dueSoonOnly.length) {
+    html += '<div class="banner banner-calm"><span class="b-ico">&#10003;</span><div>' +
+      '<h3>All clear</h3><p>Nothing due in the next 7 days. Nice work staying on top of things.</p></div></div>';
+  }
+  $('#dash-banners').innerHTML = html;
+
+  /* monthly totals */
+  var ym = today.slice(0, 7);
+  var paidThisMonth = state.history.filter(function(e){ return e.paidAt.slice(0, 7) === ym; });
+  var dueUnpaidThisMonth = unpaid.filter(function(b){ return b.dueDate.slice(0, 7) === ym && diffDays(b.dueDate, today) >= 0; });
+  var paidSum = paidThisMonth.reduce(function(t, e){ return t + Number(e.amount); }, 0);
+  $('#dash-stats').innerHTML =
+    '<div class="stat"><div class="s-label">Paid in ' + esc(monthName()) + '</div>' +
+      '<div class="s-value">' + esc(fmtMoney(paidSum)) + '</div>' +
+      '<div class="s-sub">' + paidThisMonth.length + ' payment' + (paidThisMonth.length === 1 ? '' : 's') + ' recorded</div></div>' +
+    '<div class="stat"><div class="s-label">Still due in ' + esc(monthName()) + '</div>' +
+      '<div class="s-value">' + esc(fmtMoney(sum(dueUnpaidThisMonth))) + '</div>' +
+      '<div class="s-sub">' + dueUnpaidThisMonth.length + ' unpaid bill' + (dueUnpaidThisMonth.length === 1 ? '' : 's') + '</div></div>' +
+    '<div class="stat stat-overdue"><div class="s-label">Overdue now</div>' +
+      '<div class="s-value">' + esc(fmtMoney(sum(overdue))) + '</div>' +
+      '<div class="s-sub">' + overdue.length + ' overdue bill' + (overdue.length === 1 ? '' : 's') + '</div></div>';
+
+  /* due soon + overdue list */
+  var list = overdue.concat(dueSoonOnly).sort(function(a, b){ return diffDays(a.dueDate, b.dueDate); });
+  $('#duesoon-count').textContent = list.length ? list.length + ' item' + (list.length === 1 ? '' : 's') : '';
+  var lh = '';
+  if (!list.length) {
+    lh = '<div class="empty"><span class="e-ico">&#10003;</span><h4>Nothing on the radar</h4><p>Bills due within 7 days will appear here.</p></div>';
+  } else {
+    list.forEach(function(b){
+      var od = billStatus(b) === 'overdue';
+      lh += '<div class="quick-row' + (od ? ' is-overdue' : '') + '">' +
+        '<div class="q-main"><div class="q-name">' + esc(b.name) + '</div>' +
+        '<div class="q-sub">' + catChip(b.category) + ' &middot; ' + esc(fmtDate(b.dueDate)) + ' &middot; <strong>' + esc(dueText(b)) + '</strong></div></div>' +
+        '<div class="amt">' + esc(fmtMoney(b.amount)) + '</div>' +
+        '<button class="btn btn-pay btn-sm" data-action="pay" data-id="' + esc(b.id) + '">Mark paid</button></div>';
+    });
+  }
+  $('#duesoon-list').innerHTML = lh;
+}
+
+function filteredBills(){
+  var rank = {overdue:0, duesoon:1, scheduled:2, paid:3};
+  return state.bills.filter(function(b){
+    if (ui.fcat !== 'all' && b.category !== ui.fcat) return false;
+    var s = billStatus(b);
+    if (ui.fstatus === 'paid' && s !== 'paid') return false;
+    if (ui.fstatus === 'unpaid' && s === 'paid') return false;
+    if (ui.fstatus === 'overdue' && s !== 'overdue') return false;
+    if (ui.fstatus === 'duesoon' && s !== 'duesoon') return false;
+    if (ui.fstatus === 'scheduled' && s !== 'scheduled') return false;
+    return true;
+  }).sort(function(a, b){
+    var r = rank[billStatus(a)] - rank[billStatus(b)];
+    return r !== 0 ? r : diffDays(a.dueDate, b.dueDate);
+  });
+}
+
+function renderBills(){
+  var rows = filteredBills();
+  $('#bills-count').textContent = rows.length + ' of ' + state.bills.length + ' bills';
+  var tb = $('#bills-tbody');
+  if (!rows.length) {
+    tb.innerHTML = '';
+    $('#bills-table').style.display = 'none';
+    $('#bills-empty').innerHTML = '<div class="empty"><span class="e-ico">&#9638;</span><h4>No bills match</h4>' +
+      '<p>' + (state.bills.length ? 'Try changing the filters.' : 'Add your first bill to start tracking.') + '</p></div>';
+    return;
+  }
+  $('#bills-table').style.display = '';
+  $('#bills-empty').innerHTML = '';
+  tb.innerHTML = rows.map(function(b){
+    var s = billStatus(b);
+    var payBtn = b.paid
+      ? '<button class="btn btn-ghost btn-sm" data-action="unpay" data-id="' + esc(b.id) + '">Mark unpaid</button>'
+      : '<button class="btn btn-pay btn-sm" data-action="pay" data-id="' + esc(b.id) + '">Mark paid</button>';
+    return '<tr class="' + (s === 'overdue' ? 'row-overdue' : '') + '">' +
+      '<td class="cell-main" data-label="Bill"><div><div class="bill-name">' + esc(b.name) + '</div>' +
+        '<div class="bill-sub">' + catChip(b.category) + '</div></div></td>' +
+      '<td data-label="Amount"><span class="amt">' + esc(fmtMoney(b.amount)) + '</span></td>' +
+      '<td data-label="Due date"><span class="due-date">' + esc(fmtDate(b.dueDate)) + '</span></td>' +
+      '<td data-label="Repeats"><span class="recur">' + (b.recurrence && b.recurrence !== 'none' ? '&#8635; ' + esc(RECUR_LABEL[b.recurrence] || b.recurrence) : 'One-time') + '</span></td>' +
+      '<td data-label="Status">' + statusBadge(b) + '</td>' +
+      '<td class="cell-actions" data-label="Actions"><div class="row-actions">' + payBtn +
+        '<button class="btn btn-ghost btn-sm" data-action="edit" data-id="' + esc(b.id) + '">Edit</button>' +
+        '<button class="btn btn-danger-o btn-sm" data-action="delete" data-id="' + esc(b.id) + '">Delete</button>' +
+      '</div></td></tr>';
+  }).join('');
+}
+
+function renderHistory(){
+  var tb = $('#history-tbody');
+  if (!state.history.length) {
+    tb.innerHTML = '';
+    $('#history-table').style.display = 'none';
+    $('#history-empty').innerHTML = '<div class="empty"><span class="e-ico">&#8635;</span><h4>No payments recorded yet</h4>' +
+      '<p>When you mark a bill as paid, it is logged here with the date.</p></div>';
+    return;
+  }
+  $('#history-table').style.display = '';
+  $('#history-empty').innerHTML = '';
+  tb.innerHTML = state.history.map(function(e){
+    var billGone = !findBill(e.billId);
+    return '<tr>' +
+      '<td class="cell-main" data-label="Bill"><div><div class="bill-name">' + esc(e.billName) + '</div>' +
+        '<div class="bill-sub">' + catChip(e.category) + '</div></div></td>' +
+      '<td data-label="Amount"><span class="amt">' + esc(fmtMoney(e.amount)) + '</span></td>' +
+      '<td data-label="Was due"><span class="due-date">' + esc(fmtDate(e.dueDate)) + '</span></td>' +
+      '<td data-label="Paid on"><span class="due-date">' + esc(fmtDateTime(e.paidAt)) + '</span></td>' +
+      '<td class="cell-actions" data-label="Action"><div class="row-actions">' +
+        (billGone
+          ? '<span class="bill-sub">bill removed</span>'
+          : '<button class="btn btn-ghost btn-sm" data-action="undo" data-hid="' + esc(e.id) + '">Undo</button>') +
+      '</div></td></tr>';
+  }).join('');
+}
+
+function renderAll(){
+  renderDashboard();
+  renderBills();
+  renderHistory();
+}
+
+/* ---------- toast ---------- */
+var toastT = null;
+function toast(msg){
+  var t = $('#toast');
+  t.textContent = msg;
+  t.classList.remove('hidden');
+  clearTimeout(toastT);
+  toastT = setTimeout(function(){ t.classList.add('hidden'); }, 2400);
+}
+
+/* ---------- events ---------- */
+function wireEvents(){
+  $all('.nav-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ showView(btn.getAttribute('data-view')); });
+  });
+  $('#add-bill-btn').addEventListener('click', function(){ openModal(null); });
+  $('#add-bill-btn-2').addEventListener('click', function(){ openModal(null); });
+  $('#modal-cancel').addEventListener('click', closeModal);
+  $('#modal-overlay').addEventListener('click', function(e){ if (e.target === this) closeModal(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !$('#modal-overlay').classList.contains('hidden')) closeModal(); });
+  $('#bill-form').addEventListener('submit', function(e){ e.preventDefault(); saveFromForm(); });
+
+  $('#filter-cat').addEventListener('change', function(){ ui.fcat = this.value; renderBills(); });
+  $('#filter-status').addEventListener('change', function(){ ui.fstatus = this.value; renderBills(); });
+
+  document.addEventListener('click', function(e){
+    var el = e.target.closest('[data-action]');
+    if (!el) return;
+    var action = el.getAttribute('data-action');
+    if (action === 'pay') markPaid(el.getAttribute('data-id'));
+    else if (action === 'unpay') markUnpaid(el.getAttribute('data-id'));
+    else if (action === 'edit') openModal(el.getAttribute('data-id'));
+    else if (action === 'undo') undoPayment(el.getAttribute('data-hid'));
+    else if (action === 'delete') {
+      var id = el.getAttribute('data-id');
+      if (el.getAttribute('data-armed') === '1') { clearTimeout(deleteArmTimer); deleteBill(id); }
+      else {
+        el.setAttribute('data-armed', '1');
+        el.textContent = 'Confirm?';
+        el.classList.add('armed');
+        clearTimeout(deleteArmTimer);
+        deleteArmTimer = setTimeout(function(){ renderBills(); }, 2600);
+      }
+    }
+  });
+}
+
+function buildSelects(){
+  var fc = $('#filter-cat'), f = $('#f-category');
+  var opts = '<option value="all">All categories</option>' + CATS.map(function(c){
+    return '<option value="' + esc(c.name) + '">' + esc(c.name) + '</option>';
+  }).join('');
+  fc.innerHTML = opts;
+  f.innerHTML = CATS.map(function(c){
+    return '<option value="' + esc(c.name) + '">' + esc(c.name) + '</option>';
+  }).join('');
+}
+
+/* ---------- init ---------- */
+buildSelects();
+wireEvents();
+renderAll();
+</script>
+</body>
+</html>
