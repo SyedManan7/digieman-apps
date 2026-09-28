@@ -314,51 +314,106 @@ const CONFIG = {
 };
 /* ============ end of personalization block ============ */
 
-/* ---------- URL-hash personalization (optional) ----------
-   Share a link like  invite.html#d=<base64url-json>  and the fields
-   below are overridden without editing the file. The hash JSON may
-   carry name, age, dateText, venue, fromName (strings) and photos
-   (array of data:image/... data URIs, max 8). Any failure — bad
-   base64, bad JSON, wrong shape — silently keeps CONFIG defaults. */
+/* ---------- online publishing server ---------- */
+/* ★ If you run your own Cloudflare Worker, put its URL here (no trailing
+   slash). The editor has the same setting — keep both in sync. */
+var WORKER_URL = "https://digieman-invites.potbellymenu1.workers.dev";
+
+/* ---------- shared personalization override ---------- */
+function isOkPhoto(p){
+  return typeof p === "string" && (p.indexOf("data:image") === 0 || p.indexOf("https://") === 0);
+}
+function applyDataOverride(d){
+  if(!d || typeof d !== "object") return;
+  var keys = ["name", "age", "dateText", "venue", "fromName"], i, v;
+  for(i = 0; i < keys.length; i++){
+    v = d[keys[i]];
+    if(typeof v === "string" && v) CONFIG[keys[i]] = v;
+  }
+  if(Array.isArray(d.photos)){
+    var kept = [], j;
+    for(j = 0; j < d.photos.length && kept.length < 8; j++){
+      if(isOkPhoto(d.photos[j])) kept.push(d.photos[j]);
+    }
+    if(kept.length) CONFIG.photos = kept;
+  }
+}
+
+/* ---------- URL personalization (optional) ----------
+   #i=<id>  → fetch the invitation data from the publishing server
+              (used by "Publish online" links — short, and the QR can
+              open it WITH photos). Wins if both forms are present.
+   #d=<base64url-json> → self-contained override, no server needed.
+   Any failure — bad id, no connection, bad JSON — keeps CONFIG
+   defaults (for #d=) or shows a friendly error (for #i=). */
 (function(){
-  try{
-    var h = location.hash || "";
-    if(h.indexOf("#d=") !== 0) return;
-    var b64u = h.slice(3);
-    if(!b64u) return;
-    /* base64url -> standard base64 */
-    var b64 = b64u.replace(/-/g, "+").replace(/_/g, "/");
-    while(b64.length % 4) b64 += "=";
-    /* base64 -> bytes -> UTF-8 string */
-    var bin = atob(b64), bytes = new Array(bin.length), i;
-    for(i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-    var json;
-    if(typeof TextDecoder !== "undefined"){
-      json = new TextDecoder().decode(new Uint8Array(bytes));
-    } else {
-      json = decodeURIComponent(bytes.map(function(c){
-        return "%" + ("0" + c.toString(16)).slice(-2);
-      }).join(""));
-    }
-    var d = JSON.parse(json);
-    if(!d || typeof d !== "object") return;
-    var keys = ["name", "age", "dateText", "venue", "fromName"];
-    for(i = 0; i < keys.length; i++){
-      var v = d[keys[i]];
-      if(typeof v === "string" && v) CONFIG[keys[i]] = v;
-    }
-    if(Array.isArray(d.photos)){
-      var kept = [], j;
-      for(j = 0; j < d.photos.length && kept.length < 8; j++){
-        if(typeof d.photos[j] === "string" && d.photos[j].indexOf("data:image") === 0)
-          kept.push(d.photos[j]);
+  var h = "";
+  try{ h = location.hash || ""; }catch(e){}
+  if(h.indexOf("#i=") === 0){
+    var id = h.slice(3);
+    if(/^[A-Za-z0-9_-]{4,16}$/.test(id)){ loadOnlineInvite(id); return; }
+    /* bad id shape → fall through to defaults */
+  }else if(h.indexOf("#d=") === 0){
+    try{
+      var b64u = h.slice(3);
+      if(b64u){
+        /* base64url -> standard base64 */
+        var b64 = b64u.replace(/-/g, "+").replace(/_/g, "/");
+        while(b64.length % 4) b64 += "=";
+        /* base64 -> bytes -> UTF-8 string */
+        var bin = atob(b64), bytes = new Array(bin.length), i;
+        for(i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        var json;
+        if(typeof TextDecoder !== "undefined"){
+          json = new TextDecoder().decode(new Uint8Array(bytes));
+        }else{
+          json = decodeURIComponent(bytes.map(function(c){
+            return "%" + ("0" + c.toString(16)).slice(-2);
+          }).join(""));
+        }
+        applyDataOverride(JSON.parse(json));
       }
-      if(kept.length) CONFIG.photos = kept;
-    }
-  }catch(e){ /* keep defaults */ }
+    }catch(e){ /* keep defaults */ }
+  }
+  boot();
 })();
 
-(function(){
+/* Fetch a published invitation and boot once its data is applied.
+   On any failure the sealed-envelope dialog shows a friendly error
+   instead of a wrong (default) invitation. */
+function loadOnlineInvite(id){
+  var hint = null;
+  try{
+    hint = document.querySelector("#intro .tap-hint");
+    if(hint) hint.textContent = "Opening your invitation\u2026";
+  }catch(e){}
+  var done = false;
+  function fail(){
+    if(done) return; done = true;
+    try{
+      var h2 = document.querySelector("#intro .tap-hint");
+      if(h2) h2.textContent = "Couldn't load this invitation \u2014 check your connection and try again.";
+    }catch(e){}
+  }
+  try{
+    setTimeout(function(){ if(!done) fail(); }, 12000);
+    fetch(WORKER_URL + "/get/" + id).then(function(r){
+      if(!r || !r.ok) throw new Error("http " + (r && r.status));
+      return r.json();
+    }).then(function(d){
+      if(done) return; done = true;
+      applyDataOverride(d);
+      try{
+        var h3 = document.querySelector("#intro .tap-hint");
+        if(h3) h3.textContent = "Tap the seal to open";
+      }catch(e){}
+      boot();
+    }).catch(fail);
+  }catch(e){ fail(); }
+}
+
+/* ---------- main invitation init (called after personalization resolves) ---------- */
+function boot(){
 "use strict";
 var RM = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 /* keep background locked while the sealed envelope covers the screen */
@@ -384,7 +439,7 @@ function placeholderCard(i){
   d.innerHTML = '<div class="ph-empty">' + CAKE_SVG + '<span>A memory awaits</span></div><div class="frame"></div>';
   return d;
 }
-var photos = (CONFIG.photos || []).filter(function(p){ return typeof p === "string" && p.indexOf("data:image") === 0; }).slice(0, 8);
+var photos = (CONFIG.photos || []).filter(isOkPhoto).slice(0, 8);
 if(photos.length === 0){
   for(var i = 0; i < 3; i++) rail.appendChild(placeholderCard(i));
 }else{
@@ -614,7 +669,7 @@ $("replayBtn").addEventListener("click", function(){
 if(location.hash === "#autotest"){
   setTimeout(function(){ $("waxSeal").click(); }, 600);
 }
-})();
+}
 </script>
 </body>
 </html>

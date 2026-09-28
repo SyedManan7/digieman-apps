@@ -147,16 +147,21 @@
       <h2><span class="step">5</span>Share it</h2>
       <p class="hint">The link opens the invitation with <em>your</em> details — no files, no apps. The QR opens the same link when scanned.</p>
       <div class="btnrow">
+        <button class="btn gold" id="publishBtn" type="button">☁️ Publish online</button>
         <button class="btn" id="copyBtn" type="button">🔗 Copy invitation link</button>
         <button class="btn ghost" id="shortBtn" type="button">✂️ Short link (no photos)</button>
-        <button class="btn gold" id="qrBtn" type="button">⬇ Download stylish QR</button>
+        <button class="btn" id="qrBtn" type="button">⬇ Download stylish QR</button>
         <button class="btn ghost" id="resetBtn" type="button" style="flex:0 1 auto">Reset</button>
       </div>
+      <p class="hint" id="pubState" style="margin:8px 0 0"></p>
+      <label class="field" style="margin-top:10px"><span>Publishing server <em style="color:var(--muted);font-weight:400">(for ☁️ Publish online)</em></span>
+        <input type="url" id="workerUrl" inputmode="url" autocomplete="off" spellcheck="false">
+      </label>
       <p class="hint" id="linkSize" style="margin:8px 0 0"></p>
       <div class="okline" id="statusOk"></div>
       <div class="warn" id="statusWarn"></div>
       <textarea id="linkBox" readonly placeholder="Your personal invitation link will appear here…"></textarea>
-      <p class="hint" style="margin-top:10px">Tip: a QR code can only hold a short link. If your photos make the link very long, the QR will open the text version of the invitation — share the full link (with photos) via WhatsApp using the Copy button.</p>
+      <p class="hint" style="margin-top:10px">Tip: ☁️ Publish online gives you a short link that stays online for 2 years — the QR then opens the full invitation <em>with</em> photos. Without publishing, a QR can only hold a short link, so it opens the text version; share the full link (with photos) via WhatsApp using the Copy button.</p>
     </section>
   </div>
 
@@ -499,12 +504,19 @@ root.qrVersionFor = function (text) { return pickVersion(utf8Bytes(text).length)
 (function(){
 "use strict";
 var DEFAULT_HOSTED = "https://syedmanan7.github.io/digieman-apps/birthday-3d-invite.html";
+/* ★ ONLINE PUBLISHING SERVER — used by "☁️ Publish online". Must match
+   WORKER_URL in birthday-3d-invite.html. Deploy worker.js to Cloudflare
+   Workers (KV binding name: INVITES) and put your workers.dev URL here
+   (no trailing slash). */
+var DEFAULT_WORKER = "https://digieman-invites.potbellymenu1.workers.dev";
+var ID_RE = /^[A-Za-z0-9_-]{4,16}$/;
 var LS_KEY = "bday3d-editor-v1";
 var MAX_SIDE = 800, JPEG_Q = 0.65, WARN_BYTES = 60000;
 
 var state = { name:"", age:"", dateText:"28 September 2026", venue:"",
-              fromName:"with love from family", photos:[], hostedUrl:DEFAULT_HOSTED };
-var uploading = 0, previewTimer = null, saveTimer = null;
+              fromName:"with love from family", photos:[], hostedUrl:DEFAULT_HOSTED,
+              workerUrl:DEFAULT_WORKER, publishedId:"" };
+var uploading = 0, previewTimer = null, saveTimer = null, needsRepublish = false;
 
 function $(id){ return document.getElementById(id); }
 
@@ -535,6 +547,29 @@ function cleanBase(){
   return (state.hostedUrl || DEFAULT_HOSTED).trim().replace(/#.*$/,"") || DEFAULT_HOSTED;
 }
 function shareLink(includePhotos){ return cleanBase() + currentHash(includePhotos); }
+function workerBase(){
+  return (state.workerUrl || DEFAULT_WORKER).trim().replace(/\/+$/, "") || DEFAULT_WORKER;
+}
+function publishedLink(){ return cleanBase() + "#i=" + state.publishedId; }
+/* Any content edit invalidates the published short link (it would serve
+   stale data), so drop it and ask for a fresh publish. Silent unless a
+   link had been published. */
+function clearPublished(){
+  if(state.publishedId){ state.publishedId = ""; needsRepublish = true; save(); renderPubState(); }
+}
+function renderPubState(){
+  var el = $("pubState"); if(!el) return;
+  el.textContent = "";
+  if(state.publishedId){
+    el.appendChild(document.createTextNode("\u2705 Published: "));
+    var a = document.createElement("a");
+    a.href = publishedLink(); a.textContent = publishedLink();
+    a.target = "_blank"; a.rel = "noopener";
+    el.appendChild(a);
+  }else if(needsRepublish){
+    el.textContent = "You edited the invitation \u2014 publish again to update the short link.";
+  }
+}
 
 /* ---------- preview ---------- */
 function schedulePreview(){
@@ -556,9 +591,10 @@ function load(){
   try {
     var s = JSON.parse(localStorage.getItem(LS_KEY));
     if (s && typeof s === "object"){
-      ["name","age","dateText","venue","fromName","hostedUrl"].forEach(function(k){
+      ["name","age","dateText","venue","fromName","hostedUrl","workerUrl"].forEach(function(k){
         if (typeof s[k] === "string") state[k] = s[k];
       });
+      if (typeof s.publishedId === "string" && ID_RE.test(s.publishedId)) state.publishedId = s.publishedId;
       if (Array.isArray(s.photos)) state.photos = s.photos.filter(function(p){
         return typeof p === "string" && p.indexOf("data:image") === 0; }).slice(0,5);
     }
@@ -568,6 +604,7 @@ function syncForm(){
   $("fName").value = state.name; $("fAge").value = state.age;
   $("fDate").value = state.dateText; $("fVenue").value = state.venue;
   $("fFrom").value = state.fromName; $("hostedUrl").value = state.hostedUrl;
+  $("workerUrl").value = state.workerUrl;
   renderThumbs(); updateSizeWarn();
 }
 
@@ -617,6 +654,7 @@ function addPhotos(files, replaceFirst){
         if (reason === "heic") failedHeic++;
       }
       if (--pending === 0){
+        clearPublished();
         renderThumbs(); updateSizeWarn(); save(); schedulePreview();
         if (failed.length){
           clearStatus();
@@ -636,7 +674,7 @@ function renderThumbs(){
     var im = document.createElement("img"); im.src = uri; im.alt = idx===0?"Cover photo":"Gallery photo "+idx;
     var tag = document.createElement("span"); tag.className="tag"; tag.textContent = idx===0?"cover":""+idx;
     var x = document.createElement("button"); x.type="button"; x.textContent="✕"; x.setAttribute("aria-label","Remove photo");
-    x.onclick = function(){ state.photos.splice(idx,1); renderThumbs(); updateSizeWarn(); save(); schedulePreview(); };
+    x.onclick = function(){ state.photos.splice(idx,1); clearPublished(); renderThumbs(); updateSizeWarn(); save(); schedulePreview(); };
     d.appendChild(im); d.appendChild(tag); d.appendChild(x); box.appendChild(d);
   });
 }
@@ -670,8 +708,11 @@ function copyLink(withPhotos){
     if (ok) statusOk(full ? "Invitation link copied — paste it into WhatsApp. ✓" : "Short text-only link copied — no photos, works everywhere. ✓");
     else statusWarn("Couldn't auto-copy — the link is in the box below, long-press to copy it.");
   }
+  copyTextToClipboard(done);
+}
+function copyTextToClipboard(done){
   if (navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(link).then(function(){ done(true); }, function(){ fallbackCopy(done); });
+    navigator.clipboard.writeText($("linkBox").value).then(function(){ done(true); }, function(){ fallbackCopy(done); });
   } else fallbackCopy(done);
 }
 function fallbackCopy(done){
@@ -681,17 +722,59 @@ function fallbackCopy(done){
   try { ok = document.execCommand("copy"); } catch(e){}
   done(!!ok);
 }
+
+/* ---------- online publishing ---------- */
+function publishOnline(){
+  clearStatus();
+  if (uploading > 0){ statusWarn("Please wait — your photos are still being processed."); return; }
+  var body = JSON.stringify(payloadObj(true));
+  if (body.length > 2000000){ statusWarn("Too large to publish — remove a photo or two and try again."); return; }
+  var btn = $("publishBtn"), old = btn.textContent;
+  btn.disabled = true; btn.textContent = "Publishing…";
+  fetch(workerBase() + "/save", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: body
+  }).then(function(r){
+    if(!r.ok) throw new Error(r.status === 413 ? "large" : "http" + r.status);
+    return r.json();
+  }).then(function(d){
+    if(!d || typeof d.id !== "string" || !ID_RE.test(d.id)) throw new Error("bad-id");
+    state.publishedId = d.id; needsRepublish = false; save(); renderPubState();
+    var link = publishedLink();
+    $("linkBox").value = link;
+    copyTextToClipboard(function(ok){
+      if(ok) statusOk("Published! Short link copied — it stays online for 2 years, and the QR opens it with photos. ✓");
+      else statusWarn("Published! The short link is in the box below — long-press to copy it.");
+    });
+  }).catch(function(err){
+    var msg = "Couldn't publish — check your connection and try again.";
+    if(err && err.message === "large") msg = "Too large to publish — remove a photo or two and try again.";
+    statusWarn(msg);
+  }).then(function(){
+    btn.disabled = false; btn.textContent = old;
+  });
+}
 function downloadQR(){
   clearStatus();
-  var link = shareLink(true), note = "";
-  var fits = true;
-  try { qrEncodeMatrix(link); }
-  catch(e){ fits = false; }
-  if (!fits){
-    link = shareLink(false);
-    note = "Your photos make the link too long for a QR code, so this QR opens the text version of the invitation. Share the full link (with photos) via WhatsApp using the Copy button. ";
+  var link, note = "";
+  if (state.publishedId){
+    /* Published short link: tiny, so the QR opens the FULL invitation with photos. */
+    link = publishedLink();
+    note = "This QR opens your published invitation WITH photos. ";
     try { qrEncodeMatrix(link); }
-    catch(e2){ statusWarn("Even the text-only link is too long for a QR code — please shorten the details."); return; }
+    catch(e){ statusWarn("The published link is unexpectedly long — please publish again."); return; }
+  } else {
+    link = shareLink(true);
+    var fits = true;
+    try { qrEncodeMatrix(link); }
+    catch(e){ fits = false; }
+    if (!fits){
+      link = shareLink(false);
+      note = "Your photos make the link too long for a QR code, so this QR opens the text version of the invitation. Hit \u2601\uFE0F Publish online to get a QR with photos, or share the full link (with photos) via WhatsApp using the Copy button. ";
+      try { qrEncodeMatrix(link); }
+      catch(e2){ statusWarn("Even the text-only link is too long for a QR code — please shorten the details."); return; }
+    }
   }
   var btn = $("qrBtn"); btn.disabled = true; btn.textContent = "Making QR…";
   setTimeout(function(){
@@ -810,11 +893,12 @@ function drawStylishQR(link){
 
 /* ---------- wiring ---------- */
 function bind(){
-  [["fName","name"],["fAge","age"],["fDate","dateText"],["fVenue","venue"],["fFrom","fromName"],["hostedUrl","hostedUrl"]]
+  [["fName","name"],["fAge","age"],["fDate","dateText"],["fVenue","venue"],["fFrom","fromName"],["hostedUrl","hostedUrl"],["workerUrl","workerUrl"]]
     .forEach(function(pair){
       $(pair[0]).addEventListener("input", function(e){
         state[pair[1]] = e.target.value;
         if(pair[1]==="hostedUrl"){ $("linkBox").value = shareLink(true); }
+        clearPublished();
         save(); schedulePreview();
       });
     });
@@ -824,19 +908,23 @@ function bind(){
   $("galleryInput").addEventListener("change", function(e){ addPhotos(e.target.files, false); e.target.value=""; });
   $("copyBtn").onclick = function(){ copyLink(true); };
   $("shortBtn").onclick = function(){ copyLink(false); };
+  $("publishBtn").onclick = publishOnline;
   $("qrBtn").onclick = downloadQR;
   $("resetBtn").onclick = function(){
     if(!confirm("Reset everything to defaults? Your text and photos will be cleared.")) return;
     try{ localStorage.removeItem(LS_KEY); }catch(e){}
     state = { name:"", age:"", dateText:"28 September 2026", venue:"",
-              fromName:"with love from family", photos:[], hostedUrl:DEFAULT_HOSTED };
-    clearStatus(); syncForm(); $("linkBox").value=""; schedulePreview();
+              fromName:"with love from family", photos:[], hostedUrl:DEFAULT_HOSTED,
+              workerUrl:DEFAULT_WORKER, publishedId:"" };
+    needsRepublish = false;
+    clearStatus(); syncForm(); renderPubState(); $("linkBox").value=""; schedulePreview();
   };
 }
 
 load();
 if(!state.hostedUrl) state.hostedUrl = DEFAULT_HOSTED;
-syncForm(); bind(); schedulePreview();
+if(!state.workerUrl) state.workerUrl = DEFAULT_WORKER;
+syncForm(); bind(); renderPubState(); schedulePreview();
 })();
 </script>
 </body>
