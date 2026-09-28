@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#201722">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Focus Dashboard">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23ffb02e'/%3E%3Cstop offset='1' stop-color='%23ff6f61'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='180' height='180' rx='42' fill='url(%23g)'/%3E%3Ccircle cx='90' cy='90' r='36' fill='none' stroke='%23241a20' stroke-width='15'/%3E%3Ccircle cx='90' cy='90' r='11' fill='%23241a20'/%3E%3C/svg%3E">
+<title>ADHD Focus Dashboard</title>
+<style>
+:root{
+  --bg0:#151016;
+  --bg1:#201722;
+  --card:#251b24;
+  --card2:#2c2029;
+  --ink:#f8f0e9;
+  --muted:#cdb4ab;
+  --faint:#93797a;
+  --line:rgba(255,255,255,.08);
+  --amber:#ffb02e;
+  --amber-soft:rgba(255,176,46,.14);
+  --coral:#ff6f61;
+  --coral-soft:rgba(255,111,97,.14);
+  --green:#7bd88f;
+  --green-soft:rgba(123,216,143,.14);
+  --violet:#b388ff;
+  --radius:18px;
+  --shadow:0 12px 32px rgba(0,0,0,.35);
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font);
+  color:var(--ink);
+  background:
+    radial-gradient(1100px 500px at 85% -5%, rgba(255,111,97,.10), transparent 60%),
+    radial-gradient(900px 480px at -10% 10%, rgba(179,136,255,.08), transparent 60%),
+    radial-gradient(700px 600px at 50% 110%, rgba(255,176,46,.07), transparent 60%),
+    linear-gradient(180deg,var(--bg1),var(--bg0));
+  min-height:100vh;
+  padding:26px 22px 60px;
+}
+.wrap{max-width:1180px;margin:0 auto}
+
+/* ---------- top bar ---------- */
+.topbar{
+  display:flex;justify-content:space-between;align-items:center;gap:14px;
+  padding:14px 18px;margin-bottom:22px;
+  background:rgba(37,27,36,.72);border:1px solid var(--line);
+  border-radius:var(--radius);box-shadow:var(--shadow);
+  backdrop-filter:blur(8px);
+  position:sticky;top:14px;z-index:20;
+}
+.brand{display:flex;align-items:center;gap:13px}
+.logo{
+  width:46px;height:46px;border-radius:14px;flex:0 0 46px;
+  background:conic-gradient(from 200deg,var(--amber),var(--coral),var(--violet),var(--amber));
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;color:#241a20;font-weight:800;
+  box-shadow:0 4px 14px rgba(255,176,46,.35);
+}
+.brand h1{font-size:21px;letter-spacing:.2px}
+.brand h1 .accent{background:linear-gradient(90deg,var(--amber),var(--coral));-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand p{font-size:13px;color:var(--muted);margin-top:2px}
+.top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.streak-pill{
+  display:flex;align-items:center;gap:7px;
+  background:var(--amber-soft);border:1px solid rgba(255,176,46,.35);
+  color:var(--amber);font-weight:700;font-size:14px;
+  padding:9px 14px;border-radius:999px;white-space:nowrap;
+}
+.btn{
+  font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;
+  border:none;border-radius:12px;padding:10px 16px;
+  background:linear-gradient(135deg,var(--amber),var(--coral));color:#2a1a12;
+  box-shadow:0 4px 14px rgba(255,111,97,.30);
+  transition:transform .12s ease, box-shadow .12s ease;
+}
+.btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(255,111,97,.38)}
+.btn:active{transform:translateY(0)}
+.btn.ghost{
+  background:transparent;color:var(--ink);
+  border:1px solid var(--line);box-shadow:none;
+}
+.btn.ghost:hover{border-color:rgba(255,176,46,.5);box-shadow:none}
+.btn.small{padding:7px 12px;font-size:13px;border-radius:10px}
+
+/* ---------- layout ---------- */
+.grid{columns:2;column-gap:20px}
+.card{
+  break-inside:avoid;margin-bottom:20px;
+  background:linear-gradient(180deg,var(--card2),var(--card));
+  border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:22px;
+}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.card-head h2{font-size:16px;letter-spacing:.4px;display:flex;align-items:center;gap:9px}
+.card-head h2 .ico{
+  width:30px;height:30px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;
+  font-size:16px;background:rgba(255,255,255,.06);border:1px solid var(--line);
+}
+.hint{font-size:12.5px;color:var(--faint)}
+
+/* ---------- tasks ---------- */
+.add-row{display:flex;gap:9px;margin-bottom:14px}
+.add-row input[type=text]{
+  flex:1;font-family:var(--font);font-size:14.5px;color:var(--ink);
+  background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:12px;
+  padding:11px 14px;outline:none;
+}
+.add-row input[type=text]:focus{border-color:rgba(255,176,46,.6)}
+.add-row select{
+  font-family:var(--font);font-size:13.5px;color:var(--ink);
+  background:#1c141b;border:1px solid var(--line);border-radius:12px;padding:0 10px;outline:none;
+}
+.progress-wrap{margin-bottom:14px}
+.progress-meta{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:7px}
+.progress-meta b{color:var(--amber)}
+.progress{height:10px;border-radius:99px;background:rgba(0,0,0,.35);overflow:hidden;border:1px solid var(--line)}
+.progress > div{
+  height:100%;width:0;border-radius:99px;
+  background:linear-gradient(90deg,var(--amber),var(--coral));
+  transition:width .35s ease;
+}
+.prio-group{margin-bottom:12px}
+.prio-label{font-size:11.5px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;margin:10px 0 7px;display:flex;align-items:center;gap:8px}
+.prio-label .dot{width:8px;height:8px;border-radius:50%}
+.prio-top3 .prio-label{color:var(--coral)} .prio-top3 .dot{background:var(--coral)}
+.prio-today .prio-label{color:var(--amber)} .prio-today .dot{background:var(--amber)}
+.prio-later .prio-label{color:var(--faint)} .prio-later .dot{background:var(--faint)}
+.task{
+  display:flex;align-items:center;gap:11px;
+  padding:10px 12px;border-radius:12px;margin-bottom:7px;
+  background:rgba(0,0,0,.22);border:1px solid transparent;
+  transition:border-color .15s ease;
+}
+.task:hover{border-color:var(--line)}
+.check{
+  width:23px;height:23px;flex:0 0 23px;border-radius:50%;cursor:pointer;
+  border:2px solid var(--faint);background:transparent;
+  display:flex;align-items:center;justify-content:center;
+  color:transparent;font-size:14px;font-weight:800;
+  transition:all .15s ease;
+}
+.check:hover{border-color:var(--green)}
+.task.done .check{background:var(--green);border-color:var(--green);color:#152a1a}
+.task .txt{flex:1;font-size:14.5px;line-height:1.4}
+.task.done .txt{color:var(--faint);text-decoration:line-through}
+.del{
+  background:none;border:none;color:var(--faint);font-size:18px;cursor:pointer;
+  padding:2px 6px;border-radius:8px;line-height:1;
+}
+.del:hover{color:var(--coral);background:var(--coral-soft)}
+.empty{font-size:13.5px;color:var(--faint);padding:12px 4px;font-style:italic}
+
+/* ---------- pomodoro ---------- */
+.mode-tabs{display:flex;gap:8px;margin-bottom:16px}
+.mode-tab{
+  flex:1;font-family:var(--font);font-size:13.5px;font-weight:700;cursor:pointer;
+  padding:9px;border-radius:11px;border:1px solid var(--line);
+  background:transparent;color:var(--muted);
+}
+.mode-tab.active{background:var(--amber-soft);border-color:rgba(255,176,46,.45);color:var(--amber)}
+.timer-stage{position:relative;width:212px;height:212px;margin:2px auto 14px}
+.timer-stage svg{transform:rotate(-90deg)}
+.timer-face{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:2px;
+}
+#timeDisplay{font-size:47px;font-weight:800;letter-spacing:1px;font-variant-numeric:tabular-nums}
+#modeLabel{font-size:12px;font-weight:800;letter-spacing:2.2px;text-transform:uppercase;color:var(--amber)}
+.timer-controls{display:flex;gap:9px;justify-content:center;margin-bottom:14px}
+.session-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.session-dots{display:flex;gap:6px}
+.session-dots span{width:11px;height:11px;border-radius:50%;background:rgba(255,255,255,.12);border:1px solid var(--line)}
+.session-dots span.on{background:var(--amber);border-color:var(--amber);box-shadow:0 0 8px rgba(255,176,46,.7)}
+#sessionCount{font-size:13px;color:var(--muted)}
+#sessionCount b{color:var(--ink)}
+.banner{
+  display:none;margin-top:13px;padding:11px 14px;border-radius:12px;
+  background:var(--green-soft);border:1px solid rgba(123,216,143,.4);
+  color:var(--green);font-size:13.5px;font-weight:600;text-align:center;
+}
+.banner.show{display:block;animation:pop .3s ease}
+@keyframes pop{from{transform:scale(.96);opacity:0}to{transform:scale(1);opacity:1}}
+
+/* ---------- habits ---------- */
+.habit{
+  display:flex;align-items:center;gap:12px;
+  padding:11px 12px;border-radius:12px;margin-bottom:8px;
+  background:rgba(0,0,0,.22);border:1px solid transparent;
+}
+.habit:hover{border-color:var(--line)}
+.habit-check{
+  width:30px;height:30px;flex:0 0 30px;border-radius:50%;cursor:pointer;
+  border:2px solid var(--faint);background:transparent;color:transparent;
+  font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center;
+  transition:all .15s ease;
+}
+.habit-check:hover{border-color:var(--amber)}
+.habit.done-today .habit-check{background:var(--amber);border-color:var(--amber);color:#2a1a12}
+.habit .hname{flex:1;font-size:14.5px}
+.habit.done-today .hname{color:var(--muted)}
+.habit .streak{font-size:13px;font-weight:700;color:var(--coral);white-space:nowrap}
+.habit .streak.zero{color:var(--faint);font-weight:500}
+.rename{background:none;border:none;color:var(--faint);cursor:pointer;font-size:14px;padding:4px;border-radius:7px}
+.rename:hover{color:var(--amber);background:var(--amber-soft)}
+
+/* ---------- check-in ---------- */
+.checkin-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field label{display:block;font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.sleep-row{display:flex;align-items:center;gap:10px}
+.sleep-row input{
+  width:76px;font-family:var(--font);font-size:17px;font-weight:700;color:var(--ink);text-align:center;
+  background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:11px;padding:9px 6px;outline:none;
+}
+.sleep-row input:focus{border-color:rgba(255,176,46,.6)}
+.sleep-row span{font-size:13px;color:var(--faint)}
+.scale{display:flex;gap:7px}
+.scale button{
+  flex:1;font-family:var(--font);font-size:19px;cursor:pointer;
+  background:rgba(0,0,0,.22);border:1px solid var(--line);border-radius:11px;padding:8px 0;
+  transition:all .14s ease;filter:grayscale(.55);opacity:.75;
+}
+.scale button:hover{transform:translateY(-2px);opacity:1}
+.scale button.sel{background:var(--amber-soft);border-color:rgba(255,176,46,.55);filter:none;opacity:1;box-shadow:0 0 10px rgba(255,176,46,.25)}
+.saved-tag{font-size:12.5px;color:var(--green);font-weight:700;opacity:0;transition:opacity .3s}
+.saved-tag.show{opacity:1}
+
+/* ---------- brain dump ---------- */
+#brainDump{
+  width:100%;min-height:170px;resize:vertical;
+  font-family:var(--font);font-size:14.5px;line-height:1.65;color:var(--ink);
+  background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:13px;
+  padding:14px;outline:none;
+}
+#brainDump:focus{border-color:rgba(255,176,46,.6)}
+.dump-foot{display:flex;justify-content:space-between;align-items:center;margin-top:9px}
+
+/* ---------- stats ---------- */
+#weekChart{width:100%;height:230px;display:block}
+.stats-total{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:12px;border-top:1px solid var(--line)}
+.stats-total .n{font-size:24px;font-weight:800;color:var(--amber)}
+.stats-total .l{font-size:12.5px;color:var(--faint)}
+
+/* ---------- footer ---------- */
+.foot{text-align:center;margin-top:26px;color:var(--faint);font-size:12.5px;line-height:1.7}
+.foot .lock{color:var(--green)}
+.storage-warn{
+  display:none;max-width:1180px;margin:0 auto 16px;padding:12px 18px;border-radius:14px;
+  background:rgba(255,111,97,.12);border:1px solid rgba(255,111,97,.45);
+  color:#ffb3a7;font-size:13.5px;font-weight:600;text-align:center;
+}
+.storage-warn.show{display:block}
+
+/* ---------- motion & polish ---------- */
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes taskIn{from{opacity:0;transform:translateX(-14px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes taskOut{to{opacity:0;transform:translateX(26px) scale(.96)}}
+@keyframes popIn{0%{transform:scale(.4)}55%{transform:scale(1.18)}100%{transform:scale(1)}}
+@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.22)}100%{transform:scale(1)}}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,176,46,.45)}50%{box-shadow:0 0 0 9px rgba(255,176,46,0)}}
+.card{animation:rise .55s cubic-bezier(.22,.8,.32,1) both}
+.card:nth-of-type(2){animation-delay:.07s}
+.card:nth-of-type(3){animation-delay:.14s}
+.card:nth-of-type(4){animation-delay:.21s}
+.card:nth-of-type(5){animation-delay:.28s}
+.card:nth-of-type(6){animation-delay:.35s}
+.task.enter{animation:taskIn .3s cubic-bezier(.22,.8,.32,1) both}
+.task.leaving{animation:taskOut .22s ease-in both;pointer-events:none}
+.habit.enter .habit-check{animation:popIn .32s cubic-bezier(.22,.8,.32,1)}
+.streak-pill.bump{animation:bump .4s ease}
+#ringFg{transition:stroke-dashoffset .35s linear}
+.btn{transition:transform .12s ease, box-shadow .12s ease, filter .12s ease}
+.btn:active{transform:scale(.96)}
+.mode-tab{transition:all .18s ease}
+.mode-tab:active{transform:scale(.96)}
+.check,.habit-check{transition:transform .14s ease, background .14s ease, border-color .14s ease}
+.check:active,.habit-check:active{transform:scale(.82)}
+.scale button:active{transform:scale(.92)}
+#timerMainBtn.running{animation:glowPulse 2s ease-in-out infinite}
+.empty-hero{
+  text-align:center;padding:26px 16px;border-radius:14px;margin-bottom:6px;
+  background:rgba(255,176,46,.06);border:1px dashed rgba(255,176,46,.35);
+}
+.empty-hero .big{font-size:30px;margin-bottom:8px}
+.empty-hero p{font-size:13.5px;color:var(--muted);line-height:1.6}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+
+/* ---------- responsive ---------- */
+@media (max-width:860px){
+  .grid{columns:1}
+  body{padding:16px 12px 50px}
+  .topbar{flex-direction:column;align-items:stretch;position:static}
+  .top-actions{justify-content:space-between}
+  .checkin-grid{grid-template-columns:1fr}
+  .add-row{flex-wrap:wrap}
+  .add-row input[type=text]{flex:1 1 100%}
+  .add-row select{flex:1}
+  .add-row .btn{flex:1}
+}
+
+/* ---------- print ---------- */
+@media print{
+  body{background:#fff;color:#111;padding:0}
+  .topbar{position:static;box-shadow:none;background:#fff;border:1px solid #ddd;backdrop-filter:none}
+  .card{box-shadow:none;break-inside:avoid;background:#fff;border:1px solid #ddd;margin-bottom:14px}
+  .grid{columns:1}
+  .top-actions,.timer-controls,.add-row,.del,.rename,.banner,#printBtn,#newDayBtn{display:none !important}
+  .brand h1 .accent{color:#b3541e;-webkit-text-fill-color:#b3541e;background:none}
+  .logo{box-shadow:none}
+  #timeDisplay,.streak-pill,.scale button.sel,.habit .streak,#sessionCount b{color:#111}
+  .checkin-grid{grid-template-columns:1fr 1fr}
+  #brainDump{border:1px solid #ccc;min-height:120px;color:#111;background:#fff}
+  .foot{color:#666}
+}
+</style>
+</head>
+<body>
+<noscript><div style="max-width:640px;margin:40px auto;padding:22px;border-radius:14px;background:#2c2029;border:1px solid rgba(255,176,46,.4);color:#f8f0e9;font-family:-apple-system,'Segoe UI',Roboto,sans-serif;text-align:center">⚠️ The ADHD Focus Dashboard needs JavaScript enabled to run. Please enable JavaScript in your browser settings and reload this page.</div></noscript>
+<div class="wrap">
+  <div class="storage-warn" id="storageWarn">⚠️ Your browser is blocking local storage, so your data can&rsquo;t be saved between visits. Enable cookies / site data for this file to keep your progress.</div>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">◉</div>
+      <div>
+        <h1>Focus <span class="accent">Dashboard</span></h1>
+        <p id="dateLine">—</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <div class="streak-pill" title="Consecutive active days">🔥 <span id="streakNum">0</span>&nbsp;day streak</div>
+      <button class="btn ghost" id="newDayBtn" title="Archive completed tasks and reset today's counters">↺ New day</button>
+      <button class="btn ghost" id="printBtn">⎙ Print</button>
+    </div>
+  </header>
+
+  <main class="grid">
+
+    <!-- TASKS -->
+    <section class="card" id="tasksCard">
+      <div class="card-head">
+        <h2><span class="ico">✓</span> Today's Tasks</h2>
+        <span class="hint">Pick your Top 3 — everything else can wait.</span>
+      </div>
+      <div class="add-row">
+        <input type="text" id="taskInput" placeholder="Add a task… e.g. Reply to Sara's email" maxlength="120" aria-label="New task">
+        <select id="prioSelect" aria-label="Priority">
+          <option value="top3">★ Top 3</option>
+          <option value="today" selected>● Today</option>
+          <option value="later">○ Later</option>
+        </select>
+        <button class="btn" id="addTaskBtn">Add</button>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-meta"><span>Daily progress</span><b id="progressText">0 of 0 done</b></div>
+        <div class="progress"><div id="progressBar"></div></div>
+      </div>
+      <div id="taskGroups"></div>
+    </section>
+
+    <!-- POMODORO -->
+    <section class="card" id="timerCard">
+      <div class="card-head">
+        <h2><span class="ico">⏱</span> Focus Timer</h2>
+        <span class="hint">25 min on · 5 min off</span>
+      </div>
+      <div class="mode-tabs">
+        <button class="mode-tab active" id="tabFocus">🎯 Focus · 25</button>
+        <button class="mode-tab" id="tabBreak">☕ Break · 5</button>
+      </div>
+      <div class="timer-stage">
+        <svg width="212" height="212" viewBox="0 0 212 212" aria-hidden="true">
+          <circle cx="106" cy="106" r="92" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="13"/>
+          <circle id="ringFg" cx="106" cy="106" r="92" fill="none" stroke="url(#ringGrad)" stroke-width="13"
+                  stroke-linecap="round" stroke-dasharray="578.05" stroke-dashoffset="0"/>
+          <defs>
+            <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#ffb02e"/>
+              <stop offset="1" stop-color="#ff6f61"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="timer-face">
+          <div id="modeLabel">FOCUS</div>
+          <div id="timeDisplay">25:00</div>
+        </div>
+      </div>
+      <div class="timer-controls">
+        <button class="btn" id="timerMainBtn">▶ Start</button>
+        <button class="btn ghost" id="timerResetBtn">↺ Reset</button>
+      </div>
+      <div class="session-row">
+        <div class="session-dots" id="sessionDots" title="Focus sessions this cycle"></div>
+        <div id="sessionCount">Sessions today: <b id="sessToday">0</b> · total <b id="sessTotal">0</b></div>
+      </div>
+      <div class="banner" id="timerBanner"></div>
+    </section>
+
+    <!-- HABITS -->
+    <section class="card" id="habitsCard">
+      <div class="card-head">
+        <h2><span class="ico">🔥</span> Habit Streaks</h2>
+        <span class="hint">Tap a circle to check in today.</span>
+      </div>
+      <div id="habitList"></div>
+    </section>
+
+    <!-- CHECK-IN -->
+    <section class="card" id="checkinCard">
+      <div class="card-head">
+        <h2><span class="ico">☀</span> Morning Check-in</h2>
+        <span class="saved-tag" id="checkinSaved">✓ Saved</span>
+      </div>
+      <div class="checkin-grid">
+        <div class="field">
+          <label>Sleep (hours)</label>
+          <div class="sleep-row">
+            <input type="number" id="sleepInput" min="0" max="24" step="0.5" placeholder="7.5" aria-label="Hours of sleep">
+            <span>hours last night</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>Mood</label>
+          <div class="scale" id="moodScale">
+            <button data-v="1" title="Rough">😞</button><button data-v="2" title="Low">😐</button><button data-v="3" title="Okay">🙂</button><button data-v="4" title="Good">😄</button><button data-v="5" title="Great">🤩</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Energy</label>
+          <div class="scale" id="energyScale">
+            <button data-v="1" title="Drained">🪫</button><button data-v="2" title="Low">😮‍💨</button><button data-v="3" title="Steady">🔋</button><button data-v="4" title="Charged">⚡</button><button data-v="5" title="Buzzing">🚀</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>&nbsp;</label>
+          <div class="hint" style="line-height:1.6">Two taps a morning. Your check-ins build your day streak above — small wins compound.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BRAIN DUMP -->
+    <section class="card" id="dumpCard">
+      <div class="card-head">
+        <h2><span class="ico">🧠</span> Brain Dump</h2>
+        <span class="saved-tag" id="dumpSaved">✓ Autosaved</span>
+      </div>
+      <textarea id="brainDump" placeholder="Get it out of your head and onto the page. No structure needed — just dump everything here, then drag the important bits into tasks above…"></textarea>
+      <div class="dump-foot">
+        <span class="hint">Clears only when you clear it. Never judged.</span>
+        <button class="btn ghost small" id="clearDumpBtn">Clear page</button>
+      </div>
+    </section>
+
+    <!-- WEEKLY STATS -->
+    <section class="card" id="statsCard">
+      <div class="card-head">
+        <h2><span class="ico">📊</span> This Week</h2>
+        <span class="hint">Tasks completed per day</span>
+      </div>
+      <canvas id="weekChart" aria-label="Bar chart of tasks completed each day this week"></canvas>
+      <div class="stats-total">
+        <div><div class="n" id="weekTotal">0</div><div class="l">tasks completed<br>this week</div></div>
+        <div style="text-align:right"><div class="n" id="bestDay">—</div><div class="l">best<br>day</div></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="foot">
+    <div><span class="lock">🔒</span> Everything you type stays in <b>this browser</b> — no accounts, no cloud, no tracking.</div>
+    <div>ADHD Focus Dashboard · works offline · made for real brains</div>
+  </footer>
+
+</div>
+<script>
+(function(){
+'use strict';
+
+/* ================= helpers ================= */
+var KEY = 'adhdFocusDashboard.v1';
+var CHART_FONT = '700 12px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+function $(id){ return document.getElementById(id); }
+function pad(n){ return (n<10?'0':'')+n; }
+function todayStr(d){
+  d = d || new Date();
+  return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+}
+function addDaysStr(str, n){
+  var p = str.split('-');
+  var d = new Date(+p[0], +p[1]-1, +p[2]);
+  d.setDate(d.getDate()+n);
+  return todayStr(d);
+}
+function esc(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ================= state ================= */
+var DEFAULT_HABITS = [
+  'Drink a glass of water',
+  'Move for 20 minutes',
+  'Read 10 pages',
+  'Tidy one surface',
+  'Screens off by 10:30pm'
+];
+function defaultState(){
+  return {
+    version: 1,
+    tasks: [],
+    checkins: {},
+    habits: DEFAULT_HABITS.map(function(n){ return { name:n, history:{} }; }),
+    brainDump: '',
+    stats: {},
+    pomo: { sessionsToday:0, total:0, lastDate: todayStr() },
+    lastVisit: todayStr()
+  };
+}
+function loadState(){
+  var d = defaultState();
+  try{
+    var raw = localStorage.getItem(KEY);
+    if(raw){
+      var s = JSON.parse(raw);
+      if(s && typeof s === 'object'){
+        for(var k in d){ if(s[k] !== undefined) d[k] = s[k]; }
+        if(!Array.isArray(d.habits) || !d.habits.length) d.habits = defaultState().habits;
+        if(!d.pomo || typeof d.pomo !== 'object') d.pomo = defaultState().pomo;
+        return d;
+      }
+    }
+  }catch(e){}
+  return d;
+}
+var state = loadState();
+var storageOK = (function(){
+  try{ localStorage.setItem('__fd_probe','1'); localStorage.removeItem('__fd_probe'); return true; }
+  catch(e){ return false; }
+})();
+function save(){
+  if(!storageOK) return;
+  try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
+}
+
+/* new-day rollover */
+(function rollover(){
+  var t = todayStr();
+  if(state.lastVisit !== t){
+    state.pomo.sessionsToday = 0;
+    state.pomo.lastDate = t;
+    state.lastVisit = t;
+    save();
+  }
+})();
+
+/* ================= streaks ================= */
+function activeDays(){
+  var s = {}, k;
+  for(k in state.stats){ if(state.stats[k] > 0) s[k] = true; }
+  for(k in state.checkins){ s[k] = true; }
+  return s;
+}
+function streakFrom(map){
+  var t = todayStr(), d = t, n = 0;
+  if(!map[d]) d = addDaysStr(t, -1);
+  while(map[d]){ n++; d = addDaysStr(d, -1); }
+  return n;
+}
+function dayStreak(){ return streakFrom(activeDays()); }
+
+/* ================= tasks ================= */
+var PRIO = {
+  top3:  { label:'Top 3', cls:'prio-top3'  },
+  today: { label:'Today', cls:'prio-today' },
+  later: { label:'Later', cls:'prio-later' }
+};
+function findTask(id){
+  for(var i=0;i<state.tasks.length;i++) if(state.tasks[i].id===id) return state.tasks[i];
+  return null;
+}
+var lastAddedId = null;
+function addTask(text, prio){
+  text = (text||'').trim();
+  if(!text) return;
+  var item = {
+    id: 't'+Date.now().toString(36)+Math.floor(Math.random()*1296).toString(36),
+    text: text, priority: prio||'today', done:false, created: todayStr()
+  };
+  state.tasks.push(item);
+  lastAddedId = item.id;
+  save(); renderTasks(); renderStats(); updateStreak();
+}
+function toggleTask(id){
+  var it = findTask(id); if(!it) return;
+  var t = todayStr();
+  it.done = !it.done;
+  if(it.done){ state.stats[t] = (state.stats[t]||0)+1; }
+  else { state.stats[t] = Math.max(0,(state.stats[t]||0)-1); }
+  save(); renderTasks(); renderStats(); updateStreak();
+}
+function deleteTask(id){
+  state.tasks = state.tasks.filter(function(x){ return x.id!==id; });
+  save(); renderTasks();
+}
+function renderTasks(){
+  var groups = $('taskGroups');
+  var order = ['top3','today','later'];
+  var html = '', total = state.tasks.length, done = 0, i;
+  for(i=0;i<state.tasks.length;i++) if(state.tasks[i].done) done++;
+  if(total===0){
+    html += '<div class="empty-hero"><div class="big">🌱</div>'
+      + '<p><b style="color:var(--ink)">A clear list is a calm mind.</b><br>Add your first task above — start with the smallest possible step.</p></div>';
+  }
+  order.forEach(function(p){
+    var list = state.tasks.filter(function(x){ return x.priority===p; });
+    html += '<div class="prio-group '+PRIO[p].cls+'"><div class="prio-label"><span class="dot"></span>'+PRIO[p].label+'</div>';
+    if(!list.length){
+      html += '<div class="empty">Nothing here yet.</div>';
+    } else {
+      list.forEach(function(x){
+        html += '<div class="task'+(x.done?' done':'')+(x.id===lastAddedId?' enter':'')+'" data-id="'+x.id+'">'
+          + '<button class="check" data-act="toggle" title="Mark done">\u2713</button>'
+          + '<span class="txt">'+esc(x.text)+'</span>'
+          + '<button class="del" data-act="del" title="Delete">\u00D7</button></div>';
+      });
+    }
+    html += '</div>';
+  });
+  lastAddedId = null;
+  groups.innerHTML = html;
+  $('progressText').textContent = done + ' of ' + total + ' done';
+  $('progressBar').style.width = total ? Math.round(done/total*100) + '%' : '0%';
+}
+
+/* ================= pomodoro ================= */
+var FOCUS_LEN = 25*60, BREAK_LEN = 5*60, CIRC = 578.05;
+var pomo = { mode:'focus', remaining:FOCUS_LEN, running:false, endAt:0, tickId:null };
+var audioCtx = null;
+function ensureAudio(){
+  try{
+    if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==='suspended') audioCtx.resume();
+  }catch(e){}
+}
+function chime(){
+  try{
+    ensureAudio();
+    if(!audioCtx) return;
+    var t0 = audioCtx.currentTime;
+    [523.25, 659.25, 783.99].forEach(function(f, i){
+      var o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      o.type='sine'; o.frequency.value=f;
+      g.gain.setValueAtTime(0.0001, t0+i*0.22);
+      g.gain.exponentialRampToValueAtTime(0.22, t0+i*0.22+0.03);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0+i*0.22+0.5);
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start(t0+i*0.22); o.stop(t0+i*0.22+0.55);
+    });
+  }catch(e){}
+}
+function fmt(s){ return pad(Math.floor(s/60))+':'+pad(s%60); }
+function setMode(m){
+  stopTick();
+  pomo.mode = m; pomo.running = false;
+  pomo.remaining = (m==='focus') ? FOCUS_LEN : BREAK_LEN;
+  hideBanner(); renderTimer();
+}
+function startPause(){
+  ensureAudio();
+  hideBanner();
+  if(pomo.running){ stopTick(); pomo.running=false; }
+  else { pomo.running=true; pomo.endAt = Date.now() + pomo.remaining*1000; pomo.tickId=setInterval(tick,250); }
+  renderTimer();
+}
+function stopTick(){ if(pomo.tickId){ clearInterval(pomo.tickId); pomo.tickId=null; } }
+function resetTimer(){
+  stopTick(); pomo.running=false;
+  pomo.remaining = (pomo.mode==='focus') ? FOCUS_LEN : BREAK_LEN;
+  hideBanner(); renderTimer();
+}
+function tick(){
+  var r = Math.max(0, Math.round((pomo.endAt - Date.now())/1000));
+  pomo.remaining = r;
+  if(r<=0){ completeSession(); return; }
+  paintTimer();
+}
+function completeSession(){
+  stopTick(); pomo.running=false;
+  chime();
+  var t = todayStr();
+  if(state.pomo.lastDate!==t){ state.pomo.sessionsToday=0; state.pomo.lastDate=t; }
+  if(pomo.mode==='focus'){
+    state.pomo.sessionsToday++; state.pomo.total++; save();
+    showBanner('\uD83C\uDF89 Focus session complete! Time for a well-earned break.');
+    setMode('break');
+  } else {
+    showBanner('\u2615 Break over \u2014 ready for another focus block?');
+    setMode('focus');
+  }
+}
+function showBanner(msg){ var b=$('timerBanner'); b.textContent=msg; b.classList.add('show'); }
+function hideBanner(){ $('timerBanner').classList.remove('show'); }
+function paintTimer(){
+  $('timeDisplay').textContent = fmt(pomo.remaining);
+  var total = pomo.mode==='focus' ? FOCUS_LEN : BREAK_LEN;
+  $('ringFg').style.strokeDashoffset = (CIRC*(1 - pomo.remaining/total)).toFixed(2);
+  var btn = $('timerMainBtn');
+  btn.textContent = pomo.running ? '\u23F8 Pause' : (pomo.remaining<total ? '\u25B6 Resume' : '\u25B6 Start');
+  btn.classList.toggle('running', pomo.running);
+}
+function renderTimer(){
+  paintTimer();
+  $('modeLabel').textContent = pomo.mode==='focus' ? 'FOCUS' : 'BREAK';
+  $('tabFocus').classList.toggle('active', pomo.mode==='focus');
+  $('tabBreak').classList.toggle('active', pomo.mode==='break');
+  $('sessToday').textContent = state.pomo.sessionsToday;
+  $('sessTotal').textContent = state.pomo.total;
+  var dots = $('sessionDots'), html='', i, n = state.pomo.sessionsToday % 4;
+  for(i=0;i<4;i++) html += '<span class="'+(i<n?'on':'')+'"></span>';
+  dots.innerHTML = html;
+}
+
+/* ================= habits ================= */
+var lastHabitTap = -1;
+function renderHabits(){
+  var t = todayStr(), html='';
+  state.habits.forEach(function(h, i){
+    var done = !!(h.history && h.history[t]);
+    var st = streakFrom(h.history||{});
+    html += '<div class="habit'+(done?' done-today':'')+(i===lastHabitTap?' enter':'')+'" data-i="'+i+'">'
+      + '<button class="habit-check" data-act="check" title="Check in for today">\u2713</button>'
+      + '<span class="hname">'+esc(h.name)+'</span>'
+      + '<span class="streak'+(st?'':' zero')+'">'+(st?('\uD83D\uDD25 '+st+' day'+(st>1?'s':'')):'no streak yet')+'</span>'
+      + '<button class="rename" data-act="rename" title="Rename habit">\u270E</button></div>';
+  });
+  lastHabitTap = -1;
+  $('habitList').innerHTML = html;
+}
+function toggleHabit(i){
+  var h = state.habits[i]; if(!h) return;
+  if(!h.history) h.history = {};
+  var t = todayStr();
+  if(h.history[t]) delete h.history[t]; else h.history[t]=true;
+  lastHabitTap = i;
+  save(); renderHabits(); updateStreak();
+}
+
+/* ================= check-in ================= */
+function getCheckin(){
+  var t = todayStr();
+  if(!state.checkins[t]) state.checkins[t] = { sleep:'', mood:0, energy:0 };
+  return state.checkins[t];
+}
+function renderCheckin(){
+  var c = getCheckin();
+  $('sleepInput').value = (c.sleep===undefined || c.sleep===null) ? '' : c.sleep;
+  paintScale($('moodScale'), c.mood||0);
+  paintScale($('energyScale'), c.energy||0);
+}
+function paintScale(el, v){
+  var btns = el.querySelectorAll('button'), i;
+  for(i=0;i<btns.length;i++) btns[i].classList.toggle('sel', +btns[i].getAttribute('data-v')===v);
+}
+function flashSaved(){
+  var el=$('checkinSaved'); el.classList.add('show');
+  setTimeout(function(){ el.classList.remove('show'); }, 1400);
+}
+function bindScale(el, field){
+  el.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('button') : null; if(!b) return;
+    var c = getCheckin();
+    c[field] = +b.getAttribute('data-v');
+    save(); paintScale(el, c[field]); flashSaved(); updateStreak();
+  });
+}
+
+/* ================= brain dump ================= */
+var dumpTimer = null;
+function renderDump(){
+  var ta = $('brainDump');
+  if(document.activeElement!==ta) ta.value = state.brainDump||'';
+}
+
+/* ================= weekly stats ================= */
+function weekDates(){
+  var t = todayStr(), p = t.split('-'), d = new Date(+p[0],+p[1]-1,+p[2]);
+  var dow = (d.getDay()+6)%7; /* Monday = 0 */
+  var mon = addDaysStr(t, -dow), arr=[], i;
+  for(i=0;i<7;i++) arr.push(addDaysStr(mon,i));
+  return arr;
+}
+var DAY_LETTERS = ['M','T','W','T','F','S','S'];
+function renderStats(){
+  var dates = weekDates(), counts=[], total=0, best=0, bestI=-1, i;
+  for(i=0;i<7;i++){
+    var c = state.stats[dates[i]]||0;
+    counts.push(c); total+=c;
+    if(c>best){ best=c; bestI=i; }
+  }
+  $('weekTotal').textContent = total;
+  $('bestDay').textContent = bestI>=0 ? DAY_LETTERS[bestI]+' \u00B7 '+best : '\u2014';
+  drawChart(counts, total, dates.indexOf(todayStr()));
+}
+function drawChart(counts, total, todayIdx){
+  var cv = $('weekChart');
+  if(!cv || !cv.getContext) return;
+  var dpr = window.devicePixelRatio||1;
+  var W = cv.clientWidth, H = cv.clientHeight;
+  if(!W || !H) return;
+  cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr);
+  var ctx = cv.getContext('2d');
+  ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,W,H);
+  var padL=10, padR=10, padT=30, padB=32;
+  var cw=(W-padL-padR)/7;
+  var max=Math.max.apply(null, counts.concat([4]));
+  var i, x, bw=cw*0.56, bh, y, grad;
+  ctx.strokeStyle='rgba(255,255,255,.12)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(padL,H-padB+0.5); ctx.lineTo(W-padR,H-padB+0.5); ctx.stroke();
+  ctx.textAlign='center';
+  for(i=0;i<7;i++){
+    x = padL + i*cw + (cw-bw)/2;
+    bh = (H-padT-padB) * (counts[i]/max);
+    y = H-padB-bh;
+    if(bh>0.5){
+      grad = ctx.createLinearGradient(0,y,0,H-padB);
+      if(i===todayIdx){ grad.addColorStop(0,'#ffd166'); grad.addColorStop(1,'#ff6f61'); }
+      else { grad.addColorStop(0,'rgba(255,176,46,.9)'); grad.addColorStop(1,'rgba(255,111,97,.5)'); }
+      ctx.fillStyle = grad;
+      var r = Math.min(7, bw/2);
+      ctx.beginPath();
+      ctx.moveTo(x, y+bh);
+      ctx.lineTo(x, y+r); ctx.quadraticCurveTo(x,y,x+r,y);
+      ctx.lineTo(x+bw-r,y); ctx.quadraticCurveTo(x+bw,y,x+bw,y+r);
+      ctx.lineTo(x+bw, y+bh); ctx.closePath(); ctx.fill();
+    }
+    ctx.font = CHART_FONT;
+    ctx.fillStyle = counts[i]>0 ? '#f8f0e9' : 'rgba(255,255,255,.25)';
+    ctx.fillText(String(counts[i]), x+bw/2, y-9);
+    ctx.fillStyle = i===todayIdx ? '#ffb02e' : 'rgba(255,255,255,.42)';
+    ctx.fillText(DAY_LETTERS[i], x+bw/2, H-padB+21);
+  }
+  if(total===0){
+    ctx.fillStyle='rgba(255,255,255,.32)';
+    ctx.font='13px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif';
+    ctx.fillText('Complete tasks to grow your chart \uD83C\uDF31', W/2, padT+2);
+  }
+}
+
+/* ================= header / new day ================= */
+var lastStreak = -1;
+function updateStreak(){
+  var n = dayStreak();
+  $('streakNum').textContent = n;
+  if(lastStreak>=0 && n>lastStreak){
+    var pill = document.querySelector('.streak-pill');
+    pill.classList.remove('bump');
+    void pill.offsetWidth;
+    pill.classList.add('bump');
+  }
+  lastStreak = n;
+}
+function renderHeader(){
+  $('dateLine').textContent = new Date().toLocaleDateString(undefined,{weekday:'long', month:'long', day:'numeric'});
+  updateStreak();
+}
+function newDay(){
+  if(!confirm('Start a new day?\n\nCompleted tasks will be archived. Unfinished tasks carry over.')) return;
+  state.tasks = state.tasks.filter(function(x){ return !x.done; });
+  state.pomo.sessionsToday = 0;
+  save(); renderAll();
+}
+function renderAll(){
+  renderHeader(); renderTasks(); renderTimer(); renderHabits(); renderCheckin(); renderDump(); renderStats();
+}
+
+/* ================= events ================= */
+function closestBtn(e){
+  var el = e.target;
+  if(el && el.closest) return el.closest('button');
+  return null;
+}
+function bind(){
+  $('addTaskBtn').addEventListener('click', function(){
+    addTask($('taskInput').value, $('prioSelect').value);
+    $('taskInput').value=''; $('taskInput').focus();
+  });
+  $('taskInput').addEventListener('keydown', function(e){
+    if(e.key==='Enter'){ addTask($('taskInput').value, $('prioSelect').value); $('taskInput').value=''; }
+  });
+  $('taskGroups').addEventListener('click', function(e){
+    var b = closestBtn(e); if(!b) return;
+    var row = b.closest ? b.closest('.task') : null; if(!row) return;
+    var id = row.getAttribute('data-id');
+    if(b.getAttribute('data-act')==='toggle') toggleTask(id);
+    else if(b.getAttribute('data-act')==='del'){
+      var it = findTask(id);
+      if(!it) return;
+      if(!confirm('Delete this task?\n\n“'+it.text.slice(0,60)+'”')) return;
+      row.classList.add('leaving');
+      setTimeout(function(){ deleteTask(id); }, 210);
+    }
+  });
+  $('tabFocus').addEventListener('click', function(){ setMode('focus'); });
+  $('tabBreak').addEventListener('click', function(){ setMode('break'); });
+  $('timerMainBtn').addEventListener('click', startPause);
+  $('timerResetBtn').addEventListener('click', resetTimer);
+  $('habitList').addEventListener('click', function(e){
+    var b = closestBtn(e); if(!b) return;
+    var row = b.closest ? b.closest('.habit') : null; if(!row) return;
+    var i = +row.getAttribute('data-i');
+    if(b.getAttribute('data-act')==='check') toggleHabit(i);
+    else if(b.getAttribute('data-act')==='rename'){
+      var cur = state.habits[i].name;
+      var nv = prompt('Rename habit:', cur);
+      if(nv && nv.trim()){ state.habits[i].name = nv.trim().slice(0,60); save(); renderHabits(); }
+    }
+  });
+  $('sleepInput').addEventListener('change', function(){
+    var c = getCheckin();
+    var v = parseFloat($('sleepInput').value);
+    c.sleep = isNaN(v) ? '' : Math.max(0, Math.min(24, v));
+    save(); flashSaved(); updateStreak();
+  });
+  bindScale($('moodScale'), 'mood');
+  bindScale($('energyScale'), 'energy');
+  $('brainDump').addEventListener('input', function(){
+    if(dumpTimer) clearTimeout(dumpTimer);
+    dumpTimer = setTimeout(function(){
+      state.brainDump = $('brainDump').value; save();
+      var el=$('dumpSaved'); el.classList.add('show');
+      setTimeout(function(){ el.classList.remove('show'); }, 1400);
+    }, 450);
+  });
+  $('clearDumpBtn').addEventListener('click', function(){
+    if(!state.brainDump && !$('brainDump').value) return;
+    if(confirm('Clear the whole brain dump page?')){ state.brainDump=''; save(); renderDump(); }
+  });
+  $('newDayBtn').addEventListener('click', newDay);
+  $('printBtn').addEventListener('click', function(){ window.print(); });
+  var rzT=null;
+  window.addEventListener('resize', function(){
+    if(rzT) clearTimeout(rzT);
+    rzT=setTimeout(function(){ try{ renderStats(); }catch(e){} }, 150);
+  });
+}
+
+/* Internal handle used by automated checks (harmless in production). */
+window.FocusDash = {
+  state:function(){ return state; },
+  replace:function(s){ state=s; },
+  save:save,
+  renderAll:renderAll,
+  todayStr:todayStr,
+  key:KEY
+};
+
+bind();
+if(!storageOK){ $('storageWarn').classList.add('show'); }
+renderAll();
+})();
+</script>
+</body>
+</html>

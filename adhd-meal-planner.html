@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Calm Meal Planner — Weekly Meal & Grocery App</title>
+<meta name="description" content="An ADHD-friendly weekly meal planner with automatic grocery list. Works offline, no account, no subscription.">
+<meta name="theme-color" content="#3e6b4f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Calm Meals">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%233e6b4f'/%3E%3Cpath d='M14 34h36c0 10-8 16-18 16S14 44 14 34z' fill='%23f7f4ec'/%3E%3Cpath d='M32 12c-6 6-9 10-9 15h18c0-5-3-9-9-15z' fill='%23a9c7a4'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%233e6b4f'/%3E%3Cpath d='M40 96h100c0 28-22 44-50 44S40 124 40 96z' fill='%23f7f4ec'/%3E%3Cpath d='M90 34c-17 17-25 28-25 42h50c0-14-8-25-25-42z' fill='%23a9c7a4'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#f7f4ec; --card:#ffffff; --card2:#fbf9f4;
+  --ink:#2e3a2f; --muted:#7a8478; --line:#e7e1d3;
+  --primary:#3e6b4f; --primary-dk:#2f543d; --primary-soft:#e4edde; --primary-ghost:#eef4e9;
+  --accent:#d9a441; --danger:#c96a5a;
+  --shadow:0 8px 28px rgba(62,80,60,.10);
+  --r:18px;
+}
+html[data-theme="dark"]{
+  --bg:#1b2320; --card:#252f2a; --card2:#202825;
+  --ink:#edf2e9; --muted:#9aa79b; --line:#33403a;
+  --primary:#86b894; --primary-dk:#6fa07e; --primary-soft:#2c3b32; --primary-ghost:#232e28;
+  --accent:#e0b45c; --danger:#d67f6f;
+  --shadow:0 8px 28px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{margin:0; font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:var(--bg); color:var(--ink); transition:background .35s ease,color .35s ease; min-height:100vh}
+button{font:inherit; cursor:pointer; border:none; background:none; color:inherit}
+input,textarea,select{font:inherit; color:inherit}
+.wrap{max-width:1080px; margin:0 auto; padding:20px 18px 90px}
+/* ---------- header ---------- */
+.app-head{display:flex; align-items:center; gap:14px; padding:8px 2px 18px; animation:fadeUp .5s ease both}
+.logo{width:52px; height:52px; border-radius:16px; background:linear-gradient(135deg,var(--primary),var(--primary-dk));
+  display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow); flex:none}
+.logo svg{width:30px; height:30px}
+.app-head h1{font-size:22px; margin:0; letter-spacing:-.3px}
+.app-head p{margin:2px 0 0; color:var(--muted); font-size:13px; letter-spacing:2.5px; text-transform:uppercase}
+.head-actions{margin-left:auto; display:flex; gap:10px}
+.icon-btn{width:44px; height:44px; border-radius:14px; background:var(--card); border:1px solid var(--line);
+  display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow); transition:transform .15s ease, background .2s}
+.icon-btn:hover{transform:translateY(-2px)}
+.icon-btn:active{transform:scale(.93)}
+.icon-btn svg{width:20px; height:20px; stroke:var(--ink); fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round}
+/* ---------- tabs ---------- */
+.tabs{display:flex; gap:8px; background:var(--card); border:1px solid var(--line); border-radius:20px; padding:8px;
+  box-shadow:var(--shadow); position:sticky; top:10px; z-index:20; animation:fadeUp .5s .05s ease both}
+.tab{flex:1; padding:12px 8px; border-radius:14px; font-weight:700; font-size:15px; color:var(--muted);
+  display:flex; align-items:center; justify-content:center; gap:8px; transition:all .25s ease; position:relative}
+.tab svg{width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round}
+.tab.active{background:var(--primary); color:#fff; box-shadow:0 6px 16px rgba(62,107,79,.35)}
+html[data-theme="dark"] .tab.active{color:#16211a}
+.tab .count{background:var(--primary-soft); color:var(--primary); font-size:12px; font-weight:800; border-radius:99px;
+  padding:2px 9px; min-width:26px; text-align:center}
+.tab.active .count{background:rgba(255,255,255,.25); color:#fff}
+html[data-theme="dark"] .tab.active .count{color:#16211a}
+/* ---------- views ---------- */
+.view{display:none; padding-top:20px}
+.view.active{display:block; animation:viewIn .35s ease both}
+@keyframes viewIn{from{opacity:0; transform:translateY(14px)} to{opacity:1; transform:none}}
+@keyframes fadeUp{from{opacity:0; transform:translateY(12px)} to{opacity:1; transform:none}}
+@keyframes pop{0%{transform:scale(.6); opacity:0} 60%{transform:scale(1.06)} 100%{transform:scale(1); opacity:1}}
+.section-head{display:flex; align-items:center; gap:12px; margin:4px 2px 14px; flex-wrap:wrap}
+.section-head h2{margin:0; font-size:20px; letter-spacing:-.3px}
+.section-head .sub{color:var(--muted); font-size:13px; width:100%; margin-top:-8px}
+.spacer{flex:1}
+/* ---------- buttons ---------- */
+.btn{display:inline-flex; align-items:center; gap:8px; padding:11px 18px; border-radius:14px; font-weight:700; font-size:14px;
+  background:var(--card); border:1px solid var(--line); box-shadow:var(--shadow); transition:transform .15s ease, box-shadow .2s, background .2s}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:scale(.96)}
+.btn.primary{background:linear-gradient(135deg,var(--primary),var(--primary-dk)); color:#fff; border:none}
+html[data-theme="dark"] .btn.primary{color:#16211a}
+.btn.danger{color:var(--danger); border-color:var(--danger)}
+.btn.small{padding:8px 13px; font-size:13px; border-radius:11px}
+.btn:disabled{opacity:.45; cursor:not-allowed; transform:none}
+.btn svg{width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round}
+/* ---------- week grid ---------- */
+.hint{background:linear-gradient(135deg,var(--primary-soft),var(--primary-ghost)); border:1px solid var(--line);
+  border-radius:var(--r); padding:14px 18px; margin-bottom:16px; display:flex; gap:12px; align-items:center;
+  font-size:14px; animation:fadeUp .5s .1s ease both}
+.hint .x{margin-left:auto; flex:none; width:30px; height:30px; border-radius:10px; display:flex; align-items:center; justify-content:center; color:var(--muted)}
+.hint .x:hover{background:rgba(0,0,0,.06)}
+.week-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:10px}
+.day-card{background:var(--card); border:1px solid var(--line); border-radius:var(--r); padding:12px 10px;
+  box-shadow:var(--shadow); animation:fadeUp .5s ease both}
+.day-card.today{border:2px solid var(--primary)}
+.day-name{font-weight:800; font-size:14px; text-align:center; margin-bottom:2px}
+.day-date{font-size:11px; color:var(--muted); text-align:center; margin-bottom:10px}
+.slot{display:block; width:100%; text-align:left; background:var(--card2); border:1px dashed var(--line); border-radius:12px;
+  padding:8px 10px; margin-bottom:8px; transition:all .2s ease; min-height:52px}
+.slot:hover{border-color:var(--primary); transform:translateY(-1px)}
+.slot:active{transform:scale(.98)}
+.slot .s-label{font-size:10px; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); font-weight:700}
+.slot .s-meal{font-size:13.5px; font-weight:600; margin-top:2px; line-height:1.3; word-break:break-word}
+.slot .s-add{font-size:13px; color:var(--muted)}
+.slot.filled{border-style:solid; border-color:var(--primary-soft); background:var(--primary-ghost)}
+.slot.filled .s-meal{animation:pop .3s ease}
+.slot .s-x{float:right; color:var(--muted); font-size:15px; line-height:1; padding:2px 4px; border-radius:8px}
+.slot .s-x:hover{color:var(--danger); background:rgba(0,0,0,.05)}
+/* ---------- modal ---------- */
+.overlay{position:fixed; inset:0; background:rgba(20,28,22,.5); backdrop-filter:blur(4px); z-index:50;
+  display:none; align-items:flex-end; justify-content:center; opacity:0; transition:opacity .25s ease}
+.overlay.open{display:flex; opacity:1}
+.sheet{background:var(--bg); width:100%; max-width:560px; max-height:88vh; border-radius:24px 24px 0 0;
+  padding:20px 20px 30px; overflow-y:auto; transform:translateY(60px); transition:transform .3s cubic-bezier(.2,.9,.3,1.2)}
+.overlay.open .sheet{transform:none}
+@media(min-width:640px){.overlay{align-items:center; padding:20px} .sheet{border-radius:24px}}
+.sheet h3{margin:0 0 4px; font-size:19px}
+.sheet .sheet-sub{color:var(--muted); font-size:13px; margin-bottom:14px}
+.search{width:100%; padding:12px 16px; border-radius:14px; border:1px solid var(--line); background:var(--card);
+  margin-bottom:12px; outline:none; transition:border .2s, box-shadow .2s}
+.search:focus{border-color:var(--primary); box-shadow:0 0 0 3px var(--primary-soft)}
+.lib-row{display:flex; align-items:center; gap:12px; background:var(--card); border:1px solid var(--line);
+  border-radius:14px; padding:12px 14px; margin-bottom:8px; width:100%; text-align:left; transition:all .18s ease}
+.lib-row:hover{border-color:var(--primary); transform:translateX(3px)}
+.lib-row:active{transform:scale(.99)}
+.lib-row .m-name{font-weight:700; font-size:14.5px}
+.lib-row .m-ing{font-size:12px; color:var(--muted); margin-top:2px; line-height:1.4}
+.lib-row .m-go{margin-left:auto; flex:none; background:var(--primary); color:#fff; font-weight:800; font-size:13px;
+  padding:8px 14px; border-radius:11px}
+html[data-theme="dark"] .lib-row .m-go{color:#16211a}
+.custom-box{background:var(--card); border:1px solid var(--line); border-radius:var(--r); padding:16px; margin-top:14px}
+.custom-box h4{margin:0 0 10px; font-size:15px}
+.field{margin-bottom:10px}
+.field label{display:block; font-size:12px; font-weight:700; color:var(--muted); margin-bottom:5px; text-transform:uppercase; letter-spacing:1px}
+.field input,.field textarea{width:100%; padding:11px 14px; border-radius:12px; border:1px solid var(--line);
+  background:var(--bg); outline:none; resize:vertical}
+.field input:focus,.field textarea:focus{border-color:var(--primary); box-shadow:0 0 0 3px var(--primary-soft)}
+.sheet-actions{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap}
+/* ---------- confirm dialog ---------- */
+.confirm-card{background:var(--bg); border-radius:24px; padding:26px 24px; max-width:380px; width:calc(100% - 40px);
+  text-align:center; transform:scale(.85); transition:transform .25s cubic-bezier(.2,.9,.3,1.25)}
+.overlay.open .confirm-card{transform:none}
+.confirm-card h3{margin:0 0 8px}
+.confirm-card p{color:var(--muted); font-size:14px; margin:0 0 18px; line-height:1.5}
+/* ---------- library view ---------- */
+.lib-list .lib-row{align-items:flex-start}
+.icon-mini{width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex:none;
+  background:var(--primary-soft); color:var(--primary); font-weight:800}
+.icon-mini.danger{background:rgba(201,106,90,.12); color:var(--danger)}
+.icon-mini svg{width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round}
+/* ---------- grocery view ---------- */
+.g-progress{background:var(--card); border:1px solid var(--line); border-radius:var(--r); padding:16px 18px;
+  box-shadow:var(--shadow); margin-bottom:16px; animation:fadeUp .4s ease both}
+.g-progress .bar{height:10px; background:var(--primary-soft); border-radius:99px; overflow:hidden; margin-top:10px}
+.g-progress .bar i{display:block; height:100%; background:linear-gradient(90deg,var(--primary),var(--primary-dk));
+  border-radius:99px; transition:width .5s cubic-bezier(.2,.8,.3,1)}
+.g-progress .txt{font-weight:800; font-size:15px}
+.g-progress .txt small{color:var(--muted); font-weight:600}
+.g-cat{margin-bottom:6px}
+.g-cat-head{display:flex; align-items:center; gap:10px; margin:18px 2px 10px}
+.g-cat-head h3{margin:0; font-size:15px; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); font-size:13px}
+.g-cat-head .pill{background:var(--primary-soft); color:var(--primary); font-size:12px; font-weight:800; border-radius:99px; padding:2px 10px}
+.g-row{display:flex; align-items:center; gap:13px; background:var(--card); border:1px solid var(--line); border-radius:14px;
+  padding:12px 15px; margin-bottom:8px; box-shadow:var(--shadow); transition:all .2s ease; animation:fadeUp .35s ease both}
+.g-row .cbx{width:26px; height:26px; border-radius:9px; border:2px solid var(--line); flex:none; display:flex;
+  align-items:center; justify-content:center; transition:all .22s ease; background:var(--bg)}
+.g-row .cbx svg{width:15px; height:15px; stroke:#fff; stroke-width:3; fill:none; stroke-linecap:round; stroke-linejoin:round;
+  transform:scale(0); transition:transform .22s cubic-bezier(.2,.9,.3,1.4)}
+.g-row.done .cbx{background:var(--primary); border-color:var(--primary)}
+.g-row.done .cbx svg{transform:none}
+.g-row .g-name{font-weight:600; font-size:14.5px; transition:all .2s}
+.g-row.done .g-name{text-decoration:line-through; color:var(--muted)}
+.g-row .g-n{margin-left:auto; flex:none; font-size:12px; font-weight:800; background:var(--primary-soft); color:var(--primary);
+  border-radius:99px; padding:3px 11px}
+.g-row .g-del{color:var(--muted); font-size:17px; padding:4px 8px; border-radius:8px; flex:none}
+.g-row .g-del:hover{color:var(--danger); background:rgba(0,0,0,.05)}
+.g-row.done{opacity:.75}
+/* ---------- empty states ---------- */
+.empty{text-align:center; padding:46px 20px; color:var(--muted)}
+.empty .big{font-size:44px; margin-bottom:10px}
+.empty h3{color:var(--ink); margin:0 0 6px}
+.empty p{margin:0 0 16px; font-size:14px; line-height:1.6}
+/* ---------- toast ---------- */
+.toast{position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(80px); background:var(--ink); color:var(--bg);
+  padding:13px 22px; border-radius:99px; font-weight:700; font-size:14px; z-index:99; transition:transform .35s cubic-bezier(.2,.9,.3,1.2);
+  box-shadow:0 10px 30px rgba(0,0,0,.25); max-width:calc(100vw - 40px); text-align:center}
+.toast.show{transform:translateX(-50%)}
+/* ---------- footer note ---------- */
+.foot{text-align:center; color:var(--muted); font-size:12px; margin-top:34px; line-height:1.7}
+/* ---------- print ---------- */
+#printSheet{display:none}
+@media print{
+  .app, .toast, .overlay{display:none !important}
+  #printSheet{display:block !important; color:#222; font-family:Georgia,serif}
+  #printSheet h1{font-size:26px; margin-bottom:4px}
+  #printSheet .pdate{color:#666; margin-bottom:18px}
+  #printSheet h2{font-size:16px; margin:16px 0 6px; text-transform:uppercase; letter-spacing:1px; color:#3e6b4f}
+  #printSheet label{display:block; font-size:14px; padding:5px 0; border-bottom:1px dotted #ccc}
+  #printSheet .box{display:inline-block; width:13px; height:13px; border:1.5px solid #555; border-radius:3px; margin-right:10px; vertical-align:-1px}
+}
+/* ---------- responsive ---------- */
+@media(max-width:920px){.week-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){
+  .week-grid{grid-template-columns:1fr}
+  .app-head h1{font-size:19px}
+  .tab{font-size:13px; padding:11px 4px}
+  .wrap{padding:14px 12px 80px}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none !important; transition:none !important}}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="wrap">
+
+  <header class="app-head">
+    <div class="logo" aria-hidden="true">
+      <svg viewBox="0 0 64 64"><path d="M14 34h36c0 10-8 16-18 16S14 44 14 34z" fill="#f7f4ec"/><path d="M32 12c-6 6-9 10-9 15h18c0-5-3-9-9-15z" fill="#a9c7a4"/></svg>
+    </div>
+    <div>
+      <h1>Calm Meals</h1>
+      <p>Weekly Meal Planner</p>
+    </div>
+    <div class="head-actions">
+      <button class="icon-btn" id="printBtn" title="Print grocery list" aria-label="Print grocery list">
+        <svg viewBox="0 0 24 24"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      </button>
+      <button class="icon-btn" id="themeBtn" title="Toggle light / dark theme" aria-label="Toggle theme">
+        <svg viewBox="0 0 24 24" id="themeIcon"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab active" data-view="plan" role="tab">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      Plan
+    </button>
+    <button class="tab" data-view="meals" role="tab">
+      <svg viewBox="0 0 24 24"><path d="M4 2v7a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V2"/><path d="M8 2v20"/><path d="M20 15V2a5 5 0 0 0-4 5v6a2 2 0 0 0 2 2h3zm0 0v7"/></svg>
+      Meals
+    </button>
+    <button class="tab" data-view="grocery" role="tab">
+      <svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      Groceries <span class="count" id="gCount">0</span>
+    </button>
+  </nav>
+
+  <!-- PLAN VIEW -->
+  <section class="view active" id="view-plan">
+    <div class="hint" id="firstHint" style="display:none">
+      <span style="font-size:20px">👋</span>
+      <span><strong>Tap any meal slot</strong> to plan it — pick from your library or type something new. Your grocery list builds itself.</span>
+      <button class="x" id="hintClose" aria-label="Dismiss">✕</button>
+    </div>
+    <div class="section-head">
+      <h2>This week's plan</h2>
+      <div class="spacer"></div>
+      <button class="btn small" id="copyWeekBtn">
+        <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy last week
+      </button>
+      <button class="btn small danger" id="newWeekBtn">
+        <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+        New week
+      </button>
+      <div class="sub" id="planSub">0 of 28 meals planned</div>
+    </div>
+    <div class="week-grid" id="weekGrid"></div>
+  </section>
+
+  <!-- MEALS VIEW -->
+  <section class="view" id="view-meals">
+    <div class="section-head">
+      <h2>Meal library</h2>
+      <div class="sub">Your go-to meals. Tap one while planning to assign it in one tap.</div>
+    </div>
+    <div class="custom-box" style="margin:0 0 16px">
+      <h4>＋ Add a favorite meal</h4>
+      <div class="field"><label>Meal name</label><input id="newMealName" placeholder="e.g. Creamy garlic pasta" maxlength="60"></div>
+      <div class="field"><label>Ingredients (comma separated)</label><textarea id="newMealIng" rows="2" placeholder="e.g. pasta, garlic, cream, parmesan, spinach" maxlength="400"></textarea></div>
+      <button class="btn primary" id="addMealBtn">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        Save meal
+      </button>
+    </div>
+    <input class="search" id="mealSearch" placeholder="🔍 Search your meals…">
+    <div class="lib-list" id="mealList"></div>
+  </section>
+
+  <!-- GROCERY VIEW -->
+  <section class="view" id="view-grocery">
+    <div class="section-head">
+      <h2>Grocery list</h2>
+      <div class="spacer"></div>
+      <button class="btn small" id="addItemBtn">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        Add item
+      </button>
+      <button class="btn small" id="clearCheckedBtn">Clear checked</button>
+      <button class="btn small primary" id="printListBtn">
+        <svg viewBox="0 0 24 24"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Print
+      </button>
+      <div class="sub">Auto-built from your planned meals. Check things off as you shop.</div>
+    </div>
+    <div class="g-progress">
+      <div class="txt"><span id="gDone">0</span> of <span id="gTotal">0</span> <small>bought</small></div>
+      <div class="bar"><i id="gBar" style="width:0%"></i></div>
+    </div>
+    <div id="groceryCats"></div>
+  </section>
+
+  <p class="foot">Calm Meals · your data never leaves this device<br>No account · no subscription · works offline</p>
+</div>
+</div>
+
+<!-- SLOT MODAL -->
+<div class="overlay" id="slotOverlay">
+  <div class="sheet" role="dialog" aria-modal="true">
+    <h3 id="slotTitle">Plan a meal</h3>
+    <p class="sheet-sub">Tap a favorite to assign it, or create something new below.</p>
+    <input class="search" id="slotSearch" placeholder="🔍 Search favorites…">
+    <div id="slotLib"></div>
+    <div class="custom-box">
+      <h4>Or type a custom meal</h4>
+      <div class="field"><label>Meal name</label><input id="customName" placeholder="e.g. Leftovers night" maxlength="60"></div>
+      <div class="field"><label>Ingredients (optional, comma separated)</label><textarea id="customIng" rows="2" placeholder="Adds to your grocery list automatically" maxlength="400"></textarea></div>
+      <div class="sheet-actions">
+        <button class="btn primary" id="assignCustomBtn">Assign to slot</button>
+        <button class="btn" id="slotClearBtn" style="display:none;color:var(--danger)">Clear slot</button>
+        <button class="btn" id="slotCloseBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="overlay" id="confirmOverlay">
+  <div class="confirm-card" role="dialog" aria-modal="true">
+    <h3 id="confirmTitle">Are you sure?</h3>
+    <p id="confirmText"></p>
+    <div class="sheet-actions" style="justify-content:center">
+      <button class="btn danger" id="confirmYes">Yes, do it</button>
+      <button class="btn" id="confirmNo">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD ITEM MODAL -->
+<div class="overlay" id="itemOverlay">
+  <div class="sheet" role="dialog" aria-modal="true">
+    <h3>Add to grocery list</h3>
+    <p class="sheet-sub">Something extra that's not in any meal.</p>
+    <div class="field"><label>Item name</label><input id="itemName" placeholder="e.g. Paper towels" maxlength="60"></div>
+    <div class="sheet-actions">
+      <button class="btn primary" id="itemAddBtn">Add item</button>
+      <button class="btn" id="itemCloseBtn">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div id="printSheet" aria-hidden="true"></div>
+<script>
+(function(){
+"use strict";
+var KEY='calmMeals.v1';
+var DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+var DAY_FULL={Mon:'Monday',Tue:'Tuesday',Wed:'Wednesday',Thu:'Thursday',Fri:'Friday',Sat:'Saturday',Sun:'Sunday'};
+var SLOTS=['breakfast','lunch','dinner','snack'];
+var SLOT_LABEL={breakfast:'Breakfast',lunch:'Lunch',dinner:'Dinner',snack:'Snack'};
+
+/* ---------- ingredient category keywords ---------- */
+var CATS=[
+ {name:'Produce', words:['lettuce','tomato','onion','garlic','potato','carrot','apple','banana','lemon','lime','basil','spinach','salad','pepper','cucumber','avocado','mushroom','zucchini','broccoli','celery','ginger','herb','parsley','cilantro','kale','cabbage','cauliflower','corn','pea','bean sprout','orange','berry','berries','strawberry','grape','mango','pineapple','peach','pear','plum','kiwi','melon','squash','pumpkin','radish','beet','turnip','artichoke','asparagus','brussel','leek','shallot','chili','chilli','jalapeno','mint','dill','rosemary','thyme','oregano','arugula','endive','bok choy']},
+ {name:'Dairy & Eggs', words:['milk','cheese','butter','yogurt','yoghurt','cream','egg','mozzarella','parmesan','cheddar','feta','ricotta','cottage','kefir','ghee','half-and-half','half and half']},
+ {name:'Meat & Fish', words:['chicken','beef','pork','turkey','fish','salmon','tuna','bacon','sausage','ham','steak','lamb','shrimp','prawn','cod','tilapia','mince','ground beef','ground turkey','meatball','pepperoni','chorizo','tofu','tempeh','seitan']},
+ {name:'Bakery', words:['bread','roll','bun','tortilla','bagel','pita','croissant','muffin','naan','pancake mix','breadcrumbs','bread crumbs']},
+ {name:'Pantry', words:['rice','pasta','flour','sugar','salt','olive oil','oil','sauce','soup','beans','lentil','oat','cereal','honey','vinegar','spice','cumin','paprika','pasta sauce','tomato sauce','soy sauce','ketchup','mustard','mayo','mayonnaise','peanut butter','jam','canned','chickpea','black bean','kidney bean','quinoa','couscous','noodle','ramen','broth','stock','coconut milk','curry','taco','salsa','syrup','baking powder','baking soda','vanilla','cocoa','chocolate','coffee','tea','granola','trail mix']},
+ {name:'Frozen', words:['frozen','ice cream','ice-cream','dumpling']},
+ {name:'Snacks & Other', words:['chip','cracker','cookie','popcorn','pretzel','granola bar','nuts','almond','walnut','cashew','pistachio','dried fruit','raisin']}
+];
+function categorize(ing){
+  var s=' '+ing.toLowerCase()+' ';
+  for(var i=0;i<CATS.length;i++){
+    var w=CATS[i].words;
+    for(var j=0;j<w.length;j++){ if(s.indexOf(w[j])>-1) return CATS[i].name; }
+  }
+  return 'Snacks & Other';
+}
+var CAT_ORDER=['Produce','Dairy & Eggs','Meat & Fish','Bakery','Pantry','Frozen','Snacks & Other','Added by you'];
+
+/* ---------- state ---------- */
+function blankPlan(){ var p={}; DAYS.forEach(function(d){ p[d]={}; SLOTS.forEach(function(s){ p[d][s]=null; }); }); return p; }
+function seedMeals(){ return [
+ {id:uid(), name:'Creamy garlic pasta', ingredients:['pasta','garlic','cream','parmesan','spinach','olive oil']},
+ {id:uid(), name:'Chicken stir-fry', ingredients:['chicken breast','bell pepper','broccoli','soy sauce','rice','garlic','ginger']},
+ {id:uid(), name:'Taco night', ingredients:['tortillas','ground beef','lettuce','tomato','cheddar','sour cream']},
+ {id:uid(), name:'Greek salad + pita', ingredients:['cucumber','tomato','feta','olives','pita','olive oil','lemon']},
+ {id:uid(), name:'Overnight oats', ingredients:['oats','milk','yogurt','banana','honey','chia seeds']},
+ {id:uid(), name:'Salmon & veggies', ingredients:['salmon fillets','asparagus','potatoes','lemon','butter']}
+];}
+function defaults(){ return {theme:'light', meals:seedMeals(), plan:blankPlan(), lastWeek:null, manual:[], checked:{}, hintSeen:false, seeded:true}; }
+function uid(){ return 'm'+Date.now().toString(36)+Math.floor(Math.random()*1e6).toString(36); }
+var state;
+try{ state=JSON.parse(localStorage.getItem(KEY))||defaults(); }catch(e){ state=defaults(); }
+if(!state.meals) state=defaults();
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){ toast('Storage is full or blocked'); } }
+
+/* ---------- helpers ---------- */
+function $(id){ return document.getElementById(id); }
+var toastTimer=null;
+function toast(msg){ var t=$('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(function(){ t.classList.remove('show'); },2200); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+function norm(s){ return String(s).trim().toLowerCase().replace(/\s+/g,' '); }
+function parseIng(text){ return String(text||'').split(',').map(function(x){return x.trim();}).filter(Boolean).slice(0,40); }
+
+/* ---------- confirm dialog ---------- */
+var confirmCb=null;
+function askConfirm(title,text,yesLabel,cb){
+  $('confirmTitle').textContent=title; $('confirmText').textContent=text;
+  $('confirmYes').textContent=yesLabel||'Yes, do it'; confirmCb=cb; openOverlay('confirmOverlay');
+}
+$('confirmYes').addEventListener('click',function(){ closeOverlays(); if(confirmCb){var f=confirmCb; confirmCb=null; f();} });
+$('confirmNo').addEventListener('click',closeOverlays);
+
+/* ---------- overlays ---------- */
+function openOverlay(id){ $(id).classList.add('open'); }
+function closeOverlays(){ document.querySelectorAll('.overlay.open').forEach(function(o){o.classList.remove('open');}); }
+document.querySelectorAll('.overlay').forEach(function(o){
+  o.addEventListener('click',function(e){ if(e.target===o) closeOverlays(); });
+});
+document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeOverlays(); });
+
+/* ---------- theme ---------- */
+function applyTheme(){ document.documentElement.setAttribute('data-theme',state.theme); }
+$('themeBtn').addEventListener('click',function(){
+  state.theme = state.theme==='light'?'dark':'light'; save(); applyTheme();
+  toast(state.theme==='dark'?'Dark calm mode 🌙':'Light calm mode ☀️');
+});
+
+/* ---------- tabs ---------- */
+var currentView='plan';
+document.querySelectorAll('.tab').forEach(function(t){
+  t.addEventListener('click',function(){
+    document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');});
+    t.classList.add('active'); currentView=t.getAttribute('data-view');
+    document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});
+    $('view-'+currentView).classList.add('active');
+    if(currentView==='grocery') renderGrocery();
+  });
+});
+function goView(v){ document.querySelector('.tab[data-view="'+v+'"]').click(); }
+
+/* ---------- week grid ---------- */
+function todayIdx(){ return (new Date().getDay()+6)%7; } // Mon=0
+function plannedCount(){ var n=0; DAYS.forEach(function(d){ SLOTS.forEach(function(s){ if(state.plan[d][s]) n++; }); }); return n; }
+function renderPlan(){
+  var g=$('weekGrid'); g.innerHTML=''; var ti=todayIdx();
+  DAYS.forEach(function(d,di){
+    var card=document.createElement('div'); card.className='day-card'+(di===ti?' today':'');
+    card.style.animationDelay=(di*0.04)+'s';
+    var h='<div class="day-name">'+DAY_FULL[d]+'</div><div class="day-date">'+(di===ti?'Today':d)+'</div>';
+    SLOTS.forEach(function(s){
+      var meal=state.plan[d][s];
+      h+='<button class="slot'+(meal?' filled':'')+'" data-day="'+d+'" data-slot="'+s+'">';
+      if(meal){
+        h+='<span class="s-x" data-clear="1" title="Remove">✕</span>';
+        h+='<div class="s-label">'+SLOT_LABEL[s]+'</div><div class="s-meal">'+esc(meal.name)+'</div>';
+      }else{
+        h+='<div class="s-label">'+SLOT_LABEL[s]+'</div><div class="s-add">+ Add meal</div>';
+      }
+      h+='</button>';
+    });
+    card.innerHTML=h; g.appendChild(card);
+  });
+  var n=plannedCount();
+  $('planSub').textContent=n+' of 28 meals planned'+(n===28?' — week complete! 🎉':'');
+  $('copyWeekBtn').disabled=!state.lastWeek;
+  // wire slots
+  g.querySelectorAll('.slot').forEach(function(btn){
+    btn.addEventListener('click',function(e){
+      var d=btn.getAttribute('data-day'), s=btn.getAttribute('data-slot');
+      if(e.target.getAttribute('data-clear')){ e.stopPropagation(); state.plan[d][s]=null; save(); renderPlan(); renderGroceryBadge(); toast('Removed'); return; }
+      openSlotModal(d,s);
+    });
+  });
+}
+
+/* ---------- slot modal ---------- */
+var modalDay=null, modalSlot=null;
+function openSlotModal(d,s){
+  modalDay=d; modalSlot=s;
+  $('slotTitle').textContent=DAY_FULL[d]+' · '+SLOT_LABEL[s];
+  $('slotSearch').value=''; $('customName').value=''; $('customIng').value='';
+  $('slotClearBtn').style.display=state.plan[d][s]?'':'none';
+  renderSlotLib('');
+  openOverlay('slotOverlay');
+  setTimeout(function(){ $('slotSearch').focus(); },350);
+}
+function renderSlotLib(q){
+  q=norm(q); var box=$('slotLib'); box.innerHTML='';
+  var list=state.meals.filter(function(m){ return !q||norm(m.name).indexOf(q)>-1||m.ingredients.some(function(i){return norm(i).indexOf(q)>-1;}); });
+  if(!list.length){ box.innerHTML='<div class="empty" style="padding:20px"><p>No meals match. Add it as a custom meal below 👇</p></div>'; return; }
+  list.forEach(function(m){
+    var b=document.createElement('button'); b.className='lib-row';
+    b.innerHTML='<div><div class="m-name">'+esc(m.name)+'</div><div class="m-ing">'+esc(m.ingredients.slice(0,4).join(', '))+(m.ingredients.length>4?'…':'')+'</div></div><span class="m-go">Add</span>';
+    b.addEventListener('click',function(){
+      state.plan[modalDay][modalSlot]={name:m.name, ingredients:m.ingredients.slice(), libId:m.id};
+      save(); closeOverlays(); renderPlan(); renderGroceryBadge(); toast('Planned: '+m.name+' ✓');
+    });
+    box.appendChild(b);
+  });
+}
+$('slotSearch').addEventListener('input',function(){ renderSlotLib(this.value); });
+$('slotCloseBtn').addEventListener('click',closeOverlays);
+$('slotClearBtn').addEventListener('click',function(){
+  state.plan[modalDay][modalSlot]=null; save(); closeOverlays(); renderPlan(); renderGroceryBadge(); toast('Slot cleared');
+});
+$('assignCustomBtn').addEventListener('click',function(){
+  var name=$('customName').value.trim();
+  if(!name){ toast('Give your meal a name first'); $('customName').focus(); return; }
+  var ings=parseIng($('customIng').value);
+  state.plan[modalDay][modalSlot]={name:name, ingredients:ings};
+  save(); closeOverlays(); renderPlan(); renderGroceryBadge(); toast('Planned: '+name+' ✓');
+});
+
+/* ---------- meal library ---------- */
+function renderMeals(q){
+  q=q==null?$('mealSearch').value:q; q=norm(q);
+  var box=$('mealList'); box.innerHTML='';
+  var list=state.meals.filter(function(m){ return !q||norm(m.name).indexOf(q)>-1||m.ingredients.some(function(i){return norm(i).indexOf(q)>-1;}); });
+  if(!list.length){
+    box.innerHTML='<div class="empty"><div class="big">🍽️</div><h3>No meals found</h3><p>Add your first favorite above — future-you will be grateful.</p></div>'; return;
+  }
+  list.forEach(function(m){
+    var row=document.createElement('div'); row.className='lib-row';
+    row.innerHTML='<div style="flex:1"><div class="m-name">'+esc(m.name)+'</div><div class="m-ing">'+(m.ingredients.length?esc(m.ingredients.join(', ')):'No ingredients listed')+'</div></div>'
+      +'<button class="icon-mini danger" title="Delete meal" aria-label="Delete '+esc(m.name)+'"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button>';
+    row.querySelector('.icon-mini').addEventListener('click',function(){
+      askConfirm('Delete meal?','"'+m.name+'" will be removed from your library. Planned slots using it stay as-is.','Delete',function(){
+        state.meals=state.meals.filter(function(x){return x.id!==m.id;}); save(); renderMeals(); toast('Meal deleted');
+      });
+    });
+    box.appendChild(row);
+  });
+}
+$('mealSearch').addEventListener('input',function(){ renderMeals(this.value); });
+$('addMealBtn').addEventListener('click',function(){
+  var name=$('newMealName').value.trim();
+  if(!name){ toast('Name your meal first'); $('newMealName').focus(); return; }
+  state.meals.unshift({id:uid(), name:name, ingredients:parseIng($('newMealIng').value)});
+  save(); $('newMealName').value=''; $('newMealIng').value=''; renderMeals(''); toast('Saved to library ✓');
+});
+
+/* ---------- grocery ---------- */
+function groceryItems(){
+  var map={}; // key -> {name,count,cat,manual}
+  DAYS.forEach(function(d){ SLOTS.forEach(function(s){
+    var meal=state.plan[d][s]; if(!meal||!meal.ingredients) return;
+    meal.ingredients.forEach(function(ing){
+      var k='a:'+norm(ing);
+      if(!map[k]) map[k]={name:ing.trim(), count:0, cat:categorize(ing), manual:false};
+      map[k].count++;
+    });
+  });});
+  state.manual.forEach(function(it){
+    var k='m:'+it.id;
+    if(!map[k]) map[k]={name:it.name, count:1, cat:'Added by you', manual:true, mid:it.id};
+  });
+  return Object.keys(map).map(function(k){ var o=map[k]; o.key=k; o.checked=!!state.checked[k]; return o; });
+}
+function renderGroceryBadge(){ var items=groceryItems(); $('gCount').textContent=items.length; }
+function renderGrocery(){
+  var items=groceryItems(); renderGroceryBadge();
+  var total=items.length, done=items.filter(function(i){return i.checked;}).length;
+  $('gDone').textContent=done; $('gTotal').textContent=total;
+  $('gBar').style.width=(total?Math.round(done/total*100):0)+'%';
+  var box=$('groceryCats'); box.innerHTML='';
+  if(!total){
+    box.innerHTML='<div class="empty"><div class="big">🛒</div><h3>Your list is empty</h3><p>Plan some meals and your groceries will appear here like magic.</p><button class="btn primary" id="emptyPlanBtn">Plan my week</button></div>';
+    var b=$('emptyPlanBtn'); if(b) b.addEventListener('click',function(){ goView('plan'); });
+    return;
+  }
+  var groups={};
+  items.forEach(function(it){ (groups[it.cat]=groups[it.cat]||[]).push(it); });
+  CAT_ORDER.forEach(function(cat){
+    var arr=groups[cat]; if(!arr||!arr.length) return;
+    arr.sort(function(a,b){ return (b.checked-a.checked)||a.name.localeCompare(b.name); });
+    var head=document.createElement('div'); head.className='g-cat-head';
+    head.innerHTML='<h3>'+esc(cat)+'</h3><span class="pill">'+arr.length+'</span>';
+    box.appendChild(head);
+    var catDiv=document.createElement('div'); catDiv.className='g-cat';
+    arr.forEach(function(it){
+      var row=document.createElement('div'); row.className='g-row'+(it.checked?' done':'');
+      row.innerHTML='<button class="cbx" aria-label="Check off '+esc(it.name)+'"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></button>'
+        +'<span class="g-name">'+esc(it.name)+'</span>'
+        +(it.count>1?'<span class="g-n">×'+it.count+'</span>':'')
+        +(it.manual?'<button class="g-del" aria-label="Remove">✕</button>':'');
+      row.querySelector('.cbx').addEventListener('click',function(){
+        it.checked=!it.checked; state.checked[it.key]=it.checked; save(); renderGrocery();
+      });
+      var del=row.querySelector('.g-del');
+      if(del) del.addEventListener('click',function(){
+        state.manual=state.manual.filter(function(x){return 'm:'+x.id!==it.key;});
+        delete state.checked[it.key]; save(); renderGrocery(); toast('Removed');
+      });
+      catDiv.appendChild(row);
+    });
+    box.appendChild(catDiv);
+  });
+}
+$('addItemBtn').addEventListener('click',function(){ $('itemName').value=''; openOverlay('itemOverlay'); setTimeout(function(){$('itemName').focus();},350); });
+$('itemCloseBtn').addEventListener('click',closeOverlays);
+function addManualItem(){
+  var name=$('itemName').value.trim();
+  if(!name){ toast('Type an item name'); return; }
+  state.manual.push({id:uid(), name:name}); save(); closeOverlays(); renderGrocery(); toast('Added ✓');
+}
+$('itemAddBtn').addEventListener('click',addManualItem);
+$('itemName').addEventListener('keydown',function(e){ if(e.key==='Enter') addManualItem(); });
+$('clearCheckedBtn').addEventListener('click',function(){
+  var items=groceryItems(); var n=items.filter(function(i){return i.checked;}).length;
+  if(!n){ toast('Nothing checked yet'); return; }
+  askConfirm('Clear checked?','Removes '+n+' checked item'+(n>1?'s':'')+' from your list.','Clear',function(){
+    items.forEach(function(it){ if(it.checked){
+      if(it.manual) state.manual=state.manual.filter(function(x){return 'm:'+x.id!==it.key;});
+      delete state.checked[it.key];
+    }});
+    save(); renderGrocery(); toast('Cleared ✓');
+  });
+});
+
+/* ---------- week actions ---------- */
+$('newWeekBtn').addEventListener('click',function(){
+  if(!plannedCount()){ toast('Your week is already empty'); return; }
+  askConfirm('Start a new week?','Your current plan will be saved so you can copy it back next week. Grocery checks will reset.','New week',function(){
+    state.lastWeek=JSON.parse(JSON.stringify(state.plan));
+    state.plan=blankPlan(); state.checked={}; save(); renderPlan(); renderGroceryBadge(); toast('Fresh week — you got this 🌱');
+  });
+});
+$('copyWeekBtn').addEventListener('click',function(){
+  if(!state.lastWeek) return;
+  askConfirm('Copy last week?','This replaces your current plan with last week\u2019s meals.','Copy it',function(){
+    state.plan=JSON.parse(JSON.stringify(state.lastWeek)); state.checked={}; save(); renderPlan(); renderGroceryBadge(); toast('Last week restored ✓');
+  });
+});
+
+/* ---------- print ---------- */
+function doPrint(){
+  var items=groceryItems();
+  if(!items.length){ toast('Nothing to print yet'); return; }
+  var groups={};
+  items.forEach(function(it){ (groups[it.cat]=groups[it.cat]||[]).push(it); });
+  var h='<h1>🛒 Grocery List</h1><div class="pdate">Calm Meals · '+new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'})+'</div>';
+  CAT_ORDER.forEach(function(cat){
+    var arr=(groups[cat]||[]).filter(function(i){return !i.checked;});
+    if(!arr.length) return;
+    h+='<h2>'+esc(cat)+'</h2>';
+    arr.forEach(function(it){ h+='<label><span class="box"></span>'+esc(it.name)+(it.count>1?' <em>×'+it.count+'</em>':'')+'</label>'; });
+  });
+  var doneN=items.filter(function(i){return i.checked;}).length;
+  if(doneN) h+='<div class="pdate" style="margin-top:14px">'+doneN+' already bought ✓</div>';
+  $('printSheet').innerHTML=h;
+  window.print();
+}
+$('printBtn').addEventListener('click',doPrint);
+$('printListBtn').addEventListener('click',doPrint);
+
+/* ---------- hint ---------- */
+if(!state.hintSeen){ $('firstHint').style.display='flex'; }
+$('hintClose').addEventListener('click',function(){ state.hintSeen=true; save(); $('firstHint').style.display='none'; });
+
+/* ---------- init ---------- */
+applyTheme(); renderPlan(); renderMeals(''); renderGroceryBadge(); save();
+
+/* test hook */
+window.CalmMeals={ state:function(){return state;}, version:1 };
+})();
+</script>
+</body>
+</html>
