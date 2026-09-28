@@ -130,8 +130,9 @@ img{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .age-badge .t{font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-top:2px}
 @keyframes badgeglow{0%,100%{box-shadow:0 0 0 6px rgba(212,175,55,.22),0 0 22px rgba(212,175,55,.4)}50%{box-shadow:0 0 0 6px rgba(212,175,55,.22),0 0 44px rgba(212,175,55,.7)}}
 .balloon{position:absolute;bottom:-140px;width:64px;height:84px;border-radius:50% 50% 50% 50%/55% 55% 45% 45%;opacity:.9;
-  filter:drop-shadow(0 10px 14px rgba(0,0,0,.35));
+  filter:drop-shadow(0 10px 14px rgba(0,0,0,.35));cursor:pointer;touch-action:manipulation;
   animation:rise linear infinite, sway 5.2s ease-in-out infinite}
+.balloon.popped{cursor:default}
 .balloon::before{content:"";position:absolute;left:50%;top:-8px;transform:translateX(-50%);border:6px solid transparent;border-bottom:10px solid inherit}
 .balloon::after{content:"";position:absolute;left:50%;top:100%;width:2px;height:70px;background:rgba(249,239,220,.5);transform:translateX(-50%)}
 @keyframes rise{0%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-46vh) rotate(4deg)}100%{transform:translateY(-105vh) rotate(-4deg)}}
@@ -313,6 +314,50 @@ const CONFIG = {
 };
 /* ============ end of personalization block ============ */
 
+/* ---------- URL-hash personalization (optional) ----------
+   Share a link like  invite.html#d=<base64url-json>  and the fields
+   below are overridden without editing the file. The hash JSON may
+   carry name, age, dateText, venue, fromName (strings) and photos
+   (array of data:image/... data URIs, max 8). Any failure — bad
+   base64, bad JSON, wrong shape — silently keeps CONFIG defaults. */
+(function(){
+  try{
+    var h = location.hash || "";
+    if(h.indexOf("#d=") !== 0) return;
+    var b64u = h.slice(3);
+    if(!b64u) return;
+    /* base64url -> standard base64 */
+    var b64 = b64u.replace(/-/g, "+").replace(/_/g, "/");
+    while(b64.length % 4) b64 += "=";
+    /* base64 -> bytes -> UTF-8 string */
+    var bin = atob(b64), bytes = new Array(bin.length), i;
+    for(i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    var json;
+    if(typeof TextDecoder !== "undefined"){
+      json = new TextDecoder().decode(new Uint8Array(bytes));
+    } else {
+      json = decodeURIComponent(bytes.map(function(c){
+        return "%" + ("0" + c.toString(16)).slice(-2);
+      }).join(""));
+    }
+    var d = JSON.parse(json);
+    if(!d || typeof d !== "object") return;
+    var keys = ["name", "age", "dateText", "venue", "fromName"];
+    for(i = 0; i < keys.length; i++){
+      var v = d[keys[i]];
+      if(typeof v === "string" && v) CONFIG[keys[i]] = v;
+    }
+    if(Array.isArray(d.photos)){
+      var kept = [], j;
+      for(j = 0; j < d.photos.length && kept.length < 8; j++){
+        if(typeof d.photos[j] === "string" && d.photos[j].indexOf("data:image") === 0)
+          kept.push(d.photos[j]);
+      }
+      if(kept.length) CONFIG.photos = kept;
+    }
+  }catch(e){ /* keep defaults */ }
+})();
+
 (function(){
 "use strict";
 var RM = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -436,6 +481,78 @@ $("waxSeal").addEventListener("click", function(){
     burst(innerWidth/2, innerHeight*0.3, 80);
     try{ scrollTo({top:0, behavior:"auto"}); }catch(e){ scrollTo(0,0); }
   }, 2300);
+});
+
+/* ---------- poppable balloons (tap to pop; a fresh one floats up ~4s later) ---------- */
+var BALLOON_POP_MS = 260, BALLOON_RESPAWN_MS = 4000;
+function balloonSpec(b){
+  return { style: b.getAttribute("style") || "", parent: b.parentNode };
+}
+function spawnBalloon(spec){
+  var b = document.createElement("div");
+  b.className = "balloon";
+  if(spec.style) b.setAttribute("style", spec.style);
+  b.setAttribute("role", "button");
+  b.setAttribute("aria-label", "Pop the balloon");
+  b.addEventListener("click", onBalloonPop);
+  spec.parent.appendChild(b);
+  return b;
+}
+/* soft "pop": ~80ms oscillator burst; reuses the music toggle's AudioContext if it exists */
+function popSound(){
+  var AC2 = window.AudioContext || window.webkitAudioContext;
+  if(!AC2) return;
+  var c = actx;
+  if(!c){
+    try{ c = new AC2(); actx = c; }catch(e){ return; }
+  }
+  try{
+    if(c.state === "suspended") c.resume();
+    var t = c.currentTime, o = c.createOscillator(), g = c.createGain();
+    o.type = "sine";
+    o.frequency.setValueAtTime(540, t);
+    o.frequency.exponentialRampToValueAtTime(150, t + 0.07);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.22, t + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.09);
+    o.connect(g); g.connect(c.destination);
+    o.start(t); o.stop(t + 0.1);
+  }catch(e){ /* audio unavailable — the visual pop still runs */ }
+}
+function popBalloon(b){
+  b.dataset.popped = "1";
+  b.classList.add("popped");
+  var r = b.getBoundingClientRect();
+  var cx = r.left + (r.width || 64) / 2, cy = r.top + (r.height || 84) / 2;
+  popSound();
+  burst(cx, cy, 16); /* tiny confetti puff, reuses the main confetti canvas */
+  var spec = balloonSpec(b);
+  try{
+    var cs = window.getComputedStyle(b);
+    var tr = cs.transform, tl = cs.translate;
+    b.style.animation = "none";           /* freeze both rise + sway */
+    if(tr && tr !== "none") b.style.transform = tr;
+    if(tl && tl !== "none") b.style.translate = tl;
+    void b.offsetWidth;                   /* commit the frozen frame */
+    b.style.transition = "transform .24s ease-out, opacity .24s ease-out";
+    b.style.transform = ((tr && tr !== "none") ? tr + " " : "") + "scale(1.65)";
+    b.style.opacity = "0";
+  }catch(e){
+    b.style.opacity = "0";
+  }
+  setTimeout(function(){ if(b.parentNode) b.parentNode.removeChild(b); }, BALLOON_POP_MS);
+  setTimeout(function(){ spawnBalloon(spec); }, BALLOON_RESPAWN_MS);
+}
+function onBalloonPop(e){
+  var b = e.currentTarget;
+  if(!b || b.dataset.popped) return;
+  if(document.body.classList.contains("locked")) return; /* sealed envelope still covering the screen */
+  popBalloon(b);
+}
+document.querySelectorAll("#p-cover .balloon").forEach(function(b){
+  b.setAttribute("role", "button");
+  b.setAttribute("aria-label", "Pop the balloon");
+  b.addEventListener("click", onBalloonPop);
 });
 
 /* ---------- scroll reveals ---------- */
