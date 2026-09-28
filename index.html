@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1E3D2F">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Savings Tracker">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='42' fill='%231E3D2F'/%3E%3Ccircle cx='90' cy='78' r='34' fill='none' stroke='%23D4AF6A' stroke-width='12'/%3E%3Cpath d='M60 132 Q90 108 120 132' stroke='%23D4AF6A' stroke-width='12' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<title>Savings Challenge Tracker</title>
+<style>
+:root{
+  --forest:#1E3D2F; --forest-deep:#132A20; --forest-soft:#2B5442;
+  --gold:#D4AF6A; --gold-deep:#B08A45; --gold-soft:#F3E8CF; --gold-faint:#FAF4E6;
+  --ivory:#FBF7EE; --cream:#F4EDDB; --card:#FFFDF8;
+  --ink:#2C2620; --muted:#7D7362; --line:#E8DCC3;
+  --good:#3E7A4D; --bad:#B0492F;
+  --serif:Georgia,'Times New Roman',Times,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --shadow:0 10px 28px rgba(30,61,47,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--sans); background:var(--ivory); color:var(--ink);
+  min-height:100vh; line-height:1.5;
+}
+/* ---------- HERO ---------- */
+.hero{
+  background:
+    radial-gradient(420px 220px at 12% -40px, rgba(212,175,106,.20), transparent 65%),
+    radial-gradient(520px 260px at 95% 10px, rgba(212,175,106,.13), transparent 60%),
+    linear-gradient(160deg, var(--forest) 0%, var(--forest-deep) 100%);
+  color:#F6EFE0; padding:30px 20px 84px; position:relative; overflow:hidden;
+}
+.hero::after{
+  content:""; position:absolute; left:-70px; right:-70px; bottom:-46px; height:92px;
+  background:var(--ivory); border-radius:50% 50% 0 0 / 100% 100% 0 0;
+}
+.hero-inner{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);
+  margin-bottom:10px;font-weight:600;
+}
+.hero-eyebrow::before{content:"";width:26px;height:2px;background:var(--gold);border-radius:2px}
+.hero h1{
+  font-family:var(--serif);font-weight:400;font-size:clamp(30px,6vw,44px);
+  line-height:1.12;letter-spacing:.01em;margin-bottom:8px;
+}
+.hero h1 em{font-style:italic;color:var(--gold)}
+.hero p.sub{color:#CFC5AE;font-size:15px;max-width:520px}
+.hero-stats{display:flex;gap:12px;margin-top:20px;flex-wrap:wrap}
+.hero-stat{
+  background:rgba(251,247,238,.08);border:1px solid rgba(212,175,106,.35);
+  border-radius:16px 20px 16px 24px;padding:12px 18px;min-width:130px;
+  backdrop-filter:blur(2px);
+}
+.hero-stat .n{font-family:var(--serif);font-size:24px;color:var(--gold)}
+.hero-stat .l{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#CFC5AE;margin-top:2px}
+/* ---------- NAV ---------- */
+.nav{
+  position:sticky;top:0;z-index:50;background:rgba(251,247,238,.92);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line);
+  margin-top:-34px;
+}
+.nav-inner{max-width:760px;margin:0 auto;display:flex;gap:6px;padding:10px 16px}
+.nav button{
+  flex:1;border:1px solid transparent;background:transparent;color:var(--muted);
+  font-family:var(--sans);font-size:14px;font-weight:600;padding:10px 8px;border-radius:14px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.nav button .ico{font-size:16px}
+.nav button.active{background:var(--forest);color:#F6EFE0;box-shadow:var(--shadow)}
+.nav button:not(.active):hover{background:var(--gold-faint);color:var(--ink)}
+/* ---------- LAYOUT ---------- */
+main{max-width:760px;margin:0 auto;padding:22px 16px 90px}
+.view[hidden]{display:none}
+.section-title{
+  font-family:var(--serif);font-size:24px;font-weight:400;margin:4px 0 4px;
+}
+.section-sub{color:var(--muted);font-size:14px;margin-bottom:18px}
+/* ---------- CARDS ---------- */
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:22px 26px 22px 30px;
+  box-shadow:var(--shadow);padding:20px;margin-bottom:16px;position:relative;overflow:hidden;
+}
+.card.clickable{cursor:pointer;transition:transform .15s ease, box-shadow .15s ease}
+.card.clickable:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(30,61,47,.16)}
+.ch-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px}
+.ch-name{font-family:var(--serif);font-size:20px;font-weight:400}
+.ch-tag{
+  font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  background:var(--gold-soft);color:var(--gold-deep);border:1px solid var(--gold);
+  padding:4px 10px;border-radius:999px;white-space:nowrap;
+}
+.ch-meta{color:var(--muted);font-size:13px;margin-bottom:12px}
+/* progress bar */
+.pbar{height:14px;background:var(--cream);border-radius:999px;overflow:hidden;position:relative;border:1px solid var(--line)}
+.pbar > i{
+  display:block;height:100%;width:0;border-radius:999px;
+  background:linear-gradient(90deg,var(--gold-deep),var(--gold) 60%,#E8C987);
+  transition:width .9s cubic-bezier(.22,.9,.3,1.2);position:relative;
+}
+.pbar > i::after{
+  content:"";position:absolute;inset:0;border-radius:999px;
+  background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.5) 50%,transparent 70%);
+  background-size:200% 100%;animation:shimmer 2.6s linear infinite;
+}
+@keyframes shimmer{from{background-position:180% 0}to{background-position:-80% 0}}
+.ch-nums{display:flex;justify-content:space-between;align-items:baseline;margin-top:10px}
+.ch-nums .saved{font-family:var(--serif);font-size:22px;color:var(--forest)}
+.ch-nums .goal{font-size:13px;color:var(--muted)}
+.ch-nums .pct{font-weight:800;color:var(--gold-deep);font-size:15px}
+.milestones{display:flex;gap:8px;margin-top:14px}
+.medal{
+  width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;border:2px dashed var(--line);color:var(--muted);background:var(--ivory);
+  flex-shrink:0;
+}
+.medal.won{
+  border:2px solid var(--gold-deep);color:#fff;font-size:12px;
+  background:radial-gradient(circle at 32% 28%, #EFD9A4, var(--gold) 55%, var(--gold-deep));
+  box-shadow:0 4px 12px rgba(176,138,69,.45);text-shadow:0 1px 2px rgba(0,0,0,.25);
+}
+/* ---------- DETAIL ---------- */
+.detail-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:4px}
+.detail-head h2{font-family:var(--serif);font-weight:400;font-size:28px}
+.icon-btn{
+  border:1px solid var(--line);background:var(--card);border-radius:12px;
+  padding:8px 12px;font-size:14px;cursor:pointer;color:var(--ink);font-weight:600;
+}
+.icon-btn:hover{background:var(--gold-faint)}
+.icon-btn.danger{color:var(--bad);border-color:#E5C4B8}
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:16px 0}
+.stat{
+  background:var(--gold-faint);border:1px solid var(--line);border-radius:16px 20px 16px 24px;
+  padding:12px 14px;
+}
+.stat .l{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.stat .v{font-family:var(--serif);font-size:20px;color:var(--forest);margin-top:2px}
+.stat .v.gold{color:var(--gold-deep)}
+/* week grid */
+.grid-wrap{margin-top:8px}
+.grid-legend{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-bottom:10px;flex-wrap:wrap}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.weeks{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px;
+}
+.week-cell{
+  border:1.5px solid var(--line);background:var(--card);border-radius:14px 18px 14px 20px;
+  padding:8px 4px;text-align:center;cursor:pointer;transition:all .15s ease;user-select:none;
+}
+.week-cell .wn{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.week-cell .wa{display:block;font-family:var(--serif);font-size:15px;color:var(--ink);margin-top:1px}
+.week-cell:hover{border-color:var(--gold);transform:translateY(-1px)}
+.week-cell.next{border-color:var(--gold-deep);border-style:dashed;background:var(--gold-faint)}
+.week-cell.done{
+  background:linear-gradient(150deg,#E9CE8E,var(--gold) 60%,var(--gold-deep));
+  border-color:var(--gold-deep);box-shadow:0 4px 10px rgba(176,138,69,.35);
+}
+.week-cell.done .wn,.week-cell.done .wa{color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.2)}
+.week-cell.done .wa::after{content:" ✓";font-size:12px}
+/* ---------- BUTTONS ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font-family:var(--sans);font-size:15px;font-weight:700;border:none;cursor:pointer;
+  padding:13px 22px;border-radius:16px 20px 16px 24px;transition:transform .12s ease, box-shadow .12s ease;
+}
+.btn:active{transform:scale(.97)}
+.btn-gold{background:linear-gradient(150deg,#E4C37F,var(--gold) 55%,var(--gold-deep));color:#2C2620;box-shadow:0 8px 20px rgba(176,138,69,.4)}
+.btn-gold:hover{box-shadow:0 10px 26px rgba(176,138,69,.55)}
+.btn-forest{background:var(--forest);color:#F6EFE0;box-shadow:0 8px 20px rgba(30,61,47,.3)}
+.btn-ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink)}
+.btn-ghost:hover{background:var(--gold-faint)}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.btn-row .btn{flex:1;min-width:150px}
+/* ---------- FORMS ---------- */
+label.f{display:block;font-size:13px;font-weight:700;margin:14px 0 6px;color:var(--forest)}
+input[type=text],input[type=number],input[type=date],select,textarea{
+  width:100%;font-family:var(--sans);font-size:16px;padding:12px 14px;border-radius:14px;
+  border:1.5px solid var(--line);background:#fff;color:var(--ink);
+}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--gold);border-color:var(--gold)}
+textarea{min-height:70px;resize:vertical}
+.hint{font-size:12.5px;color:var(--muted);margin-top:5px}
+.mode-pick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+.mode-pick button{
+  border:1.5px solid var(--line);background:#fff;border-radius:14px;padding:10px 6px;font-size:13px;
+  font-weight:700;cursor:pointer;color:var(--muted);
+}
+.mode-pick button.sel{background:var(--forest);color:#F6EFE0;border-color:var(--forest)}
+/* ---------- ACTIVITY ---------- */
+.act-item{
+  display:flex;gap:12px;padding:13px 4px;border-bottom:1px solid var(--line);align-items:flex-start;
+}
+.act-item:last-child{border-bottom:none}
+.act-ico{
+  width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-size:17px;background:var(--gold-faint);border:1px solid var(--gold);
+}
+.act-body{flex:1;min-width:0}
+.act-text{font-size:14px}
+.act-text b{font-weight:700}
+.act-time{font-size:12px;color:var(--muted)}
+.act-amt{font-family:var(--serif);font-weight:700;font-size:16px;white-space:nowrap}
+.act-amt.pos{color:var(--good)} .act-amt.neg{color:var(--bad)}
+/* ---------- EMPTY ---------- */
+.empty{text-align:center;padding:44px 20px;color:var(--muted)}
+.empty .big{font-size:44px;margin-bottom:10px}
+.empty h3{font-family:var(--serif);font-weight:400;font-size:22px;color:var(--ink);margin-bottom:6px}
+/* ---------- MODALS ---------- */
+.modal-veil{
+  position:fixed;inset:0;background:rgba(19,42,32,.55);z-index:100;
+  display:flex;align-items:flex-end;justify-content:center;padding:0;
+  animation:fadein .2s ease;
+}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+.modal{
+  background:var(--ivory);border-radius:26px 26px 0 0;width:100%;max-width:520px;
+  padding:24px 22px 30px;max-height:88vh;overflow-y:auto;
+  animation:slideup .25s ease;box-shadow:0 -12px 40px rgba(0,0,0,.25);
+}
+@keyframes slideup{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+@media(min-width:560px){
+  .modal-veil{align-items:center;padding:20px}
+  .modal{border-radius:26px}
+}
+.modal h3{font-family:var(--serif);font-weight:400;font-size:24px;margin-bottom:4px}
+.modal .msub{color:var(--muted);font-size:14px;margin-bottom:8px}
+/* ---------- MILESTONE ---------- */
+.milestone-veil{
+  position:fixed;inset:0;z-index:200;background:rgba(19,42,32,.72);
+  display:flex;align-items:center;justify-content:center;padding:20px;overflow:hidden;
+}
+.milestone-card{
+  background:var(--ivory);border-radius:30px;max-width:420px;width:100%;text-align:center;
+  padding:40px 28px 32px;position:relative;z-index:2;border:3px solid var(--gold);
+  box-shadow:0 24px 70px rgba(0,0,0,.4);animation:pop .45s cubic-bezier(.2,1.4,.4,1);
+}
+@keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+.milestone-medal{
+  width:110px;height:110px;border-radius:50%;margin:0 auto 18px;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  background:radial-gradient(circle at 32% 28%, #F2DFAE, var(--gold) 55%, var(--gold-deep));
+  box-shadow:0 10px 30px rgba(176,138,69,.55), inset 0 0 0 5px rgba(255,255,255,.35);
+  color:#fff;text-shadow:0 2px 4px rgba(0,0,0,.25);
+}
+.milestone-medal .mp{font-family:var(--serif);font-size:34px}
+.milestone-medal .ml{font-size:10px;letter-spacing:.18em;text-transform:uppercase}
+.milestone-card h2{font-family:var(--serif);font-weight:400;font-size:30px;margin-bottom:8px}
+.milestone-card p{color:var(--muted);margin-bottom:20px}
+.confetti-piece{position:absolute;top:-16px;border-radius:2px;z-index:1;animation-name:cfall;animation-timing-function:linear;animation-fill-mode:forwards}
+@keyframes cfall{
+  0%{transform:translateY(-5vh) rotate(0deg);opacity:1}
+  100%{transform:translateY(110vh) rotate(720deg);opacity:.85}
+}
+/* ---------- TOAST ---------- */
+#toast{
+  position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(80px);
+  background:var(--forest);color:#F6EFE0;padding:13px 22px;border-radius:999px;
+  font-size:14px;font-weight:600;z-index:300;opacity:0;transition:all .3s ease;
+  box-shadow:0 10px 30px rgba(0,0,0,.3);max-width:90vw;text-align:center;
+}
+#toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+/* ---------- NEW VIEW ---------- */
+.choice-grid{display:grid;gap:14px}
+@media(min-width:600px){.choice-grid{grid-template-columns:1fr 1fr}}
+.choice{border:2px solid var(--line)}
+.choice.sel{border-color:var(--gold-deep)}
+.hidden{display:none!important}
+.footer-note{text-align:center;color:var(--muted);font-size:12.5px;margin-top:30px;padding:0 20px}
+.deposit-list{margin-top:6px}
+.dep-row{display:flex;justify-content:space-between;align-items:center;padding:10px 2px;border-bottom:1px solid var(--line);font-size:14px}
+.dep-row:last-child{border-bottom:none}
+.dep-note{color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="hero-inner">
+    <span class="hero-eyebrow">Money Garden</span>
+    <h1>Grow your <em>savings</em>,<br>one week at a time.</h1>
+    <p class="sub">52-week money challenges and custom savings goals — track every deposit, celebrate every milestone.</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="n" id="hero-saved">$0</div><div class="l">Saved so far</div></div>
+      <div class="hero-stat"><div class="n" id="hero-challenges">0</div><div class="l">Active challenges</div></div>
+      <div class="hero-stat"><div class="n" id="hero-goal">$0</div><div class="l">Total goals</div></div>
+    </div>
+  </div>
+</header>
+
+<nav class="nav" aria-label="Main navigation">
+  <div class="nav-inner">
+    <button data-nav="list" class="active"><span class="ico">🌱</span>Challenges</button>
+    <button data-nav="activity"><span class="ico">📜</span>Activity</button>
+    <button data-nav="new"><span class="ico">＋</span>New</button>
+  </div>
+</nav>
+
+<main>
+  <!-- LIST VIEW -->
+  <section class="view" id="view-list">
+    <h2 class="section-title">Your challenges</h2>
+    <p class="section-sub">Every seed you plant grows. Tap a challenge to tend it.</p>
+    <div id="challenge-list"></div>
+    <div class="btn-row">
+      <button class="btn btn-gold" id="btn-list-new">＋ Start a new challenge</button>
+    </div>
+  </section>
+
+  <!-- DETAIL VIEW -->
+  <section class="view" id="view-detail" hidden>
+    <button class="btn btn-ghost" id="btn-back" style="margin-bottom:14px">← All challenges</button>
+    <div class="card">
+      <div class="detail-head">
+        <div><h2 id="detail-name"></h2><div class="ch-meta" id="detail-meta"></div></div>
+        <div style="display:flex;gap:8px;flex-shrink:0">
+          <button class="icon-btn" id="btn-edit-ch" title="Edit challenge">✏️ Edit</button>
+          <button class="icon-btn danger" id="btn-delete-ch" title="Delete challenge">🗑</button>
+        </div>
+      </div>
+      <div class="pbar" aria-hidden="true"><i id="detail-bar"></i></div>
+      <div class="ch-nums">
+        <div><span class="saved" id="detail-saved"></span> <span class="goal" id="detail-goal"></span></div>
+        <span class="pct" id="detail-pct"></span>
+      </div>
+      <div class="milestones" id="detail-milestones"></div>
+      <div class="stats-grid" id="detail-stats"></div>
+      <div class="btn-row" id="detail-actions"></div>
+    </div>
+    <div class="card" id="detail-grid-card">
+      <h3 style="font-family:var(--serif);font-weight:400;font-size:20px;margin-bottom:2px">Week by week</h3>
+      <p class="hint" style="margin-bottom:12px">Tap a week to mark its deposit as saved. Tap again to undo.</p>
+      <div class="grid-legend">
+        <span><span class="dot" style="background:var(--gold)"></span>Saved</span>
+        <span><span class="dot" style="background:var(--gold-faint);border:1.5px dashed var(--gold-deep)"></span>Up next</span>
+        <span><span class="dot" style="background:#fff;border:1.5px solid var(--line)"></span>To go</span>
+      </div>
+      <div class="weeks" id="week-grid"></div>
+    </div>
+    <div class="card" id="detail-deposits-card" hidden>
+      <h3 style="font-family:var(--serif);font-weight:400;font-size:20px;margin-bottom:8px">Recent deposits</h3>
+      <div class="deposit-list" id="detail-deposits"></div>
+    </div>
+  </section>
+
+  <!-- ACTIVITY VIEW -->
+  <section class="view" id="view-activity" hidden>
+    <h2 class="section-title">Activity history</h2>
+    <p class="section-sub">Every deposit, withdrawal and milestone — your full savings journal.</p>
+    <div class="card"><div id="activity-list"></div></div>
+  </section>
+
+  <!-- NEW VIEW -->
+  <section class="view" id="view-new" hidden>
+    <h2 class="section-title">Start a challenge</h2>
+    <p class="section-sub">Pick the classic 52-week money challenge, or design your own.</p>
+    <div class="choice-grid">
+      <div class="card choice sel" id="choice-52">
+        <h3 style="font-family:var(--serif);font-weight:400;font-size:22px;margin-bottom:6px">🌾 52-Week Challenge</h3>
+        <p class="hint">The classic: save a little more each week. Week 1 → $1, week 52 → $52. Total <b>$1,378</b> in a year.</p>
+        <form id="form-52">
+          <label class="f" for="f52-name">Challenge name</label>
+          <input type="text" id="f52-name" maxlength="60" placeholder="e.g. 2026 Savings Garden" value="52-Week Money Challenge">
+          <label class="f">Deposit order</label>
+          <div class="mode-pick" id="f52-modes">
+            <button type="button" data-mode="standard" class="sel">1 → 52<br><small>Classic</small></button>
+            <button type="button" data-mode="reverse">52 → 1<br><small>Reverse</small></button>
+            <button type="button" data-mode="fixed">Fixed<br><small>Custom $</small></button>
+          </div>
+          <div id="f52-amount-wrap" class="hidden">
+            <label class="f" for="f52-amount">Weekly amount ($)</label>
+            <input type="number" id="f52-amount" min="1" max="10000" step="0.01" value="25">
+            <p class="hint">Same amount every week — 52 × your amount.</p>
+          </div>
+          <label class="f" for="f52-start">Start date</label>
+          <input type="date" id="f52-start">
+          <div class="btn-row"><button class="btn btn-forest" type="submit" id="f52-create" style="flex:1">Plant this challenge 🌱</button></div>
+        </form>
+      </div>
+      <div class="card choice" id="choice-custom">
+        <h3 style="font-family:var(--serif);font-weight:400;font-size:22px;margin-bottom:6px">🎯 Custom Challenge</h3>
+        <p class="hint">Your own goal, your own deadline, your own pace. Log deposits whenever you like.</p>
+        <form id="form-custom">
+          <label class="f" for="fc-name">Challenge name</label>
+          <input type="text" id="fc-name" maxlength="60" placeholder="e.g. Emergency fund">
+          <label class="f" for="fc-goal">Goal amount ($)</label>
+          <input type="number" id="fc-goal" min="1" max="1000000" step="0.01" placeholder="1000">
+          <label class="f" for="fc-deadline">Deadline <span class="hint" style="display:inline">(optional)</span></label>
+          <input type="date" id="fc-deadline">
+          <div class="btn-row"><button class="btn btn-gold" type="submit" id="fc-create" style="flex:1">Create challenge ✨</button></div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <p class="footer-note">Your data lives only in this browser — no account, no cloud, no fees. 🌿</p>
+</main>
+
+<div id="modal-root"></div>
+<div id="toast" role="status"></div>
+
+<script>
+'use strict';
+/* ================= Savings Challenge Tracker ================= */
+const NS = 'savingsChallengeApp';
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.prototype.slice.call((r || document).querySelectorAll(s));
+const MILESTONES = [25, 50, 75, 100];
+
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+const moneyFmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+function fmt$(n) { return moneyFmt.format(Math.round((Number(n) || 0) * 100) / 100); }
+function fmtDate(ts) {
+  if (!ts) return '—';
+  return new Date(ts).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+}
+function todayISO() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function tsToLocalISO(ts) {
+  const d = new Date(ts);
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function parseLocalDate(iso) {
+  if (!iso) return Date.now();
+  const p = iso.split('-');
+  return new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2])).getTime();
+}
+function uid() { return 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+
+/* ---------- state ---------- */
+function blankState() { return { challenges: [], activity: [] }; }
+function load() {
+  try {
+    const raw = localStorage.getItem(NS);
+    if (raw) {
+      const p = JSON.parse(raw);
+      if (p && Array.isArray(p.challenges) && Array.isArray(p.activity)) return p;
+    }
+  } catch (e) { /* corrupted storage: start fresh */ }
+  return blankState();
+}
+let state = load();
+function save() {
+  try { localStorage.setItem(NS, JSON.stringify(state)); } catch (e) { toast('Could not save — browser storage is full or blocked.'); }
+}
+function getCh(id) { return state.challenges.find(function (c) { return c.id === id; }); }
+
+/* ---------- challenge math ---------- */
+function weekAmount(ch, w) {
+  if (ch.mode === 'reverse') return 53 - w;
+  if (ch.mode === 'fixed') return Number(ch.weeklyAmount) || 0;
+  return w;
+}
+function goalOf(ch) {
+  if (ch.type === '52week') { let t = 0; for (let w = 1; w <= 52; w++) t += weekAmount(ch, w); return t; }
+  return Number(ch.goal) || 0;
+}
+function savedOf(ch) {
+  if (ch.type === '52week') {
+    return ch.doneWeeks.reduce(function (s, w) { return s + weekAmount(ch, w); }, 0);
+  }
+  return ch.deposits.reduce(function (s, d) { return s + (d.type === 'withdraw' ? -d.amount : d.amount); }, 0);
+}
+function pctOf(ch) {
+  const g = goalOf(ch);
+  if (g <= 0) return 0;
+  return Math.min(100, Math.max(0, (savedOf(ch) / g) * 100));
+}
+function elapsedDays(ch) {
+  const s = ch.startDate || Date.now();
+  return Math.max(1, Math.round((Date.now() - s) / 86400000));
+}
+function projectedFinish(ch) {
+  const saved = savedOf(ch), goal = goalOf(ch), rem = goal - saved;
+  if (rem <= 0) return { label: 'Complete!', date: null };
+  const rate = saved / elapsedDays(ch);
+  if (rate <= 0) return { label: '—', date: null };
+  const d = new Date(); d.setDate(d.getDate() + Math.ceil(rem / rate));
+  return { label: fmtDate(d.getTime()), date: d.getTime() };
+}
+function deadlineInfo(ch) {
+  if (ch.type !== 'custom' || !ch.deadline) return null;
+  const daysLeft = Math.ceil((ch.deadline - Date.now()) / 86400000);
+  return { label: fmtDate(ch.deadline), daysLeft: daysLeft };
+}
+
+/* ---------- activity log ---------- */
+function logActivity(ch, kind, text, amount) {
+  state.activity.unshift({
+    id: uid(), ts: Date.now(), cid: ch ? ch.id : null,
+    cname: ch ? ch.name : '—', kind: kind, text: text, amount: amount || 0
+  });
+  if (state.activity.length > 600) state.activity.length = 600;
+}
+
+/* ---------- milestone check ---------- */
+function checkMilestones(ch) {
+  const pct = pctOf(ch);
+  ch.celebrated = ch.celebrated || [];
+  MILESTONES.forEach(function (m) {
+    if (pct >= m && ch.celebrated.indexOf(m) === -1) {
+      ch.celebrated.push(m);
+      logActivity(ch, 'milestone', 'Hit the ' + m + '% milestone', 0);
+      celebrateMilestone(ch, m);
+    }
+  });
+}
+
+/* ---------- toast ---------- */
+let toastTimer = null;
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function () { t.classList.remove('show'); }, 2600);
+}
+
+/* ---------- confetti + milestone overlay ---------- */
+function spawnConfetti(root, count) {
+  const colors = ['#D4AF6A', '#B08A45', '#F2DFAE', '#1E3D2F', '#FFFDF8', '#8FBF8F'];
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    const size = 6 + Math.random() * 8;
+    p.style.left = (Math.random() * 100) + '%';
+    p.style.width = size + 'px';
+    p.style.height = (size * (0.6 + Math.random() * 0.8)) + 'px';
+    p.style.background = colors[i % colors.length];
+    p.style.animationDuration = (2.4 + Math.random() * 2.2) + 's';
+    p.style.animationDelay = (Math.random() * 0.9) + 's';
+    if (Math.random() < 0.35) p.style.borderRadius = '50%';
+    root.appendChild(p);
+  }
+}
+function celebrateMilestone(ch, m) {
+  const veil = document.createElement('div');
+  veil.className = 'milestone-veil';
+  veil.id = 'milestone-overlay';
+  const saved = savedOf(ch);
+  veil.innerHTML =
+    '<div class="milestone-card">' +
+      '<div class="milestone-medal"><span class="mp">' + m + '%</span><span class="ml">Milestone</span></div>' +
+      '<h2>You did it! 🎉</h2>' +
+      '<p>You saved <b>' + esc(fmt$(saved)) + '</b> toward<br>“' + esc(ch.name) + '”.<br>Your money garden is blooming.</p>' +
+      '<button class="btn btn-gold" id="btn-milestone-close" style="width:100%">Keep growing 🌱</button>' +
+    '</div>';
+  document.body.appendChild(veil);
+  spawnConfetti(veil, 90);
+  $('#btn-milestone-close', veil).addEventListener('click', function () {
+    document.body.removeChild(veil);
+  });
+  veil.addEventListener('click', function (e) {
+    if (e.target === veil) document.body.removeChild(veil);
+  });
+}
+
+/* ---------- rendering ---------- */
+let currentView = 'list';
+let currentDetailId = null;
+
+function renderHero() {
+  let saved = 0, goal = 0;
+  state.challenges.forEach(function (c) { saved += savedOf(c); goal += goalOf(c); });
+  $('#hero-saved').textContent = fmt$(saved);
+  $('#hero-challenges').textContent = String(state.challenges.length);
+  $('#hero-goal').textContent = fmt$(goal);
+}
+
+function medalRow(ch) {
+  const pct = pctOf(ch);
+  return MILESTONES.map(function (m) {
+    return '<div class="medal' + (pct >= m ? ' won' : '') + '" title="' + m + '% milestone">' + m + '%</div>';
+  }).join('');
+}
+
+function renderList() {
+  const wrap = $('#challenge-list');
+  if (!state.challenges.length) {
+    wrap.innerHTML =
+      '<div class="card"><div class="empty"><div class="big">🌱</div>' +
+      '<h3>No challenges yet</h3><p>Plant your first savings seed —<br>the classic 52-week challenge takes 2 minutes to start.</p></div></div>';
+    return;
+  }
+  wrap.innerHTML = state.challenges.map(function (ch) {
+    const saved = savedOf(ch), goal = goalOf(ch), pct = pctOf(ch);
+    const tag = ch.type === '52week' ? '52-Week' : 'Custom';
+    const meta = ch.type === '52week'
+      ? modeLabel(ch) + ' · started ' + fmtDate(ch.startDate)
+      : 'Goal ' + fmt$(goal) + (ch.deadline ? ' · by ' + fmtDate(ch.deadline) : '');
+    return '<article class="card clickable ch-card" data-id="' + esc(ch.id) + '" tabindex="0" role="button" aria-label="Open ' + esc(ch.name) + '">' +
+      '<div class="ch-top"><div class="ch-name">' + esc(ch.name) + '</div><span class="ch-tag">' + tag + '</span></div>' +
+      '<div class="ch-meta">' + esc(meta) + '</div>' +
+      '<div class="pbar"><i data-w="' + pct.toFixed(1) + '"></i></div>' +
+      '<div class="ch-nums"><div><span class="saved">' + esc(fmt$(saved)) + '</span> <span class="goal">of ' + esc(fmt$(goal)) + '</span></div><span class="pct">' + pct.toFixed(0) + '%</span></div>' +
+      '<div class="milestones">' + medalRow(ch) + '</div>' +
+    '</article>';
+  }).join('');
+  $$('.ch-card', wrap).forEach(function (card) {
+    card.addEventListener('click', function () { openDetail(card.getAttribute('data-id')); });
+    card.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDetail(card.getAttribute('data-id')); } });
+  });
+  requestAnimationFrame(function () {
+    $$('#challenge-list .pbar > i').forEach(function (bar) { bar.style.width = bar.getAttribute('data-w') + '%'; });
+  });
+}
+
+function modeLabel(ch) {
+  if (ch.mode === 'reverse') return 'Reverse ($52 → $1)';
+  if (ch.mode === 'fixed') return 'Fixed ' + fmt$(ch.weeklyAmount) + '/week';
+  return 'Classic ($1 → $52)';
+}
+
+function renderDetail() {
+  const ch = getCh(currentDetailId);
+  if (!ch) { showView('list'); return; }
+  const saved = savedOf(ch), goal = goalOf(ch), pct = pctOf(ch);
+  $('#detail-name').textContent = ch.name;
+  $('#detail-meta').textContent = ch.type === '52week'
+    ? modeLabel(ch) + ' · started ' + fmtDate(ch.startDate)
+    : 'Custom goal · created ' + fmtDate(ch.createdAt);
+  requestAnimationFrame(function () { $('#detail-bar').style.width = pct + '%'; });
+  $('#detail-bar').style.width = '0';
+  $('#detail-saved').textContent = fmt$(saved);
+  $('#detail-goal').textContent = 'of ' + fmt$(goal);
+  $('#detail-pct').textContent = pct.toFixed(1) + '%';
+  $('#detail-milestones').innerHTML = medalRow(ch);
+
+  const proj = projectedFinish(ch);
+  const dl = deadlineInfo(ch);
+  let stats = '';
+  stats += statHtml('Saved so far', fmt$(saved), false);
+  stats += statHtml('Remaining', fmt$(Math.max(0, goal - saved)), true);
+  stats += statHtml('Projected finish', proj.label, false);
+  if (ch.type === '52week') {
+    const weeksDone = ch.doneWeeks.length;
+    stats += statHtml('Weeks complete', weeksDone + ' / 52', false);
+    stats += statHtml('Target date', fmtDate((ch.startDate || Date.now()) + 364 * 86400000), false);
+    const next = nextWeek(ch);
+    stats += statHtml('Next deposit', next ? fmt$(weekAmount(ch, next)) + ' (week ' + next + ')' : 'All done! 🎉', true);
+  } else {
+    stats += statHtml('Goal', fmt$(goal), false);
+    if (dl) {
+      const dlLabel = dl.daysLeft < 0 ? 'Overdue by ' + Math.abs(dl.daysLeft) + 'd' : dl.daysLeft + ' days left';
+      stats += statHtml('Deadline', dl.label + ' · ' + dlLabel, dl.daysLeft < 0);
+    } else {
+      stats += statHtml('Deadline', 'None set', false);
+    }
+  }
+  $('#detail-stats').innerHTML = stats;
+
+  const actions = $('#detail-actions');
+  if (ch.type === '52week') {
+    const next = nextWeek(ch);
+    actions.innerHTML = next
+      ? '<button class="btn btn-gold" id="btn-next-week">Mark week ' + next + ' saved (' + esc(fmt$(weekAmount(ch, next))) + ')</button>'
+      : '<button class="btn btn-gold" disabled style="opacity:.6">Challenge complete! 🎉</button>';
+    const nb = $('#btn-next-week');
+    if (nb) nb.addEventListener('click', function () { toggleWeek(ch.id, next); });
+  } else {
+    actions.innerHTML =
+      '<button class="btn btn-gold" id="btn-add-deposit">＋ Log deposit</button>' +
+      '<button class="btn btn-ghost" id="btn-add-withdraw">− Log withdrawal</button>';
+    $('#btn-add-deposit').addEventListener('click', function () { openDepositModal(ch.id, 'deposit'); });
+    $('#btn-add-withdraw').addEventListener('click', function () { openDepositModal(ch.id, 'withdraw'); });
+  }
+
+  $('#detail-grid-card').hidden = ch.type !== '52week';
+  $('#detail-deposits-card').hidden = ch.type !== 'custom';
+  if (ch.type === '52week') renderWeekGrid(ch);
+  else renderDepositList(ch);
+}
+
+function statHtml(label, value, gold) {
+  return '<div class="stat"><div class="l">' + esc(label) + '</div><div class="v' + (gold ? ' gold' : '') + '">' + esc(value) + '</div></div>';
+}
+
+function nextWeek(ch) {
+  for (let w = 1; w <= 52; w++) if (ch.doneWeeks.indexOf(w) === -1) return w;
+  return null;
+}
+
+function renderWeekGrid(ch) {
+  const grid = $('#week-grid');
+  const nx = nextWeek(ch);
+  let html = '';
+  for (let w = 1; w <= 52; w++) {
+    const done = ch.doneWeeks.indexOf(w) !== -1;
+    html += '<div class="week-cell' + (done ? ' done' : (w === nx ? ' next' : '')) + '" data-week="' + w + '" role="button" tabindex="0" aria-label="Week ' + w + ', ' + fmt$(weekAmount(ch, w)) + (done ? ', saved' : '') + '">' +
+      '<span class="wn">W' + w + '</span><span class="wa">' + esc(fmt$(weekAmount(ch, w))) + '</span></div>';
+  }
+  grid.innerHTML = html;
+  $$('.week-cell', grid).forEach(function (cell) {
+    cell.addEventListener('click', function () { toggleWeek(ch.id, Number(cell.getAttribute('data-week'))); });
+    cell.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleWeek(ch.id, Number(cell.getAttribute('data-week'))); }
+    });
+  });
+}
+
+function renderDepositList(ch) {
+  const wrap = $('#detail-deposits');
+  const deps = ch.deposits.slice().sort(function (a, b) { return b.ts - a.ts; }).slice(0, 12);
+  if (!deps.length) {
+    wrap.innerHTML = '<p class="hint">No deposits yet — log your first one above. 💰</p>';
+    return;
+  }
+  wrap.innerHTML = deps.map(function (d) {
+    const sign = d.type === 'withdraw' ? '−' : '+';
+    const cls = d.type === 'withdraw' ? 'neg' : 'pos';
+    return '<div class="dep-row"><div><div>' + esc(d.note || (d.type === 'withdraw' ? 'Withdrawal' : 'Deposit')) +
+      '</div><div class="dep-note">' + esc(fmtDate(d.ts)) + '</div></div>' +
+      '<div class="act-amt ' + cls + '">' + sign + esc(fmt$(d.amount)) + '</div></div>';
+  }).join('');
+}
+
+function actIcon(kind) {
+  return { deposit: '💰', withdraw: '💸', week: '✅', created: '🌱', milestone: '🏅', edit: '✏️', deleted: '🗑️' }[kind] || '📝';
+}
+
+function renderActivity() {
+  const wrap = $('#activity-list');
+  if (!state.activity.length) {
+    wrap.innerHTML = '<div class="empty"><div class="big">📜</div><h3>Nothing yet</h3><p>Your savings journal will appear here.</p></div>';
+    return;
+  }
+  wrap.innerHTML = state.activity.map(function (a) {
+    const amt = a.amount ? '<div class="act-amt ' + (a.kind === 'withdraw' ? 'neg' : 'pos') + '">' +
+      (a.kind === 'withdraw' ? '−' : '+') + esc(fmt$(a.amount)) + '</div>' : '';
+    return '<div class="act-item"><div class="act-ico">' + actIcon(a.kind) + '</div>' +
+      '<div class="act-body"><div class="act-text"><b>' + esc(a.cname) + '</b> — ' + esc(a.text) + '</div>' +
+      '<div class="act-time">' + esc(fmtDate(a.ts)) + ' · ' + esc(new Date(a.ts).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })) + '</div></div>' + amt + '</div>';
+  }).join('');
+}
+
+/* ---------- router ---------- */
+function showView(name) {
+  currentView = name;
+  ['list', 'detail', 'activity', 'new'].forEach(function (v) { $('#view-' + v).hidden = v !== name; });
+  $$('.nav button').forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-nav') === name); });
+  if (name === 'list') { renderHero(); renderList(); }
+  if (name === 'detail') renderDetail();
+  if (name === 'activity') renderActivity();
+  window.scrollTo(0, 0);
+}
+function openDetail(id) { currentDetailId = id; showView('detail'); }
+
+/* ---------- modal helper ---------- */
+function openModal(html) {
+  const root = $('#modal-root');
+  root.innerHTML = '<div class="modal-veil" id="modal-veil"><div class="modal" role="dialog" aria-modal="true">' + html + '</div></div>';
+  const veil = $('#modal-veil');
+  veil.addEventListener('click', function (e) { if (e.target === veil) closeModal(); });
+  return veil;
+}
+function closeModal() { $('#modal-root').innerHTML = ''; }
+
+/* ---------- week toggle ---------- */
+function toggleWeek(id, w) {
+  const ch = getCh(id);
+  if (!ch || ch.type !== '52week') return;
+  const i = ch.doneWeeks.indexOf(w);
+  const amt = weekAmount(ch, w);
+  if (i === -1) {
+    ch.doneWeeks.push(w);
+    ch.doneWeeks.sort(function (a, b) { return a - b; });
+    logActivity(ch, 'week', 'Saved week ' + w + ' deposit', amt);
+    toast('Week ' + w + ' saved — ' + fmt$(amt) + ' 🌱');
+  } else {
+    ch.doneWeeks.splice(i, 1);
+    logActivity(ch, 'week', 'Unmarked week ' + w + ' deposit', 0);
+    toast('Week ' + w + ' unmarked');
+  }
+  save();
+  checkMilestones(ch);
+  save();
+  renderHero();
+  renderDetail();
+}
+
+/* ---------- create challenges ---------- */
+function create52(name, mode, weeklyAmount, startISO) {
+  const ch = {
+    id: uid(), type: '52week', name: name || '52-Week Money Challenge',
+    mode: mode, weeklyAmount: mode === 'fixed' ? Math.max(1, Number(weeklyAmount) || 25) : 0,
+    startDate: parseLocalDate(startISO), createdAt: Date.now(),
+    doneWeeks: [], deposits: [], celebrated: []
+  };
+  state.challenges.push(ch);
+  logActivity(ch, 'created', 'Started the challenge (' + modeLabel(ch) + ')', 0);
+  save();
+  toast('Challenge planted! 🌱');
+  openDetail(ch.id);
+  return ch;
+}
+function createCustom(name, goal, deadlineISO) {
+  const ch = {
+    id: uid(), type: 'custom', name: name || 'Custom Savings Challenge',
+    goal: Math.max(1, Number(goal) || 0),
+    deadline: deadlineISO ? parseLocalDate(deadlineISO) : null,
+    startDate: Date.now(), createdAt: Date.now(),
+    doneWeeks: [], deposits: [], celebrated: []
+  };
+  state.challenges.push(ch);
+  logActivity(ch, 'created', 'Started the challenge — goal ' + fmt$(ch.goal), 0);
+  save();
+  toast('Challenge created! ✨');
+  openDetail(ch.id);
+  return ch;
+}
+
+/* ---------- deposit / withdraw ---------- */
+function openDepositModal(id, kind) {
+  const ch = getCh(id);
+  if (!ch) return;
+  const isW = kind === 'withdraw';
+  const veil = openModal(
+    '<h3>' + (isW ? 'Log withdrawal' : 'Log deposit') + '</h3>' +
+    '<p class="msub">For “' + esc(ch.name) + '” · saved so far: <b>' + esc(fmt$(savedOf(ch))) + '</b></p>' +
+    '<label class="f" for="m-dep-amount">Amount ($)</label>' +
+    '<input type="number" id="m-dep-amount" min="0.01" step="0.01" placeholder="50.00" inputmode="decimal">' +
+    '<label class="f" for="m-dep-note">Note <span class="hint" style="display:inline">(optional)</span></label>' +
+    '<input type="text" id="m-dep-note" maxlength="80" placeholder="e.g. Birthday money">' +
+    '<label class="f" for="m-dep-date">Date</label>' +
+    '<input type="date" id="m-dep-date" value="' + todayISO() + '">' +
+    '<div class="btn-row">' +
+      '<button class="btn ' + (isW ? 'btn-ghost' : 'btn-gold') + '" id="btn-dep-save">' + (isW ? '− Log withdrawal' : '＋ Log deposit') + '</button>' +
+      '<button class="btn btn-ghost" id="btn-dep-cancel">Cancel</button>' +
+    '</div>'
+  );
+  $('#btn-dep-cancel', veil).addEventListener('click', closeModal);
+  $('#btn-dep-save', veil).addEventListener('click', function () {
+    const amt = Math.round((Number($('#m-dep-amount', veil).value) || 0) * 100) / 100;
+    const note = $('#m-dep-note', veil).value.trim();
+    const ts = parseLocalDate($('#m-dep-date', veil).value);
+    if (!(amt > 0)) { toast('Enter an amount greater than $0'); return; }
+    if (isW && amt > savedOf(ch)) { toast('Withdrawal can’t exceed saved amount (' + fmt$(savedOf(ch)) + ')'); return; }
+    ch.deposits.push({ id: uid(), amount: amt, type: isW ? 'withdraw' : 'deposit', note: note, ts: ts });
+    logActivity(ch, isW ? 'withdraw' : 'deposit', (isW ? 'Withdrew ' : 'Deposited ') + (note ? '“' + note + '”' : ''), amt);
+    save();
+    checkMilestones(ch);
+    save();
+    closeModal();
+    toast(isW ? 'Withdrawal logged' : 'Deposit logged — ' + fmt$(amt) + ' 💰');
+    renderHero();
+    renderDetail();
+  });
+  setTimeout(function () { const i = $('#m-dep-amount', veil); if (i) i.focus(); }, 60);
+}
+
+/* ---------- edit / delete ---------- */
+function openEditModal(id) {
+  const ch = getCh(id);
+  if (!ch) return;
+  let extra = '';
+  if (ch.type === 'custom') {
+    extra = '<label class="f" for="m-edit-goal">Goal amount ($)</label>' +
+      '<input type="number" id="m-edit-goal" min="1" step="0.01" value="' + esc(String(ch.goal)) + '">' +
+      '<label class="f" for="m-edit-deadline">Deadline</label>' +
+      '<input type="date" id="m-edit-deadline" value="' + (ch.deadline ? tsToLocalISO(ch.deadline) : '') + '">';
+  } else if (ch.mode === 'fixed') {
+    extra = '<label class="f" for="m-edit-amount">Weekly amount ($)</label>' +
+      '<input type="number" id="m-edit-amount" min="1" step="0.01" value="' + esc(String(ch.weeklyAmount)) + '">';
+  }
+  const veil = openModal(
+    '<h3>Edit challenge</h3><p class="msub">Adjust the details — your saved progress stays intact.</p>' +
+    '<label class="f" for="m-edit-name">Challenge name</label>' +
+    '<input type="text" id="m-edit-name" maxlength="60" value="' + esc(ch.name) + '">' + extra +
+    '<div class="btn-row"><button class="btn btn-forest" id="btn-edit-save">Save changes</button>' +
+    '<button class="btn btn-ghost" id="btn-edit-cancel">Cancel</button></div>'
+  );
+  $('#btn-edit-cancel', veil).addEventListener('click', closeModal);
+  $('#btn-edit-save', veil).addEventListener('click', function () {
+    const name = $('#m-edit-name', veil).value.trim();
+    if (name) ch.name = name;
+    if (ch.type === 'custom') {
+      const g = Number($('#m-edit-goal', veil).value);
+      if (g > 0) ch.goal = g;
+      const dl = $('#m-edit-deadline', veil).value;
+      ch.deadline = dl ? parseLocalDate(dl) : null;
+    } else if (ch.mode === 'fixed') {
+      const a = Number($('#m-edit-amount', veil).value);
+      if (a > 0) ch.weeklyAmount = a;
+    }
+    logActivity(ch, 'edit', 'Edited challenge details', 0);
+    save();
+    closeModal();
+    toast('Challenge updated ✏️');
+    renderHero();
+    renderDetail();
+  });
+}
+function openDeleteModal(id) {
+  const ch = getCh(id);
+  if (!ch) return;
+  const veil = openModal(
+    '<h3>Delete challenge?</h3>' +
+    '<p class="msub">“' + esc(ch.name) + '” and its ' + esc(fmt$(savedOf(ch))) + ' of tracked progress will be removed. This can’t be undone.</p>' +
+    '<div class="btn-row"><button class="btn" id="btn-confirm-delete" style="background:var(--bad);color:#fff">Yes, delete it</button>' +
+    '<button class="btn btn-ghost" id="btn-delete-cancel">Keep it</button></div>'
+  );
+  $('#btn-delete-cancel', veil).addEventListener('click', closeModal);
+  $('#btn-confirm-delete', veil).addEventListener('click', function () {
+    state.challenges = state.challenges.filter(function (c) { return c.id !== id; });
+    logActivity(ch, 'deleted', 'Deleted the challenge', 0);
+    save();
+    closeModal();
+    toast('Challenge deleted');
+    currentDetailId = null;
+    showView('list');
+  });
+}
+
+/* ---------- wiring ---------- */
+function init() {
+  $('#f52-start').value = todayISO();
+  $$('.nav button').forEach(function (b) {
+    b.addEventListener('click', function () { showView(b.getAttribute('data-nav')); });
+  });
+  $('#btn-list-new').addEventListener('click', function () { showView('new'); });
+  $('#btn-back').addEventListener('click', function () { showView('list'); });
+  $('#btn-edit-ch').addEventListener('click', function () { if (currentDetailId) openEditModal(currentDetailId); });
+  $('#btn-delete-ch').addEventListener('click', function () { if (currentDetailId) openDeleteModal(currentDetailId); });
+
+  let mode52 = 'standard';
+  $$('#f52-modes button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      $$('#f52-modes button').forEach(function (x) { x.classList.remove('sel'); });
+      b.classList.add('sel');
+      mode52 = b.getAttribute('data-mode');
+      $('#f52-amount-wrap').classList.toggle('hidden', mode52 !== 'fixed');
+    });
+  });
+  $$('.choice').forEach(function (c) {
+    c.addEventListener('click', function (e) {
+      if (e.target.closest('form')) return;
+      $$('.choice').forEach(function (x) { x.classList.remove('sel'); });
+      c.classList.add('sel');
+    });
+  });
+  $('#form-52').addEventListener('submit', function (e) {
+    e.preventDefault();
+    create52($('#f52-name').value.trim(), mode52, $('#f52-amount').value, $('#f52-start').value || todayISO());
+  });
+  $('#form-custom').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const goal = Number($('#fc-goal').value);
+    if (!(goal > 0)) { toast('Enter a goal amount greater than $0'); return; }
+    createCustom($('#fc-name').value.trim(), goal, $('#fc-deadline').value);
+  });
+
+  showView('list');
+}
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
