@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#FAF5EC">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Mood Journal">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='42' fill='%23FAF5EC'/%3E%3Ccircle cx='90' cy='90' r='52' fill='%23E8833A'/%3E%3Ccircle cx='72' cy='80' r='7' fill='%2337302A'/%3E%3Ccircle cx='108' cy='80' r='7' fill='%2337302A'/%3E%3Cpath d='M68 108q22 18 44 0' stroke='%2337302A' stroke-width='8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<title>The Mood Journal — Daily Mood Tracker</title>
+<style>
+:root{
+  --paper:#FAF5EC;
+  --paper-2:#F3ECDD;
+  --card:#FFFDF7;
+  --ink:#37302A;
+  --soft:#7A6C5D;
+  --faint:#A89A85;
+  --dusk:#463252;
+  --dusk-deep:#352641;
+  --amber:#E8833A;
+  --amber-deep:#C96F22;
+  --amber-soft:#FBEEDD;
+  --rose:#C65D6E;
+  --line:#EAE0CF;
+  --m1:#7C8DA6;
+  --m2:#9B8FBF;
+  --m3:#D9A441;
+  --m4:#7FA36B;
+  --m5:#E8833A;
+  --radius:20px;
+  --shadow:0 10px 30px rgba(70,50,82,.10);
+  --shadow-sm:0 4px 14px rgba(70,50,82,.08);
+  --serif:Georgia,'Times New Roman','Nimbus Roman',serif;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--sans);
+  color:var(--ink);
+  background-color:var(--paper);
+  background-image:radial-gradient(rgba(70,50,82,.05) 1px, transparent 1px);
+  background-size:22px 22px;
+  min-height:100vh;
+  padding:28px 20px 90px;
+  line-height:1.5;
+}
+.wrap{max-width:860px;margin:0 auto}
+
+/* ---------- masthead ---------- */
+.masthead{text-align:center;margin:6px 0 18px}
+.eyebrow{
+  display:inline-block;font-size:11px;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--amber-deep);font-weight:700;margin-bottom:10px;
+}
+h1.brand{
+  font-family:var(--serif);font-weight:400;color:var(--dusk);
+  font-size:clamp(34px,6vw,52px);line-height:1.05;letter-spacing:.01em;
+}
+.brand-rule{width:64px;height:3px;background:var(--amber);border-radius:2px;margin:14px auto 10px}
+.date-line{color:var(--soft);font-size:14px}
+.date-line .greet{font-family:var(--serif);font-style:italic;color:var(--dusk);font-size:16px}
+.streak-pill{
+  display:inline-flex;align-items:center;gap:8px;margin-top:12px;
+  background:var(--card);border:1px solid var(--line);border-radius:999px;
+  padding:8px 18px;font-size:13.5px;font-weight:700;color:var(--dusk);
+  box-shadow:var(--shadow-sm);
+}
+.streak-pill .flame{font-size:16px}
+.streak-pill.dim{color:var(--faint);font-weight:500}
+
+/* ---------- tabs ---------- */
+.tabs{
+  display:flex;gap:6px;justify-content:center;margin:0 auto 24px;max-width:560px;
+  background:var(--paper-2);border:1px solid var(--line);border-radius:999px;padding:6px;
+  position:sticky;top:12px;z-index:30;box-shadow:var(--shadow-sm);
+}
+.tab{
+  flex:1;border:0;background:transparent;cursor:pointer;border-radius:999px;
+  padding:10px 6px;font-size:13.5px;font-weight:700;color:var(--soft);
+  font-family:var(--sans);letter-spacing:.02em;transition:all .18s ease;white-space:nowrap;
+}
+.tab.active{background:var(--dusk);color:var(--paper);box-shadow:0 4px 12px rgba(70,50,82,.28)}
+.tab:not(.active):hover{color:var(--dusk)}
+
+/* ---------- cards ---------- */
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:22px;margin-bottom:18px;
+}
+.section-label{
+  font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--amber-deep);
+  font-weight:700;margin:26px 4px 12px;
+}
+.section-label:first-child{margin-top:0}
+h2.serif{font-family:var(--serif);font-weight:400;color:var(--dusk);font-size:24px;margin-bottom:6px}
+p.muted{color:var(--soft);font-size:14px}
+.serif-i{font-family:var(--serif);font-style:italic}
+
+/* ---------- day nav ---------- */
+.day-nav-card{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.day-nav{display:flex;align-items:center;gap:8px}
+.nav-btn{
+  width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--paper);
+  color:var(--dusk);font-size:18px;cursor:pointer;line-height:1;transition:all .15s;
+}
+.nav-btn:hover{border-color:var(--amber);color:var(--amber-deep)}
+.nav-btn:disabled{opacity:.35;cursor:default}
+.day-title{font-family:var(--serif);font-size:20px;color:var(--dusk);min-width:170px;text-align:center}
+.today-pill{
+  border:1px solid var(--amber);background:var(--amber-soft);color:var(--amber-deep);
+  border-radius:999px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;
+}
+.today-pill.hidden{visibility:hidden}
+
+/* ---------- mood picker ---------- */
+.mood-q{font-family:var(--serif);font-size:22px;color:var(--dusk);text-align:center;margin-bottom:4px}
+.mood-sub{text-align:center;color:var(--soft);font-size:13.5px;margin-bottom:18px}
+.mood-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.mood-btn{
+  border:2px solid var(--line);background:var(--paper);border-radius:18px;cursor:pointer;
+  padding:14px 6px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;
+  transition:all .16s ease;font-family:var(--sans);
+}
+.mood-btn:hover{transform:translateY(-2px);border-color:var(--mc,var(--amber))}
+.mood-face{
+  width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:32px;background:color-mix(in srgb, var(--mc) 16%, white);
+  border:2px solid transparent;transition:all .16s ease;
+}
+.mood-btn.sel{border-color:var(--mc);background:color-mix(in srgb, var(--mc) 10%, white);box-shadow:0 8px 20px color-mix(in srgb, var(--mc) 30%, transparent)}
+.mood-btn.sel .mood-face{background:var(--mc);border-color:var(--mc);transform:scale(1.06)}
+.mood-lbl{font-size:12.5px;font-weight:700;color:var(--soft)}
+.mood-btn.sel .mood-lbl{color:var(--dusk)}
+.mood-whisper{
+  text-align:center;margin-top:14px;min-height:26px;
+  font-family:var(--serif);font-style:italic;font-size:15px;color:var(--soft);
+}
+
+/* ---------- tags ---------- */
+.tag-row{display:flex;flex-wrap:wrap;gap:8px}
+.tag-chip{
+  border:1.5px solid var(--line);background:var(--paper);border-radius:999px;
+  padding:8px 14px;font-size:13.5px;font-weight:600;color:var(--soft);cursor:pointer;
+  transition:all .14s ease;font-family:var(--sans);
+}
+.tag-chip:hover{border-color:var(--amber)}
+.tag-chip.sel{background:var(--dusk);border-color:var(--dusk);color:var(--paper)}
+.tag-chip .te{margin-right:6px}
+.custom-tag-row{display:flex;gap:8px;margin-top:12px}
+.custom-tag-row input{
+  flex:1;border:1.5px solid var(--line);border-radius:12px;background:var(--paper);
+  padding:10px 14px;font-size:14px;font-family:var(--sans);color:var(--ink);outline:none;min-width:0;
+}
+.custom-tag-row input:focus{border-color:var(--amber);box-shadow:0 0 0 3px rgba(232,131,58,.15)}
+.mini-btn{
+  border:1.5px solid var(--line);background:var(--paper);border-radius:12px;
+  padding:10px 16px;font-size:14px;font-weight:700;color:var(--dusk);cursor:pointer;white-space:nowrap;
+}
+.mini-btn:hover{border-color:var(--amber)}
+
+/* ---------- note ---------- */
+.note-area{
+  width:100%;border:1.5px solid var(--line);border-radius:14px;background:var(--paper);
+  padding:14px 15px;font-size:15px;font-family:var(--serif);color:var(--ink);
+  min-height:96px;resize:vertical;outline:none;line-height:1.6;
+}
+.note-area:focus{border-color:var(--amber);box-shadow:0 0 0 3px rgba(232,131,58,.15)}
+.note-area::placeholder{color:var(--faint);font-style:italic}
+
+/* ---------- buttons ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  border:0;border-radius:999px;cursor:pointer;font-weight:700;font-size:15px;
+  padding:13px 26px;font-family:var(--sans);transition:all .18s ease;
+}
+.btn-primary{background:var(--amber);color:#fff;box-shadow:0 8px 20px rgba(232,131,58,.35)}
+.btn-primary:hover{background:var(--amber-deep);transform:translateY(-1px)}
+.btn-dusk{background:var(--dusk);color:var(--paper)}
+.btn-dusk:hover{background:var(--dusk-deep)}
+.btn-ghost{background:transparent;color:var(--soft);border:1px solid var(--line)}
+.btn-ghost:hover{color:var(--dusk);border-color:var(--dusk)}
+.btn-danger{background:transparent;color:var(--rose);border:1px solid rgba(198,93,110,.4)}
+.btn-block{width:100%}
+.save-row{margin:4px 0 6px}
+
+/* ---------- entry summary ---------- */
+.entry-summary{display:flex;gap:16px;align-items:flex-start}
+.entry-face{
+  width:64px;height:64px;flex:0 0 64px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:34px;
+  background:var(--mc);color:#fff;box-shadow:0 6px 16px color-mix(in srgb, var(--mc) 40%, transparent);
+}
+.entry-main{flex:1;min-width:0}
+.entry-moodline{font-family:var(--serif);font-size:20px;color:var(--dusk)}
+.entry-tags{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.entry-tag{
+  font-size:12px;font-weight:600;color:var(--soft);background:var(--paper-2);
+  border:1px solid var(--line);border-radius:999px;padding:4px 11px;
+}
+.entry-note{
+  font-family:var(--serif);font-style:italic;font-size:15.5px;color:var(--soft);
+  border-left:3px solid var(--mc);padding-left:12px;margin-top:6px;line-height:1.65;
+}
+.entry-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.saved-flag{
+  display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;
+  color:var(--m4);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;
+}
+
+/* ---------- gentle note ---------- */
+.gentle{
+  background:linear-gradient(135deg,#FFFDF7,#FBF3E4);
+  border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow-sm);padding:22px;margin-bottom:18px;text-align:center;
+}
+.gentle .q{font-size:30px;margin-bottom:8px}
+.gentle p{font-family:var(--serif);font-style:italic;font-size:17px;color:var(--dusk);line-height:1.65}
+
+/* ---------- empty ---------- */
+.empty{
+  text-align:center;padding:52px 24px;border:2px dashed var(--line);border-radius:var(--radius);
+  background:rgba(255,253,247,.6);
+}
+.empty .big{font-size:44px;margin-bottom:12px}
+.empty h3{font-family:var(--serif);font-weight:400;color:var(--dusk);font-size:22px;margin-bottom:8px}
+.empty p{color:var(--soft);font-size:14px;max-width:400px;margin:0 auto 18px}
+
+/* ---------- calendar ---------- */
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.cal-title{font-family:var(--serif);font-size:22px;color:var(--dusk)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}
+.dow{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);text-align:center;padding:6px 0}
+.day{
+  aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:600;color:var(--soft);border:2px solid transparent;
+  cursor:default;transition:transform .12s;position:relative;
+}
+.day.has-data{cursor:pointer;font-weight:700;color:#fff}
+.day.has-data:hover{transform:scale(1.1)}
+.day.out{visibility:hidden}
+.day.nodata{background:var(--paper-2);color:var(--faint)}
+.day.today{border-color:var(--dusk)}
+.day.future{background:transparent;color:var(--faint);opacity:.5}
+.legend{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:16px;flex-wrap:wrap;font-size:11.5px;color:var(--soft)}
+.legend .sw{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:14px;height:14px;border-radius:50%;display:inline-block}
+.cal-hint{font-size:12.5px;color:var(--faint);margin-top:10px;font-style:italic;font-family:var(--serif);text-align:center}
+
+/* ---------- insights ---------- */
+.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:6px}
+.stat{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow-sm);padding:18px;text-align:center;
+}
+.stat .num{font-family:var(--serif);font-size:34px;color:var(--dusk);line-height:1.1}
+.stat .lbl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--soft);font-weight:700;margin-top:6px}
+.seg{display:inline-flex;gap:6px;background:var(--paper-2);border:1px solid var(--line);border-radius:999px;padding:5px;margin-bottom:14px}
+.seg-opt{
+  border:0;background:transparent;border-radius:999px;padding:8px 20px;cursor:pointer;
+  font-size:13px;font-weight:700;color:var(--soft);font-family:var(--sans);
+}
+.seg-opt.sel{background:var(--dusk);color:var(--paper)}
+.chart-wrap{width:100%}
+.chart-wrap svg{width:100%;height:auto;display:block}
+.wk{display:flex;align-items:flex-end;gap:10px;height:170px;padding:6px 4px 0}
+.wk-day{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%;justify-content:flex-end}
+.wk-bar{width:100%;max-width:44px;border-radius:10px 10px 6px 6px;min-height:8px;transition:height .5s ease;position:relative}
+.wk-bar.none{background:var(--paper-2);border:1px solid var(--line)}
+.wk-val{font-size:11px;font-weight:700;color:var(--soft)}
+.wk-lbl{font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--faint);text-transform:uppercase}
+.wk-lbl.best{color:var(--amber-deep)}
+.tag-cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.tag-col h4{font-family:var(--serif);font-weight:400;font-size:17px;color:var(--dusk);margin-bottom:10px}
+.tag-stat{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.tag-stat .tname{flex:1;font-size:13.5px;font-weight:600;color:var(--soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tag-stat .tbar{flex:0 0 90px;height:8px;border-radius:99px;background:var(--paper-2);overflow:hidden}
+.tag-stat .tbar i{display:block;height:100%;border-radius:99px}
+.tag-stat .tnum{font-size:12px;font-weight:700;color:var(--dusk);min-width:26px;text-align:right}
+.insight-line{font-family:var(--serif);font-style:italic;font-size:15px;color:var(--soft);margin-top:14px;line-height:1.65}
+
+/* ---------- journal ---------- */
+.search-row{display:flex;gap:8px;margin-bottom:16px}
+.search-row input{
+  flex:1;border:1.5px solid var(--line);border-radius:999px;background:var(--card);
+  padding:12px 20px;font-size:15px;font-family:var(--sans);color:var(--ink);outline:none;box-shadow:var(--shadow-sm);
+}
+.search-row input:focus{border-color:var(--amber)}
+.j-entry{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow-sm);padding:18px;margin-bottom:12px;cursor:pointer;
+  transition:transform .12s ease, box-shadow .12s ease;
+}
+.j-entry:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+.j-entry.open{cursor:default}
+.j-top{display:flex;align-items:center;gap:12px}
+.j-face{width:46px;height:46px;flex:0 0 46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;background:var(--mc);color:#fff}
+.j-date{font-family:var(--serif);font-size:16.5px;color:var(--dusk)}
+.j-mood{font-size:12px;font-weight:700;color:var(--soft);letter-spacing:.04em;text-transform:uppercase}
+.j-snippet{font-family:var(--serif);font-style:italic;font-size:14.5px;color:var(--soft);margin-top:10px;line-height:1.6;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.j-entry.open .j-snippet{-webkit-line-clamp:unset}
+.j-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.j-actions{display:flex;gap:8px;margin-top:12px}
+
+/* ---------- celebration ---------- */
+.overlay{
+  position:fixed;inset:0;background:rgba(53,38,65,.5);backdrop-filter:blur(3px);
+  display:flex;align-items:center;justify-content:center;padding:20px;z-index:100;
+  opacity:0;pointer-events:none;transition:opacity .2s ease;
+}
+.overlay.show{opacity:1;pointer-events:auto}
+.modal{
+  background:var(--card);border-radius:24px;box-shadow:0 24px 70px rgba(53,38,65,.35);
+  width:100%;max-width:440px;max-height:92vh;overflow-y:auto;padding:28px;text-align:center;
+  transform:translateY(14px) scale(.98);transition:transform .22s ease;position:relative;overflow:hidden;
+}
+.overlay.show .modal{transform:none}
+.celeb-icon{font-size:64px;margin:6px 0 10px;animation:bounce .8s ease}
+@keyframes bounce{0%{transform:scale(0)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
+.modal h3{font-family:var(--serif);font-size:28px;color:var(--dusk);font-weight:400;margin-bottom:8px}
+.modal .miles{font-family:var(--serif);font-style:italic;font-size:16px;color:var(--amber-deep);margin-bottom:20px;line-height:1.65}
+.confetti{position:absolute;top:-14px;width:9px;height:14px;border-radius:2px;z-index:5;animation:cfall 2.9s ease-in forwards;pointer-events:none}
+@keyframes cfall{0%{transform:translateY(-10px) rotate(0deg);opacity:1}100%{transform:translateY(560px) rotate(680deg);opacity:.7}}
+
+/* ---------- toast ---------- */
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(80px);
+  background:var(--dusk);color:var(--paper);padding:12px 22px;border-radius:999px;
+  font-size:14px;font-weight:600;box-shadow:0 12px 30px rgba(53,38,65,.35);
+  transition:transform .3s ease;z-index:200;max-width:90vw;text-align:center;
+}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ---------- footer ---------- */
+.foot{text-align:center;margin-top:34px;color:var(--faint);font-size:12px;line-height:1.8}
+.foot .rule{width:40px;height:2px;background:var(--line);margin:0 auto 12px;border-radius:2px}
+
+@media (max-width:520px){
+  body{padding:18px 12px 80px}
+  .card{padding:18px}
+  .mood-grid{gap:7px}
+  .mood-face{width:48px;height:48px;font-size:26px}
+  .mood-btn{padding:10px 4px;border-radius:14px}
+  .mood-lbl{font-size:11px}
+  .day-title{min-width:0;font-size:17px}
+  .tag-cols{grid-template-columns:1fr}
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  .tab{font-size:12px}
+}
+@media (min-width:700px){
+  .stat-grid{grid-template-columns:repeat(4,1fr)}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="eyebrow">A quiet place for your feelings</div>
+    <h1 class="brand">The Mood Journal</h1>
+    <div class="brand-rule"></div>
+    <div class="date-line"><span class="greet" id="greet"></span> &nbsp;·&nbsp; <span id="today-line"></span></div>
+    <div><span class="streak-pill dim" id="streak-pill"><span class="flame">🔥</span><span id="streak-txt">no streak yet</span></span></div>
+  </header>
+
+  <nav class="tabs" aria-label="Views">
+    <button class="tab active" data-action="tab" data-view="today">Today</button>
+    <button class="tab" data-action="tab" data-view="calendar">Calendar</button>
+    <button class="tab" data-action="tab" data-view="insights">Insights</button>
+    <button class="tab" data-action="tab" data-view="journal">Journal</button>
+  </nav>
+
+  <main id="view"></main>
+
+  <footer class="foot">
+    <div class="rule"></div>
+    Your entries live only in this browser — never uploaded, never shared.<br>
+    Made for honest evenings and gentle mornings.
+  </footer>
+</div>
+
+<!-- celebration modal -->
+<div class="overlay" id="celeb-overlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Milestone celebration">
+    <div id="confetti-box"></div>
+    <div class="celeb-icon">🌅</div>
+    <h3 id="celeb-title">7 days of checking in</h3>
+    <p class="miles" id="celeb-msg"></p>
+    <button class="btn btn-primary btn-block" data-action="celeb-close">Keep listening inward →</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+/* =====================================================================
+   The Mood Journal — core logic (pure functions; DOM only inside render/boot)
+   ===================================================================== */
+const NS = 'moodJournalTracker';
+
+const MOODS = [
+  {v:1, label:'Heavy',   emoji:'😔', color:'#7C8DA6', whisper:'A heavy day. Be extra gentle with yourself tonight.'},
+  {v:2, label:'Low',     emoji:'😟', color:'#9B8FBF', whisper:'A low hum. Rest counts as progress too.'},
+  {v:3, label:'Okay',    emoji:'😐', color:'#D9A441', whisper:'Steady middle. Nothing here needs fixing.'},
+  {v:4, label:'Good',    emoji:'🙂', color:'#7FA36B', whisper:'A good day. Let it land, fully.'},
+  {v:5, label:'Radiant', emoji:'🤩', color:'#E8833A', whisper:'Radiant. Soak in every bit of it.'}
+];
+const PRESET_TAGS = [
+  {e:'😴', n:'Sleep'}, {e:'🏃', n:'Exercise'}, {e:'☀️', n:'Sunshine'},
+  {e:'🌧', n:'Rain'}, {e:'👯', n:'Friends'}, {e:'💼', n:'Work'},
+  {e:'🛋', n:'Rest'}, {e:'🎵', n:'Music'}, {e:'📖', n:'Reading'},
+  {e:'🍽', n:'Good food'}, {e:'🌿', n:'Nature'}, {e:'❤️', n:'Family'}
+];
+const GENTLE_NOTES = [
+  'Feelings are weather, not climate. This will move through.',
+  'Naming it is the first kindness.',
+  'You showed up for yourself today. That counts.',
+  'No entry is too small — a single word is enough.',
+  'Be as kind to yourself as you are to everyone else.',
+  'Every feeling is information, not a verdict.',
+  'You don\u2019t have to earn rest. You just have to take it.'
+];
+const MILESTONES = [7, 30, 100];
+const MILE_MSG = {
+  7:'Seven days of checking in with yourself. That\u2019s a quiet kind of brave.',
+  30:'A full month of honest entries. You\u2019re learning your own weather.',
+  100:'One hundred days of listening inward. Remarkable, truly.'
+};
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+/* ---------- date helpers (local timezone) ---------- */
+function fmtDate(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function parseDate(s){const p=s.split('-');return new Date(+p[0],+p[1]-1,+p[2]);}
+function addDaysStr(s,n){const d=parseDate(s);d.setDate(d.getDate()+n);return fmtDate(d);}
+function todayStr(){return fmtDate(new Date());}
+function prettyDate(s){const d=parseDate(s);return DAYS[d.getDay()]+', '+MONTHS[d.getMonth()]+' '+d.getDate();}
+function shortDate(s){const d=parseDate(s);return MONTHS[d.getMonth()].slice(0,3)+' '+d.getDate();}
+function moodDef(v){return MOODS.find(m=>m.v===v)||MOODS[2];}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+
+/* ---------- state ---------- */
+function freshState(){return {entries:{}, celebrated:[]};}
+function loadState(store){
+  try{
+    const raw=store.getItem(NS);
+    if(!raw) return freshState();
+    const s=JSON.parse(raw);
+    if(!s||typeof s!=='object'||!s.entries||typeof s.entries!=='object'||Array.isArray(s.entries)) return freshState();
+    return {entries:s.entries, celebrated:Array.isArray(s.celebrated)?s.celebrated:[]};
+  }catch(e){return freshState();}
+}
+function saveState(store,st){
+  try{store.setItem(NS,JSON.stringify(st));return true;}catch(e){return false;}
+}
+
+/* ---------- entry operations (pure) ---------- */
+function getEntry(st,ds){return st.entries[ds]||null;}
+function upsertEntry(st,ds,patch){
+  const prev=st.entries[ds]||{};
+  const next={mood:patch.mood!=null?patch.mood:prev.mood,
+              note:patch.note!=null?String(patch.note):(prev.note||''),
+              tags:Array.isArray(patch.tags)?patch.tags.slice():(prev.tags||[])};
+  if(next.mood==null) return false;
+  st.entries[ds]=next;
+  return true;
+}
+function deleteEntry(st,ds){
+  if(!st.entries[ds]) return false;
+  delete st.entries[ds];
+  return true;
+}
+function toggleTag(list,name){
+  const i=list.indexOf(name);
+  if(i>=0) list.splice(i,1); else list.push(name);
+  return list;
+}
+function addCustomTag(list,name){
+  name=String(name||'').trim().slice(0,24);
+  if(!name||list.indexOf(name)>=0) return false;
+  list.push(name); return true;
+}
+
+/* ---------- analytics (pure) ---------- */
+function entryDates(st){return Object.keys(st.entries).sort();}
+function currentStreak(st,today){
+  let d=today;
+  if(!st.entries[d]) d=addDaysStr(d,-1);
+  let s=0;
+  while(st.entries[d]){s++;d=addDaysStr(d,-1);}
+  return s;
+}
+function longestStreak(st){
+  const ds=entryDates(st);
+  let best=0,run=0,prev=null;
+  for(const k of ds){
+    run=(prev&&addDaysStr(prev,1)===k)?run+1:1;
+    if(run>best)best=run;
+    prev=k;
+  }
+  return best;
+}
+function averageMood(list){
+  const ms=list.map(e=>e.mood).filter(m=>typeof m==='number');
+  if(!ms.length) return null;
+  return ms.reduce((a,b)=>a+b,0)/ms.length;
+}
+function overallAverage(st){
+  return averageMood(Object.keys(st.entries).map(k=>st.entries[k]));
+}
+function weekdayAverages(st,endStr,days){
+  days=days||90;
+  const sums=[0,0,0,0,0,0,0], counts=[0,0,0,0,0,0,0];
+  const start=addDaysStr(endStr,-(days-1));
+  for(const k of Object.keys(st.entries)){
+    if(k<start||k>endStr) continue;
+    const wd=parseDate(k).getDay();
+    sums[wd]+=st.entries[k].mood; counts[wd]++;
+  }
+  return sums.map((s,i)=>counts[i]?s/counts[i]:null);
+}
+function tagStats(st){
+  const out={};
+  for(const k of Object.keys(st.entries)){
+    const e=st.entries[k];
+    for(const t of (e.tags||[])){
+      if(!out[t]) out[t]={good:0,low:0,total:0};
+      out[t].total++;
+      if(e.mood>=4) out[t].good++;
+      if(e.mood<=2) out[t].low++;
+    }
+  }
+  return out;
+}
+function topTags(stats,kind,n){
+  return Object.keys(stats)
+    .map(t=>({tag:t,count:stats[t][kind],total:stats[t].total}))
+    .filter(x=>x.count>0)
+    .sort((a,b)=>b.count-a.count||a.tag.localeCompare(b.tag))
+    .slice(0,n||5);
+}
+function heatmapMonth(st,ym){
+  const out={};
+  for(const k of Object.keys(st.entries)){
+    if(k.slice(0,7)===ym) out[k]=st.entries[k].mood;
+  }
+  return out;
+}
+function trendData(st,endStr,n){
+  const pts=[];
+  for(let i=n-1;i>=0;i--){
+    const ds=addDaysStr(endStr,-i);
+    const e=st.entries[ds];
+    pts.push({date:ds,mood:e?e.mood:null});
+  }
+  return pts;
+}
+function searchEntries(st,q){
+  q=String(q||'').trim().toLowerCase();
+  const all=entryDates(st).reverse().map(ds=>({date:ds,entry:st.entries[ds]}));
+  if(!q) return all;
+  return all.filter(x=>{
+    const e=x.entry;
+    if((e.note||'').toLowerCase().indexOf(q)>=0) return true;
+    if((e.tags||[]).some(t=>t.toLowerCase().indexOf(q)>=0)) return true;
+    if(moodDef(e.mood).label.toLowerCase().indexOf(q)>=0) return true;
+    return false;
+  });
+}
+function bestWeekday(avgs){
+  let bi=-1,bv=-1;
+  avgs.forEach((a,i)=>{if(a!=null&&a>bv){bv=a;bi=i;}});
+  return bi;
+}
+function gentlePick(seedStr){
+  let h=0;
+  for(let i=0;i<seedStr.length;i++){h=(h*31+seedStr.charCodeAt(i))>>>0;}
+  return GENTLE_NOTES[h%GENTLE_NOTES.length];
+}
+
+/* =====================================================================
+   App shell (DOM) — only runs in a browser
+   ===================================================================== */
+let state=freshState();
+let view='today';
+let viewDate=todayStr();
+let calCursor=todayStr().slice(0,7);
+let trendN=30;
+let journalQ='';
+let journalOpen=null;
+let delArmed=false;
+/* form draft (not persisted) */
+let fMood=null, fTags=[], fNote='', editing=false;
+
+function $(s){return document.querySelector(s);}
+function toast(msg){
+  const t=$('#toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('show'),2400);
+}
+function loadDraft(ds){
+  const e=getEntry(state,ds);
+  if(e){fMood=e.mood;fTags=(e.tags||[]).slice();fNote=e.note||'';}
+  else{fMood=null;fTags=[];fNote='';}
+}
+
+/* ---------- celebration ---------- */
+function maybeCelebrate(){
+  const s=currentStreak(state,todayStr());
+  if(MILESTONES.indexOf(s)<0) return;
+  if(state.celebrated.indexOf(s)>=0) return;
+  state.celebrated.push(s);
+  saveState(localStorage,state);
+  $('#celeb-title').textContent=s+' days of checking in';
+  $('#celeb-msg').textContent='\u201C'+(MILE_MSG[s]||'Keep going.')+'\u201D';
+  $('#celeb-overlay').classList.add('show');
+  confettiBurst();
+}
+function confettiBurst(){
+  const box=$('#confetti-box'); box.innerHTML='';
+  const cols=['#E8833A','#463252','#D9A441','#C65D6E','#7FA36B','#9B8FBF'];
+  for(let i=0;i<90;i++){
+    const p=document.createElement('i'); p.className='confetti';
+    p.style.left=Math.random()*100+'%';
+    p.style.background=cols[i%cols.length];
+    p.style.animationDelay=(Math.random()*0.7)+'s';
+    p.style.width=(6+Math.random()*7)+'px';
+    p.style.height=(9+Math.random()*8)+'px';
+    if(Math.random()<.3) p.style.borderRadius='50%';
+    box.appendChild(p);
+    setTimeout(()=>p.remove(),3800);
+  }
+}
+
+/* ================= RENDER ================= */
+function moodBtn(m,sel){
+  return '<button class="mood-btn'+(sel?' sel':'')+'" style="--mc:'+m.color+'" data-action="mood-pick" data-v="'+m.v+'" aria-label="'+m.label+'">'
+    +'<span class="mood-face">'+m.emoji+'</span>'
+    +'<span class="mood-lbl">'+m.label+'</span></button>';
+}
+function tagChip(t,sel){
+  const label=t.e?t.e+' '+t.n:t.n;
+  return '<button class="tag-chip'+(sel?' sel':'')+'" data-action="tag-toggle" data-v="'+esc(t.n)+'"><span class="te">'+(t.e||'✦')+'</span>'+esc(t.n)+'</button>';
+}
+function presetDef(name){
+  const p=PRESET_TAGS.find(x=>x.n===name);
+  return p||{e:'',n:name};
+}
+
+function renderToday(){
+  const isToday=viewDate===todayStr();
+  const e=getEntry(state,viewDate);
+  let html='<div class="card"><div class="day-nav-card"><div class="day-nav">'
+    +'<button class="nav-btn" data-action="date-prev" aria-label="Previous day">‹</button>'
+    +'<div class="day-title">'+esc(isToday?'Today':prettyDate(viewDate))+'</div>'
+    +'<button class="nav-btn" data-action="date-next" '+(isToday?'disabled':'')+' aria-label="Next day">›</button></div>'
+    +'<button class="today-pill'+(isToday?' hidden':'')+'" data-action="date-today">← back to today</button></div></div>';
+
+  if(e&&!editing){
+    const m=moodDef(e.mood);
+    html+='<div class="card"><div class="saved-flag">✓ saved</div><div class="entry-summary" style="--mc:'+m.color+'">'
+      +'<div class="entry-face">'+m.emoji+'</div>'
+      +'<div class="entry-main"><div class="entry-moodline">Feeling <b>'+m.label+'</b></div>'
+      +(e.tags&&e.tags.length?'<div class="entry-tags">'+e.tags.map(t=>'<span class="entry-tag">'+esc(presetDef(t).e?presetDef(t).e+' '+t:t)+'</span>').join('')+'</div>':'')
+      +(e.note?'<div class="entry-note">\u201C'+esc(e.note)+'\u201D</div>':'')
+      +'<div class="entry-actions"><button class="btn btn-ghost" data-action="entry-edit">Edit entry</button>'
+      +'<button class="btn btn-danger" data-action="entry-delete" id="del-btn">'+(delArmed?'Tap again to confirm':'Delete')+'</button></div>'
+      +'</div></div></div>';
+  }else{
+    html+='<div class="card"><div class="mood-q">'+(e?'How is '+(isToday?'today':'this day')+' feeling?':'How is '+(isToday?'today':'this day')+' feeling?')+'</div>'
+      +'<p class="mood-sub">One tap. No overthinking — first instinct counts.</p>'
+      +'<div class="mood-grid">'+MOODS.map(m=>moodBtn(m,m.v===fMood)).join('')+'</div>'
+      +'<div class="mood-whisper" id="mood-whisper">'+(fMood?esc(moodDef(fMood).whisper):'&nbsp;')+'</div></div>';
+
+    html+='<div class="card"><div class="section-label" style="margin-top:0">What colored '+(isToday?'today':'this day')+'?</div>'
+      +'<div class="tag-row">'
+      +PRESET_TAGS.map(t=>tagChip(t,fTags.indexOf(t.n)>=0)).join('')
+      +fTags.filter(t=>!PRESET_TAGS.some(p=>p.n===t)).map(t=>tagChip({e:'',n:t},true)).join('')
+      +'</div>'
+      +'<div class="custom-tag-row"><input type="text" id="custom-tag" maxlength="24" placeholder="Add your own tag…" autocomplete="off">'
+      +'<button class="mini-btn" data-action="tag-add">Add</button></div></div>';
+
+    html+='<div class="card"><div class="section-label" style="margin-top:0">A few words '+(isToday?'about today':'')+'</div>'
+      +'<textarea class="note-area" id="note-area" placeholder="Anything on your mind… a single word is enough. (optional)">'+esc(fNote)+'</textarea></div>';
+
+    html+='<div class="save-row"><button class="btn btn-primary btn-block" data-action="entry-save">'+(e?'Update entry':'Save today\u2019s entry')+' →</button></div>';
+  }
+
+  html+='<div class="gentle"><div class="q">🌙</div><p>'+esc(gentlePick(viewDate))+'</p></div>';
+  return html;
+}
+
+function renderCalendar(){
+  const parts=calCursor.split('-'), y=+parts[0], m=+parts[1];
+  const first=new Date(y,m-1,1), startDow=first.getDay();
+  const daysInMonth=new Date(y,m,0).getDate();
+  const t=todayStr();
+  const heat=heatmapMonth(state,calCursor);
+  let cells='';
+  ['S','M','T','W','T','F','S'].forEach(d=>{cells+='<div class="dow">'+d+'</div>';});
+  for(let i=0;i<startDow;i++) cells+='<div class="day out"></div>';
+  for(let d=1;d<=daysInMonth;d++){
+    const ds=calCursor+'-'+String(d).padStart(2,'0');
+    const mood=heat[ds];
+    const isT=ds===t, isFuture=ds>t;
+    let cls='day', style='', tip;
+    if(isFuture){cls+=' future';tip='the future — not yet written';}
+    else if(mood){const md=moodDef(mood);cls+=' has-data';style=' style="background:'+md.color+'"';tip=prettyDate(ds)+' — feeling '+md.label;}
+    else{cls+=' nodata';tip=prettyDate(ds)+' — no entry';}
+    if(isT) cls+=' today';
+    cells+='<div class="'+cls+'"'+style+' data-action="cal-day" data-date="'+ds+'" title="'+esc(tip)+'">'+d+'</div>';
+  }
+  return '<div class="card"><div class="cal-head"><div><div class="section-label" style="margin:0 0 4px">Your month in color</div>'
+    +'<div class="cal-title">'+MONTHS[m-1]+' '+y+'</div></div>'
+    +'<div class="day-nav"><button class="nav-btn" data-action="month-prev" aria-label="Previous month">‹</button>'
+    +'<button class="nav-btn" data-action="month-next" aria-label="Next month">›</button></div></div>'
+    +'<div class="cal-grid">'+cells+'</div>'
+    +'<div class="legend">'+MOODS.map(m=>'<span class="sw"><i style="background:'+m.color+'"></i>'+m.label+'</span>').join('')+'</div>'
+    +'<p class="cal-hint">Tap any day to open it and check in for that date.</p></div>';
+}
+
+function trendSVG(pts){
+  const W=620,H=230,PL=34,PR=14,PT=14,PB=30;
+  const iw=W-PL-PR, ih=H-PT-PB;
+  const n=pts.length;
+  const X=i=>n<=1?PL+iw/2:PL+iw*i/(n-1);
+  const Y=v=>PT+ih*(1-(v-1)/4);
+  let g='';
+  for(let v=1;v<=5;v++){
+    const y=Y(v);
+    g+='<line x1="'+PL+'" y1="'+y+'" x2="'+(W-PR)+'" y2="'+y+'" stroke="#EAE0CF" stroke-width="1"'+(v===3?' stroke-dasharray="4 4"':'')+'/>'
+      +'<text x="'+(PL-8)+'" y="'+(y+4)+'" font-size="11" fill="#A89A85" text-anchor="end">'+v+'</text>';
+  }
+  let d='', started=false;
+  const dots=[];
+  pts.forEach((p,i)=>{
+    if(p.mood==null){started=false;return;}
+    const x=X(i).toFixed(1), y=Y(p.mood).toFixed(1);
+    d+=(started?'L':'M')+x+' '+y; started=true;
+    dots.push({x:x,y:y,p:p});
+  });
+  let s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Mood trend chart">'+g;
+  if(d) s+='<path d="'+d+'" fill="none" stroke="#463252" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>';
+  dots.forEach(dt=>{
+    const md=moodDef(dt.p.mood);
+    s+='<circle cx="'+dt.x+'" cy="'+dt.y+'" r="7" fill="'+md.color+'" stroke="#FFFDF7" stroke-width="2.5"><title>'+esc(shortDate(dt.p.date)+' — '+md.label)+'</title></circle>';
+  });
+  const first=pts[0], last=pts[pts.length-1];
+  if(first&&last){
+    s+='<text x="'+PL+'" y="'+(H-8)+'" font-size="11" fill="#A89A85">'+esc(shortDate(first.date))+'</text>'
+      +'<text x="'+(W-PR)+'" y="'+(H-8)+'" font-size="11" fill="#A89A85" text-anchor="end">'+esc(shortDate(last.date))+'</text>';
+  }
+  return s+'</svg>';
+}
+
+function renderInsights(){
+  const t=todayStr();
+  const logged=entryDates(state).length;
+  let html='';
+  if(!logged){
+    return '<div class="empty"><div class="big">🔭</div><h3>Insights bloom with time</h3>'
+      +'<p>Log a few days of moods and this page will draw your patterns — trends, rhythms, and the little things that lift you.</p></div>';
+  }
+  /* numbers */
+  const cur=currentStreak(state,t), lon=longestStreak(state);
+  const avg=overallAverage(state);
+  html+='<div class="section-label">By the numbers</div><div class="stat-grid">'
+    +'<div class="stat"><div class="num">'+cur+'</div><div class="lbl">Day streak</div></div>'
+    +'<div class="stat"><div class="num">'+lon+'</div><div class="lbl">Longest streak</div></div>'
+    +'<div class="stat"><div class="num">'+logged+'</div><div class="lbl">Entries</div></div>'
+    +'<div class="stat"><div class="num">'+(avg==null?'–':avg.toFixed(1))+'</div><div class="lbl">Avg mood</div></div></div>';
+
+  /* trend */
+  const pts=trendData(state,t,trendN);
+  const someData=pts.some(p=>p.mood!=null);
+  html+='<div class="card"><div class="section-label" style="margin-top:0">Mood trend</div>'
+    +'<div class="seg"><button class="seg-opt'+(trendN===7?' sel':'')+'" data-action="trend-n" data-v="7">7 days</button>'
+    +'<button class="seg-opt'+(trendN===30?' sel':'')+'" data-action="trend-n" data-v="30">30 days</button></div>'
+    +'<div class="chart-wrap">'+(someData?trendSVG(pts):'<p class="muted">No entries in this window yet.</p>')+'</div></div>';
+
+  /* weekday rhythm */
+  const avgs=weekdayAverages(state,t,90);
+  const bw=bestWeekday(avgs);
+  let bars='';
+  for(let i=0;i<7;i++){
+    const a=avgs[i];
+    const h=a==null?4:Math.max(6,a/5*100);
+    const col=a==null?'':(i===bw?'background:linear-gradient(180deg,#E8833A,#C96F22)':'background:#D9C9A8');
+    bars+='<div class="wk-day"><div class="wk-val">'+(a==null?'–':a.toFixed(1))+'</div>'
+      +'<div class="wk-bar'+(a==null?' none':'')+'" style="height:'+h+'%;'+col+'" title="'+DAYS[i]+'"></div>'
+      +'<div class="wk-lbl'+(i===bw?' best':'')+'">'+'SMTWTFS'[i]+'</div></div>';
+  }
+  html+='<div class="card"><div class="section-label" style="margin-top:0">Your weekly rhythm</div><div class="wk">'+bars+'</div>'
+    +(bw>=0?'<p class="insight-line">☀️ '+DAYS[bw]+'s tend to be your brightest day. Notice what makes them different.</p>':'')
+    +'</div>';
+
+  /* tag correlations */
+  const stats=tagStats(state);
+  const good=topTags(stats,'good',5), low=topTags(stats,'low',5);
+  const maxG=good.length?good[0].count:1, maxL=low.length?low[0].count:1;
+  function tagRows(list,max,color){
+    if(!list.length) return '<p class="muted" style="font-size:13px">Not enough tagged days yet.</p>';
+    return list.map(x=>'<div class="tag-stat"><span class="tname">'+esc(x.tag)+'</span>'
+      +'<span class="tbar"><i style="width:'+Math.round(x.count/max*100)+'%;background:'+color+'"></i></span>'
+      +'<span class="tnum">'+x.count+'</span></div>').join('');
+  }
+  html+='<div class="card"><div class="section-label" style="margin-top:0">What lifts you, what weighs</div>'
+    +'<div class="tag-cols"><div class="tag-col"><h4>☀️ On brighter days</h4>'+tagRows(good,maxG,'#7FA36B')+'</div>'
+    +'<div class="tag-col"><h4>🌧 On heavier days</h4>'+tagRows(low,maxL,'#7C8DA6')+'</div></div>'
+    +'<p class="insight-line">Patterns, not verdicts — a gentle nudge toward more of what helps.</p></div>';
+  return html;
+}
+
+function renderJournal(){
+  const list=searchEntries(state,journalQ);
+  let html='<div class="search-row"><input type="text" id="j-search" placeholder="Search notes, tags, moods…" value="'+esc(journalQ)+'" autocomplete="off"></div>';
+  if(!entryDates(state).length){
+    return html+'<div class="empty"><div class="big">📖</div><h3>Your story starts here</h3>'
+      +'<p>Every entry becomes a page. Head to Today and log your first mood — future you will love reading back.</p>'
+      +'<button class="btn btn-primary" data-action="goto-today">Log today\u2019s mood →</button></div>';
+  }
+  if(!list.length){
+    return html+'<div class="empty"><div class="big">🔍</div><h3>Nothing found</h3><p>No entries match \u201C'+esc(journalQ)+'\u201D. Try a different word.</p></div>';
+  }
+  html+=list.map(x=>{
+    const e=x.entry, m=moodDef(e.mood), open=journalOpen===x.date;
+    let h='<div class="j-entry'+(open?' open':'')+'" data-action="j-toggle" data-date="'+x.date+'"><div class="j-top" style="--mc:'+m.color+'">'
+      +'<div class="j-face">'+m.emoji+'</div>'
+      +'<div><div class="j-date">'+esc(prettyDate(x.date))+'</div><div class="j-mood">feeling '+m.label+'</div></div></div>'
+      +(e.tags&&e.tags.length?'<div class="j-tags">'+e.tags.map(t=>'<span class="entry-tag">'+esc(t)+'</span>').join('')+'</div>':'')
+      +(e.note?'<div class="j-snippet">\u201C'+esc(e.note)+'\u201D</div>':'<div class="j-snippet" style="color:var(--faint)">— no note —</div>');
+    if(open){
+      h+='<div class="j-actions"><button class="btn btn-ghost" data-action="j-edit" data-date="'+x.date+'">Edit</button></div>';
+    }
+    return h+'</div>';
+  }).join('');
+  return html;
+}
+
+function renderStreakPill(){
+  const s=currentStreak(state,todayStr());
+  const pill=$('#streak-pill');
+  if(s>0){pill.classList.remove('dim');$('#streak-txt').textContent=s+'-day check-in streak';}
+  else{pill.classList.add('dim');$('#streak-txt').textContent='no streak yet — today is day one';}
+}
+
+function render(){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
+  const v=$('#view');
+  v.innerHTML=view==='today'?renderToday():view==='calendar'?renderCalendar():view==='insights'?renderInsights():renderJournal();
+  renderStreakPill();
+  const js=$('#j-search');
+  if(js){js.addEventListener('input',()=>{journalQ=js.value;const pos=js.selectionStart;render();const n=$('#j-search');if(n){n.focus();n.setSelectionRange(pos,pos);}});}
+  const nt=$('#note-area');
+  if(nt){nt.addEventListener('input',()=>{fNote=nt.value;});}
+  const ct=$('#custom-tag');
+  if(ct){ct.addEventListener('keydown',ev=>{if(ev.key==='Enter'){ev.preventDefault();addCustomTagUI();}});}
+}
+
+/* ---------- mutations ---------- */
+function persist(){saveState(localStorage,state);}
+function saveEntry(){
+  if(fMood==null){toast('Choose a mood first — one tap 💛');return;}
+  upsertEntry(state,viewDate,{mood:fMood,tags:fTags,note:fNote.trim()});
+  persist(); editing=false; delArmed=false;
+  render(); maybeCelebrate();
+  toast(viewDate===todayStr()?'Saved — thank you for checking in 🌿':'Entry saved for '+shortDate(viewDate)+' 📖');
+}
+function addCustomTagUI(){
+  const inp=$('#custom-tag');
+  if(!inp) return;
+  if(addCustomTag(fTags,inp.value)){render();toast('Tag added ✦');}
+  else{toast('That tag is already there');}
+}
+function doDelete(){
+  if(!delArmed){delArmed=true;render();toast('Tap delete once more to confirm');return;}
+  deleteEntry(state,viewDate);
+  persist(); delArmed=false; editing=false; loadDraft(viewDate);
+  render(); toast('Entry removed — the page turns 📖');
+}
+
+/* ---------- header ---------- */
+function renderHead(){
+  const hr=new Date().getHours();
+  $('#greet').textContent=hr<12?'Good morning':hr<17?'Good afternoon':'Good evening';
+  const d=new Date();
+  $('#today-line').textContent=DAYS[d.getDay()]+', '+MONTHS[d.getMonth()]+' '+d.getDate();
+}
+
+/* ---------- boot ---------- */
+function boot(){
+  state=loadState(localStorage);
+  loadDraft(viewDate);
+  renderHead();
+  render();
+  document.addEventListener('click',ev=>{
+    const el=ev.target.closest('[data-action]');
+    if(!el) return;
+    const a=el.dataset.action, dt=el.dataset.date;
+    switch(a){
+      case 'tab': view=el.dataset.view; delArmed=false; render(); window.scrollTo({top:0,behavior:'smooth'}); break;
+      case 'goto-today': view='today'; viewDate=todayStr(); editing=false; loadDraft(viewDate); render(); break;
+      case 'mood-pick':
+        fMood=+el.dataset.v; editing=true;
+        document.querySelectorAll('.mood-btn').forEach(b=>b.classList.toggle('sel',+b.dataset.v===fMood));
+        $('#mood-whisper').textContent=moodDef(fMood).whisper;
+        break;
+      case 'tag-toggle': toggleTag(fTags,el.dataset.v); render(); break;
+      case 'tag-add': addCustomTagUI(); break;
+      case 'entry-save': saveEntry(); break;
+      case 'entry-edit': editing=true; loadDraft(viewDate); delArmed=false; render(); window.scrollTo({top:0,behavior:'smooth'}); break;
+      case 'entry-delete': doDelete(); break;
+      case 'date-prev': viewDate=addDaysStr(viewDate,-1); editing=false; delArmed=false; loadDraft(viewDate); render(); break;
+      case 'date-next': if(viewDate<todayStr()){viewDate=addDaysStr(viewDate,1);editing=false;delArmed=false;loadDraft(viewDate);render();} break;
+      case 'date-today': viewDate=todayStr(); editing=false; delArmed=false; loadDraft(viewDate); render(); break;
+      case 'month-prev': {const p=calCursor.split('-');const d=new Date(+p[0],+p[1]-2,1);calCursor=fmtDate(d).slice(0,7);render();break;}
+      case 'month-next': {const p=calCursor.split('-');const d=new Date(+p[0],+p[1],1);calCursor=fmtDate(d).slice(0,7);render();break;}
+      case 'cal-day': {const ds=el.dataset.date; if(ds<=todayStr()){viewDate=ds;view='today';editing=false;delArmed=false;loadDraft(viewDate);render();window.scrollTo({top:0,behavior:'smooth'});} break;}
+      case 'trend-n': trendN=+el.dataset.v; render(); break;
+      case 'j-toggle': journalOpen=journalOpen===dt?null:dt; render(); break;
+      case 'j-edit': ev.stopPropagation(); viewDate=dt; view='today'; editing=true; delArmed=false; loadDraft(viewDate); render(); window.scrollTo({top:0,behavior:'smooth'}); break;
+      case 'celeb-close': $('#celeb-overlay').classList.remove('show'); break;
+    }
+  });
+  document.addEventListener('keydown',ev=>{
+    if(ev.key==='Escape') $('#celeb-overlay').classList.remove('show');
+  });
+  $('#celeb-overlay').addEventListener('click',ev=>{if(ev.target.id==='celeb-overlay')$('#celeb-overlay').classList.remove('show');});
+}
+
+if(typeof document!=='undefined'&&typeof document.addEventListener==='function'){boot();}
+</script>
+</body>
+</html>
