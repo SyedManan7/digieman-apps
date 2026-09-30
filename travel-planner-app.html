@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Voyara — Travel Planner</title>
+<style>
+:root{
+  --teal:#0e7c7b; --teal-dark:#0a5f5e; --navy:#14324a; --navy2:#0e2438;
+  --coral:#ff6b5e; --amber:#ffb020; --sand:#fff6ea;
+  --bg:#eef3f7; --card:#ffffff; --ink:#1c2b3a; --muted:#6b7d90; --line:#e3eaf1;
+  --ok:#1faa6b; --warn:#e8930c; --bad:#e14b4b;
+  --r:16px; --sh:0 6px 22px rgba(20,50,74,.10);
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:40px}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:15px}
+/* ---------- header ---------- */
+.hero{background:linear-gradient(135deg,var(--navy2) 0%,var(--navy) 45%,var(--teal-dark) 100%);color:#fff;padding:26px 18px 20px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-70px;top:-70px;width:230px;height:230px;border-radius:50%;background:radial-gradient(circle,rgba(255,107,94,.55),transparent 70%)}
+.hero::before{content:"";position:absolute;left:-50px;bottom:-90px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(255,176,32,.4),transparent 70%)}
+.hero-inner{max-width:1060px;margin:0 auto;position:relative;z-index:1}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;letter-spacing:.3px}
+.brand .logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--coral),var(--amber));display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+.brand small{font-weight:500;opacity:.75;font-size:12px;display:block;letter-spacing:1.5px;text-transform:uppercase}
+.tripline{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:16px}
+.tripline h1{margin:0;font-size:26px;flex:1 1 220px}
+.tripdates{opacity:.85;font-size:14px}
+.trip-switch{display:flex;gap:8px;align-items:center;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:12px;padding:6px 8px}
+.trip-switch select{background:transparent;border:0;color:#fff;font-weight:700;font-size:14px;max-width:170px;outline:none}
+.trip-switch select option{color:#111}
+.iconbtn{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:10px;width:34px;height:34px;font-size:17px;display:flex;align-items:center;justify-content:center}
+.iconbtn:hover{background:rgba(255,255,255,.28)}
+.countdown{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.cd{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:10px 16px;text-align:center;min-width:74px;backdrop-filter:blur(4px)}
+.cd b{font-size:24px;display:block;font-variant-numeric:tabular-nums}
+.cd span{font-size:11px;opacity:.8;text-transform:uppercase;letter-spacing:1px}
+.cd-label{font-size:13px;opacity:.85;margin:14px 0 -6px}
+/* ---------- layout ---------- */
+.wrap{max-width:1060px;margin:0 auto;padding:0 14px}
+.tabs{position:sticky;top:0;z-index:20;background:rgba(238,243,247,.92);backdrop-filter:blur(8px);padding:12px 0 8px;margin:0 -14px;padding-left:14px;padding-right:14px}
+.tabs-in{display:flex;gap:8px;overflow-x:auto;max-width:1060px;margin:0 auto;padding-bottom:4px}
+.tab{border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:999px;padding:10px 18px;font-size:14px;font-weight:700;white-space:nowrap;transition:.15s}
+.tab.active{background:var(--navy);color:#fff;border-color:var(--navy);box-shadow:var(--sh)}
+.tab .n{background:var(--coral);color:#fff;font-size:11px;border-radius:999px;padding:1px 7px;margin-left:6px}
+.tab.active .n{background:var(--amber);color:var(--navy)}
+.panel{display:none;animation:fade .25s ease}
+.panel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:18px;margin:14px 0}
+.card h2{margin:0 0 4px;font-size:18px}
+.card h3{margin:16px 0 8px;font-size:15px}
+.sub{color:var(--muted);font-size:13px;margin:0 0 10px}
+/* ---------- forms ---------- */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+@media(max-width:640px){.grid2,.grid3{grid-template-columns:1fr}}
+label.f{display:block;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin:10px 0 4px}
+input[type=text],input[type=date],input[type=number],input[type=time],select,textarea{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:11px 12px;background:#fbfdff;color:var(--ink);outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--teal);background:#fff;box-shadow:0 0 0 3px rgba(14,124,123,.12)}
+.btn{border:0;border-radius:12px;padding:12px 20px;font-weight:800;font-size:15px;background:linear-gradient(135deg,var(--teal),var(--teal-dark));color:#fff;box-shadow:0 4px 14px rgba(14,124,123,.35);transition:.15s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(14,124,123,.45)}
+.btn.coral{background:linear-gradient(135deg,var(--coral),#e8533f);box-shadow:0 4px 14px rgba(255,107,94,.35)}
+.btn.ghost{background:#eef3f7;color:var(--navy);box-shadow:none;border:1.5px solid var(--line)}
+.btn.sm{padding:8px 14px;font-size:13px;border-radius:10px}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+/* ---------- stats ---------- */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:14px 0}
+@media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:16px;text-align:center}
+.stat .ic{font-size:26px}
+.stat b{font-size:22px;display:block;margin-top:4px;font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:var(--muted)}
+.bar{height:10px;background:#e8eef4;border-radius:99px;overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--teal),#25b5a8);transition:width .4s}
+.bar.warn i{background:linear-gradient(90deg,var(--amber),#ff8a3d)}
+.bar.bad i{background:linear-gradient(90deg,var(--bad),#ff7a7a)}
+/* ---------- itinerary ---------- */
+.daychips{display:flex;gap:8px;overflow-x:auto;padding:4px 0 10px}
+.daychip{flex:0 0 auto;border:1.5px solid var(--line);background:#fff;border-radius:14px;padding:10px 14px;text-align:center;min-width:86px}
+.daychip b{display:block;font-size:14px}
+.daychip span{font-size:11px;color:var(--muted)}
+.daychip.active{background:var(--navy);border-color:var(--navy);color:#fff}
+.daychip.active span{color:#cfe0ee}
+.daychip .dcost{font-size:11px;font-weight:700;color:var(--teal)}
+.daychip.active .dcost{color:var(--amber)}
+.act{display:flex;gap:12px;align-items:flex-start;background:#fbfdff;border:1.5px solid var(--line);border-radius:14px;padding:12px;margin:8px 0;transition:.15s}
+.act.dragging{opacity:.4}
+.act.dragover{border-color:var(--teal);box-shadow:0 0 0 3px rgba(14,124,123,.15)}
+.act.done{opacity:.62}
+.act.done .atitle{text-decoration:line-through}
+.grip{cursor:grab;color:#b9c6d2;font-size:18px;padding-top:2px;touch-action:none}
+.aicon{width:42px;height:42px;flex:0 0 42px;border-radius:12px;background:linear-gradient(135deg,#e8f4f3,#d3e9e8);display:flex;align-items:center;justify-content:center;font-size:22px}
+.abody{flex:1;min-width:0}
+.atime{font-size:12px;font-weight:800;color:var(--teal)}
+.atitle{font-weight:700;font-size:15px}
+.anotes{font-size:13px;color:var(--muted);margin-top:2px}
+.acost{font-weight:800;color:var(--navy);font-size:14px;white-space:nowrap}
+.aactions{display:flex;gap:6px}
+.mini{border:1px solid var(--line);background:#fff;border-radius:9px;width:32px;height:32px;font-size:15px;color:var(--muted)}
+.mini:hover{border-color:var(--teal);color:var(--teal)}
+.mini.danger:hover{border-color:var(--bad);color:var(--bad)}
+.check{width:26px;height:26px;border-radius:50%;border:2px solid #c4d2de;background:#fff;flex:0 0 26px;margin-top:8px;font-size:14px;color:#fff;display:flex;align-items:center;justify-content:center}
+.act.done .check{background:var(--ok);border-color:var(--ok)}
+/* ---------- budget ---------- */
+.hero-num{background:linear-gradient(135deg,var(--navy),var(--teal-dark));color:#fff;border-radius:var(--r);padding:22px;text-align:center;box-shadow:var(--sh);margin:14px 0}
+.hero-num .lbl{font-size:12px;text-transform:uppercase;letter-spacing:1.5px;opacity:.8}
+.hero-num .val{font-size:44px;font-weight:800;margin:6px 0;font-variant-numeric:tabular-nums}
+.hero-num .meta{opacity:.85;font-size:14px}
+.alert{border-radius:12px;padding:12px 16px;font-size:14px;font-weight:600;margin:10px 0}
+.alert.bad{background:#fdecec;color:#a83232;border:1.5px solid #f5c6c6}
+.alert.warn{background:#fff4e0;color:#9a6206;border:1.5px solid #f3d9a4}
+.catrow{display:flex;align-items:center;gap:12px;margin:10px 0}
+.catrow .e{font-size:22px;width:34px;text-align:center}
+.catrow .nm{flex:1;font-weight:600;font-size:14px}
+.catrow .amt{font-weight:800;font-variant-numeric:tabular-nums}
+.catbar{height:8px;background:#e8eef4;border-radius:99px;overflow:hidden;margin-top:4px}
+.catbar i{display:block;height:100%;background:linear-gradient(90deg,var(--coral),var(--amber));border-radius:99px}
+.exp{display:flex;gap:10px;align-items:center;padding:10px 4px;border-bottom:1px solid var(--line)}
+.exp:last-child{border-bottom:0}
+.exp .e{font-size:22px}
+.exp .b{flex:1}.exp .t{font-weight:700;font-size:14px}.exp .m{font-size:12px;color:var(--muted)}
+.exp .a{font-weight:800;font-variant-numeric:tabular-nums}
+/* ---------- packing ---------- */
+.pack-cat{margin:14px 0}
+.pack-cat>h3{display:flex;align-items:center;gap:8px;font-size:15px;margin:0 0 6px}
+.pack-cat .pct{margin-left:auto;font-size:12px;color:var(--muted);font-weight:700}
+.pitem{display:flex;align-items:center;gap:10px;padding:9px 4px;border-bottom:1px solid var(--line);font-size:15px}
+.pitem:last-child{border:0}
+.pitem .nm{flex:1}
+.pitem.packed .nm{text-decoration:line-through;color:var(--muted)}
+.pcheck{width:24px;height:24px;border-radius:8px;border:2px solid #c4d2de;background:#fff;flex:0 0 24px;font-size:14px;color:#fff;display:flex;align-items:center;justify-content:center}
+.pitem.packed .pcheck{background:var(--ok);border-color:var(--ok)}
+.prog{height:14px;background:#e8eef4;border-radius:99px;overflow:hidden}
+.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),#25b5a8);border-radius:99px;transition:width .4s}
+/* ---------- bookings ---------- */
+.book{border:1.5px solid var(--line);border-radius:14px;padding:14px;margin:10px 0;background:#fbfdff}
+.book .top{display:flex;gap:10px;align-items:center}
+.book .type{font-size:13px;font-weight:800;background:#e8f4f3;color:var(--teal-dark);border-radius:999px;padding:4px 12px}
+.book .t{font-weight:800;font-size:16px;flex:1}
+.book .conf{font-family:ui-monospace,Menlo,monospace;background:#eef3f7;border:1px dashed #b9c6d2;border-radius:8px;padding:4px 10px;font-size:13px}
+.book .m{font-size:13px;color:var(--muted);margin-top:6px}
+/* ---------- trips ---------- */
+.triprow{display:flex;align-items:center;gap:12px;padding:12px;border:1.5px solid var(--line);border-radius:14px;margin:8px 0;background:#fbfdff}
+.triprow.active{border-color:var(--teal);box-shadow:0 0 0 3px rgba(14,124,123,.12)}
+.triprow .flag{font-size:28px}
+.triprow .b{flex:1}.triprow .t{font-weight:800}.triprow .m{font-size:12px;color:var(--muted)}
+.empty{text-align:center;padding:44px 20px;color:var(--muted)}
+.empty .big{font-size:52px;margin-bottom:10px}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff;padding:12px 22px;border-radius:999px;font-weight:700;font-size:14px;opacity:0;transition:.25s;z-index:99;box-shadow:0 8px 24px rgba(0,0,0,.25);pointer-events:none;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+footer{text-align:center;color:var(--muted);font-size:12px;margin-top:30px}
+</style>
+</head>
+<body>
+<div class="hero"><div class="hero-inner">
+  <div class="brand"><div class="logo">🧭</div><div>Voyara<small>Travel Planner</small></div></div>
+  <div class="tripline">
+    <h1 id="heroTitle">Plan your next adventure</h1>
+    <div class="trip-switch">
+      <select id="tripSelect" aria-label="Switch trip"></select>
+      <button class="iconbtn" id="btnNewTrip" title="New trip">＋</button>
+    </div>
+  </div>
+  <div class="tripdates" id="heroDates"></div>
+  <div class="cd-label" id="cdLabel" style="display:none">⏳ Countdown to departure</div>
+  <div class="countdown" id="countdown" style="display:none">
+    <div class="cd"><b id="cdD">0</b><span>days</span></div>
+    <div class="cd"><b id="cdH">0</b><span>hours</span></div>
+    <div class="cd"><b id="cdM">0</b><span>min</span></div>
+    <div class="cd"><b id="cdS">0</b><span>sec</span></div>
+  </div>
+</div></div>
+
+<div class="wrap">
+  <div class="tabs"><div class="tabs-in" id="tabs">
+    <button class="tab active" data-tab="trip">🧳 Trip</button>
+    <button class="tab" data-tab="plan">🗺️ Itinerary</button>
+    <button class="tab" data-tab="budget">💰 Budget</button>
+    <button class="tab" data-tab="packing">🎒 Packing</button>
+    <button class="tab" data-tab="bookings">🎟️ Bookings</button>
+  </div></div>
+  <div id="panel-trip" class="panel active"></div>
+  <div id="panel-plan" class="panel"></div>
+  <div id="panel-budget" class="panel"></div>
+  <div id="panel-packing" class="panel"></div>
+  <div id="panel-bookings" class="panel"></div>
+  <footer>Voyara Travel Planner · your trips live only in this browser · buy once, use forever</footer>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+"use strict";
+/* ================= CORE ================= */
+const LS_KEY = "voyara.travelPlanner.v1";
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const uid = () => "id" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+const ACT_CATS = [
+  {id:"transport", e:"🚗", n:"Transport"},
+  {id:"food", e:"🍽️", n:"Food & Drink"},
+  {id:"sight", e:"🏛️", n:"Sightseeing"},
+  {id:"stay", e:"🏨", n:"Stay"},
+  {id:"fun", e:"🎭", n:"Activity"},
+  {id:"shop", e:"🛍️", n:"Shopping"},
+  {id:"leisure", e:"🏖️", n:"Leisure"},
+  {id:"other", e:"⭐", n:"Other"}
+];
+const EXP_CATS = [
+  {id:"flights", e:"✈️", n:"Flights"},
+  {id:"hotels", e:"🏨", n:"Hotels"},
+  {id:"food", e:"🍽️", n:"Food"},
+  {id:"activities", e:"🎭", n:"Activities"},
+  {id:"other", e:"🧾", n:"Other"}
+];
+const PACK_CATS = ["Documents", "Clothes", "Toiletries", "Electronics", "Other"];
+const BOOK_TYPES = [
+  {id:"flight", e:"✈️", n:"Flight"},
+  {id:"hotel", e:"🏨", n:"Hotel"},
+  {id:"car", e:"🚗", n:"Car rental"},
+  {id:"ticket", e:"🎟️", n:"Tickets"},
+  {id:"other", e:"📋", n:"Other"}
+];
+const STARTER_PACK = {
+  "Documents": ["Passport", "Visa / entry permits", "Flight tickets", "Hotel confirmations", "Travel insurance", "Photo ID"],
+  "Clothes": ["T-shirts / tops", "Jeans / trousers", "Jacket or hoodie", "Underwear", "Socks", "Sleepwear", "Comfortable walking shoes", "Swimwear"],
+  "Toiletries": ["Toothbrush & toothpaste", "Shampoo & soap", "Sunscreen", "Deodorant", "Personal medications"],
+  "Electronics": ["Phone charger", "Power bank", "Universal travel adapter", "Headphones", "Camera"],
+  "Other": ["Reusable water bottle", "Sunglasses", "Travel pillow", "Day backpack", "Snacks for the journey"]
+};
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return {trips: [], activeTripId: null};
+    const s = JSON.parse(raw);
+    if (!s || !Array.isArray(s.trips)) return {trips: [], activeTripId: null};
+    return s;
+  } catch (e) { return {trips: [], activeTripId: null}; }
+}
+function saveState() {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) {}
+}
+let state = loadState();
+function activeTrip() { return state.trips.find(t => t.id === state.activeTripId) || null; }
+
+function newTrip() {
+  return {
+    id: uid(), name: "", startDate: "", endDate: "", travelers: 2, budget: 0,
+    itinerary: {}, expenses: [], packing: [], bookings: [], createdAt: Date.now()
+  };
+}
+function tripDayList(trip) {
+  if (!trip.startDate || !trip.endDate) return [];
+  const out = [];
+  let d = parseISODate(trip.startDate), end = parseISODate(trip.endDate);
+  if (!d || !end || end < d) return [];
+  while (d <= end) { out.push(toISODate(d)); d = new Date(d.getTime() + 86400000); }
+  return out;
+}
+function parseISODate(s) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || "");
+  if (!m) return null;
+  return new Date(+m[1], +m[2] - 1, +m[3]);
+}
+function toISODate(d) {
+  const p = n => String(n).padStart(2, "0");
+  return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+}
+function fmtDate(iso) {
+  const d = parseISODate(iso);
+  if (!d) return "";
+  return d.toLocaleDateString(undefined, {weekday:"short", month:"short", day:"numeric"});
+}
+function fmtMoney(n) {
+  n = +n || 0;
+  return "$" + n.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2});
+}
+function tripSpent(trip) { return trip.expenses.reduce((s, e) => s + (+e.amount || 0), 0); }
+function tripActivities(trip) {
+  return Object.values(trip.itinerary || {}).reduce((s, arr) => s + arr.length, 0);
+}
+function packingPct(trip) {
+  if (!trip.packing.length) return 0;
+  const done = trip.packing.filter(p => p.packed).length;
+  return Math.round(done / trip.packing.length * 100);
+}
+function budgetPct(trip) {
+  if (!trip.budget || trip.budget <= 0) return 0;
+  return Math.min(999, Math.round(tripSpent(trip) / trip.budget * 100));
+}
+function actCatEmoji(id) { const c = ACT_CATS.find(c => c.id === id); return c ? c.e : "⭐"; }
+function expCatEmoji(id) { const c = EXP_CATS.find(c => c.id === id); return c ? c.e : "🧾"; }
+function expCatName(id) { const c = EXP_CATS.find(c => c.id === id); return c ? c.n : "Other"; }
+function bookTypeEmoji(id) { const c = BOOK_TYPES.find(c => c.id === id); return c ? c.e : "📋"; }
+
+let toastTimer = null;
+function toast(msg) {
+  const el = $("#toast");
+  el.textContent = msg; el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove("show"), 2200);
+}
+
+/* countdown — updated every second without full re-render */
+function tickCountdown() {
+  const t = activeTrip();
+  const box = $("#countdown"), lbl = $("#cdLabel");
+  if (!t || !t.startDate) { box.style.display = "none"; lbl.style.display = "none"; return; }
+  const now = new Date();
+  const start = parseISODate(t.startDate);
+  const end = t.endDate ? parseISODate(t.endDate) : null;
+  start.setHours(0,0,0,0);
+  const diff = start - now;
+  if (diff > 0) {
+    lbl.style.display = "block"; lbl.textContent = "⏳ Countdown to departure";
+    box.style.display = "flex";
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor(diff % 86400000 / 3600000);
+    const m = Math.floor(diff % 3600000 / 60000);
+    const s = Math.floor(diff % 60000 / 1000);
+    $("#cdD").textContent = d; $("#cdH").textContent = h; $("#cdM").textContent = m; $("#cdS").textContent = s;
+  } else if (end && now <= new Date(end.getTime() + 86400000)) {
+    lbl.style.display = "block"; lbl.textContent = "✈️ You are on this trip — enjoy!";
+    box.style.display = "none";
+  } else {
+    lbl.style.display = "block"; lbl.textContent = "🏁 This trip has ended — plan the next one!";
+    box.style.display = "none";
+  }
+}
+setInterval(tickCountdown, 1000);
+
+/* ================= RENDER: header & tabs ================= */
+function renderHeader() {
+  const t = activeTrip();
+  const sel = $("#tripSelect");
+  sel.innerHTML = state.trips.map(x =>
+    `<option value="${x.id}"${x.id === state.activeTripId ? " selected" : ""}>${esc(x.name || "Untitled trip")}</option>`
+  ).join("") || `<option value="">— no trips —</option>`;
+  if (t) {
+    $("#heroTitle").textContent = t.name || "Untitled trip";
+    const dates = (t.startDate || t.endDate)
+      ? `${t.startDate ? fmtDate(t.startDate) : "?"} → ${t.endDate ? fmtDate(t.endDate) : "?"} · ${tripDayList(t).length || "–"} days · ${t.travelers || 1} traveler${(t.travelers || 1) > 1 ? "s" : ""}`
+      : "Set your destination and dates below to start planning ✈️";
+    $("#heroDates").textContent = dates;
+  } else {
+    $("#heroTitle").textContent = "Plan your next adventure";
+    $("#heroDates").textContent = "Create your first trip to unlock itinerary, budget, packing & bookings.";
+  }
+  tickCountdown();
+}
+
+function switchTab(name) {
+  $$("#tabs .tab").forEach(b => b.classList.toggle("active", b.dataset.tab === name));
+  $$(".panel").forEach(p => p.classList.toggle("active", p.id === "panel-" + name));
+  render();
+}
+
+function render() {
+  renderHeader();
+  const t = activeTrip();
+  renderTripPanel(t);
+  renderPlanPanel(t);
+  renderBudgetPanel(t);
+  renderPackingPanel(t);
+  renderBookingsPanel(t);
+}
+
+/* ================= PANEL: TRIP ================= */
+function renderTripPanel(t) {
+  const el = $("#panel-trip");
+  if (!t) {
+    el.innerHTML = `<div class="card"><div class="empty"><div class="big">🧭</div>
+      <h2 style="color:var(--ink)">No trips yet</h2>
+      <p class="sub">Create your first trip and Voyara will build your day-by-day plan, budget tracker, packing list and booking vault around it.</p>
+      <div class="btnrow" style="justify-content:center"><button class="btn coral" data-act="new-trip">＋ Create my first trip</button></div>
+    </div></div>`;
+    return;
+  }
+  const days = tripDayList(t).length;
+  const acts = tripActivities(t);
+  const packed = packingPct(t);
+  const bpct = budgetPct(t);
+  const spent = tripSpent(t);
+  const remaining = (t.budget || 0) - spent;
+  el.innerHTML = `
+  <div class="stats">
+    <div class="stat"><div class="ic">📅</div><b>${days}</b><span>days total</span></div>
+    <div class="stat"><div class="ic">🗺️</div><b>${acts}</b><span>activities planned</span></div>
+    <div class="stat"><div class="ic">🎒</div><b>${packed}%</b><span>packed</span><div class="bar"><i style="width:${packed}%"></i></div></div>
+    <div class="stat"><div class="ic">💰</div><b>${bpct}%</b><span>budget used</span><div class="bar${bpct > 100 ? " bad" : bpct > 85 ? " warn" : ""}"><i style="width:${Math.min(100, bpct)}%"></i></div></div>
+  </div>
+  <div class="card">
+    <h2>🧳 Trip profile</h2>
+    <p class="sub">Everything below shapes your itinerary days, countdown and budget.</p>
+    <label class="f">Destination</label>
+    <input type="text" id="fName" placeholder="e.g. Kyoto, Japan" value="${esc(t.name)}">
+    <div class="grid2">
+      <div><label class="f">Start date</label><input type="date" id="fStart" value="${esc(t.startDate)}"></div>
+      <div><label class="f">End date</label><input type="date" id="fEnd" value="${esc(t.endDate)}"></div>
+    </div>
+    <div class="grid2">
+      <div><label class="f">Travelers</label><input type="number" id="fTrav" min="1" max="99" value="${t.travelers || 1}"></div>
+      <div><label class="f">Total trip budget ($)</label><input type="number" id="fBudget" min="0" step="0.01" value="${t.budget || 0}"></div>
+    </div>
+    <div class="btnrow">
+      <button class="btn" data-act="save-profile">💾 Save trip profile</button>
+      <button class="btn ghost" data-act="new-trip">＋ New trip</button>
+      <button class="btn ghost" data-act="del-trip" style="color:var(--bad);border-color:#f0c0c0">🗑 Delete trip</button>
+    </div>
+  </div>
+  <div class="card">
+    <h2>🗂️ All trips</h2>
+    <p class="sub">${state.trips.length} trip${state.trips.length === 1 ? "" : "s"} saved in this browser.</p>
+    ${state.trips.map(x => `
+      <div class="triprow${x.id === state.activeTripId ? " active" : ""}">
+        <div class="flag">🧭</div>
+        <div class="b"><div class="t">${esc(x.name || "Untitled trip")}</div>
+        <div class="m">${x.startDate ? fmtDate(x.startDate) : "?"} → ${x.endDate ? fmtDate(x.endDate) : "?"} · ${tripActivities(x)} activities · ${fmtMoney(tripSpent(x))} spent</div></div>
+        ${x.id === state.activeTripId
+          ? `<button class="btn sm ghost" disabled>Active</button>`
+          : `<button class="btn sm" data-act="switch-trip" data-id="${x.id}">Open</button>`}
+      </div>`).join("")}
+  </div>`;
+}
+
+/* trip-panel actions (delegated) */
+function tripAction(act, btn) {
+  const t = activeTrip();
+  if (act === "new-trip") {
+    const nt = newTrip();
+    state.trips.push(nt); state.activeTripId = nt.id; saveState(); render();
+    toast("New trip created — name it above ✈️");
+    const f = $("#fName"); if (f) f.focus();
+  } else if (act === "del-trip" && t) {
+    if (confirm(`Delete "${t.name || "Untitled trip"}" and all its plans? This cannot be undone.`)) {
+      state.trips = state.trips.filter(x => x.id !== t.id);
+      state.activeTripId = state.trips.length ? state.trips[state.trips.length - 1].id : null;
+      saveState(); render(); toast("Trip deleted");
+    }
+  } else if (act === "switch-trip") {
+    state.activeTripId = btn.dataset.id; saveState(); render();
+    toast("Switched trip 🧭");
+  } else if (act === "save-profile" && t) {
+    t.name = $("#fName").value.trim();
+    let s = $("#fStart").value, e = $("#fEnd").value;
+    if (s && e && e < s) { e = s; $("#fEnd").value = s; toast("End date adjusted to match start date"); }
+    t.startDate = s; t.endDate = e;
+    t.travelers = Math.max(1, Math.min(99, parseInt($("#fTrav").value, 10) || 1));
+    t.budget = Math.max(0, parseFloat($("#fBudget").value) || 0);
+    saveState(); render(); toast("Trip profile saved ✅");
+  }
+}
+
+/* ================= PANEL: ITINERARY ================= */
+let planDay = null; // selected day ISO (per render session)
+
+function renderPlanPanel(t) {
+  const el = $("#panel-plan");
+  if (!t) { el.innerHTML = emptyPlan(); return; }
+  const days = tripDayList(t);
+  if (!days.length) {
+    el.innerHTML = `<div class="card"><div class="empty"><div class="big">🗺️</div>
+      <h2 style="color:var(--ink)">Set trip dates first</h2>
+      <p class="sub">Add a start and end date on the Trip tab and Voyara will generate a day-by-day plan for you.</p>
+      <div class="btnrow" style="justify-content:center"><button class="btn" data-goto="trip">🧳 Go to Trip tab</button></div></div></div>`;
+    return;
+  }
+  if (!planDay || !days.includes(planDay)) planDay = days[0];
+  const acts = (t.itinerary[planDay] || []).slice().sort((a, b) => (a._ord || 0) - (b._ord || 0));
+  const dayCost = acts.reduce((s, a) => s + (+a.cost || 0), 0);
+  const dayIdx = days.indexOf(planDay) + 1;
+  el.innerHTML = `
+  <div class="card">
+    <h2>🗺️ Day-by-day itinerary</h2>
+    <p class="sub">Drag the <b>⠿</b> handle to reorder · tap the circle to mark done.</p>
+    <div class="daychips">
+      ${days.map((d, i) => {
+        const c = (t.itinerary[d] || []).reduce((s, a) => s + (+a.cost || 0), 0);
+        const n = (t.itinerary[d] || []).length;
+        return `<button class="daychip${d === planDay ? " active" : ""}" data-day="${d}">
+          <b>Day ${i + 1}</b><span>${fmtDate(d)}</span>
+          <div class="dcost">${n} stop${n === 1 ? "" : "s"}${c ? " · " + fmtMoney(c) : ""}</div>
+        </button>`;
+      }).join("")}
+    </div>
+    <h3>Day ${dayIdx} — ${fmtDate(planDay)} <span style="color:var(--muted);font-weight:400">· ${fmtMoney(dayCost)} planned</span>
+      <button class="btn sm ghost" data-act="sort-time" style="margin-left:8px">⇅ Sort by time</button></h3>
+    <div id="actList">
+      ${acts.length ? acts.map(a => `
+        <div class="act${a.done ? " done" : ""}" draggable="true" data-aid="${a.id}">
+          <div class="grip" title="Drag to reorder">⠿</div>
+          <button class="check" data-act="toggle-act" data-aid="${a.id}" title="Mark done">${a.done ? "✓" : ""}</button>
+          <div class="aicon">${actCatEmoji(a.category)}</div>
+          <div class="abody">
+            <div class="atime">${esc(a.time || "—")}</div>
+            <div class="atitle">${esc(a.title)}</div>
+            ${a.notes ? `<div class="anotes">${esc(a.notes)}</div>` : ""}
+          </div>
+          ${+a.cost ? `<div class="acost">${fmtMoney(a.cost)}</div>` : ""}
+          <div class="aactions"><button class="mini danger" data-act="del-act" data-aid="${a.id}" title="Delete">🗑</button></div>
+        </div>`).join("")
+      : `<div class="empty" style="padding:24px"><div class="big" style="font-size:40px">🌤️</div><p class="sub">Nothing planned for this day yet — add your first stop below.</p></div>`}
+    </div>
+  </div>
+  <div class="card">
+    <h2>➕ Add activity — Day ${dayIdx}</h2>
+    <div class="grid2">
+      <div><label class="f">Time</label><input type="time" id="aTime" value="09:00"></div>
+      <div><label class="f">Category</label><select id="aCat">${ACT_CATS.map(c => `<option value="${c.id}">${c.e} ${c.n}</option>`).join("")}</select></div>
+    </div>
+    <label class="f">Title</label>
+    <input type="text" id="aTitle" placeholder="e.g. Visit Kinkaku-ji Temple">
+    <div class="grid2">
+      <div><label class="f">Cost ($) — optional</label><input type="number" id="aCost" min="0" step="0.01" placeholder="0"></div>
+      <div><label class="f">Notes — optional</label><input type="text" id="aNotes" placeholder="e.g. Buy tickets online"></div>
+    </div>
+    <div class="btnrow"><button class="btn coral" data-act="add-act">＋ Add to Day ${dayIdx}</button></div>
+  </div>`;
+  wireDayChips(el);
+  wireDrag(el, t);
+}
+
+function emptyPlan() {
+  return `<div class="card"><div class="empty"><div class="big">🗺️</div>
+    <h2 style="color:var(--ink)">No active trip</h2>
+    <p class="sub">Create a trip first, then plan it day by day.</p></div></div>`;
+}
+
+function wireDayChips(el) {
+  el.querySelectorAll(".daychip").forEach(ch =>
+    ch.addEventListener("click", () => { planDay = ch.dataset.day; render(); }));
+}
+
+function wireDrag(el, t) {
+  const list = el.querySelector("#actList");
+  if (!list) return;
+  let dragId = null;
+  list.querySelectorAll(".act").forEach(item => {
+    item.addEventListener("dragstart", e => {
+      dragId = item.dataset.aid;
+      item.classList.add("dragging");
+      e.dataTransfer.effectAllowed = "move";
+      try { e.dataTransfer.setData("text/plain", dragId); } catch (err) {}
+    });
+    item.addEventListener("dragend", () => item.classList.remove("dragging"));
+    item.addEventListener("dragover", e => {
+      e.preventDefault(); e.dataTransfer.dropEffect = "move";
+      item.classList.add("dragover");
+    });
+    item.addEventListener("dragleave", () => item.classList.remove("dragover"));
+    item.addEventListener("drop", e => {
+      e.preventDefault(); item.classList.remove("dragover");
+      const targetId = item.dataset.aid;
+      if (!dragId || dragId === targetId) return;
+      const arr = t.itinerary[planDay] || [];
+      const from = arr.findIndex(a => a.id === dragId);
+      const to = arr.findIndex(a => a.id === targetId);
+      if (from < 0 || to < 0) return;
+      const [moved] = arr.splice(from, 1);
+      arr.splice(to, 0, moved);
+      // persist explicit order by stamping times so sort keeps it: use order field
+      arr.forEach((a, i) => a._ord = i);
+      saveState(); render(); toast("Reordered ✅");
+    });
+  });
+}
+
+function planAction(act, btn) {
+  const t = activeTrip();
+  if (!t) return;
+  const days = tripDayList(t);
+  if (!planDay || !days.includes(planDay)) planDay = days[0];
+  if (act === "add-act") {
+    const title = $("#aTitle").value.trim();
+    if (!title) { toast("Give the activity a title first ✏️"); $("#aTitle").focus(); return; }
+    const arr = t.itinerary[planDay] || (t.itinerary[planDay] = []);
+    arr.push({
+      id: uid(),
+      time: $("#aTime").value || "",
+      title,
+      notes: $("#aNotes").value.trim(),
+      cost: Math.max(0, parseFloat($("#aCost").value) || 0),
+      category: $("#aCat").value,
+      done: false,
+      _ord: arr.length
+    });
+    saveState(); render(); toast("Activity added 🗺️");
+  } else if (act === "del-act") {
+    const arr = t.itinerary[planDay] || [];
+    t.itinerary[planDay] = arr.filter(a => a.id !== btn.dataset.aid);
+    saveState(); render(); toast("Activity removed");
+  } else if (act === "toggle-act") {
+    const a = (t.itinerary[planDay] || []).find(a => a.id === btn.dataset.aid);
+    if (a) { a.done = !a.done; saveState(); render(); }
+  } else if (act === "sort-time") {
+    const arr = t.itinerary[planDay] || [];
+    arr.sort((a, b) => (a.time || "99") < (b.time || "99") ? -1 : ((a.time || "99") > (b.time || "99") ? 1 : 0));
+    arr.forEach((a, i) => a._ord = i);
+    saveState(); render(); toast("Sorted by time ⏰");
+  }
+}
+
+/* ================= PANEL: BUDGET ================= */
+function renderBudgetPanel(t) {
+  const el = $("#panel-budget");
+  if (!t) { el.innerHTML = `<div class="card"><div class="empty"><div class="big">💰</div><h2 style="color:var(--ink)">No active trip</h2></div></div>`; return; }
+  const days = tripDayList(t);
+  const spent = tripSpent(t);
+  const budget = t.budget || 0;
+  const remaining = budget - spent;
+  const pct = budgetPct(t);
+  const over = budget > 0 && remaining < 0;
+  const low = budget > 0 && !over && remaining < budget * 0.1;
+  const catTotals = {};
+  EXP_CATS.forEach(c => catTotals[c.id] = 0);
+  t.expenses.forEach(e => { catTotals[e.category] = (catTotals[e.category] || 0) + (+e.amount || 0); });
+  const maxCat = Math.max(1, ...Object.values(catTotals));
+  const expSorted = t.expenses.slice().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+  el.innerHTML = `
+  <div class="hero-num">
+    <div class="lbl">${over ? "⚠️ Over budget by" : "Remaining budget"}</div>
+    <div class="val" style="${over ? "color:#ffb3ab" : ""}">${over ? "−" : ""}${fmtMoney(Math.abs(remaining))}</div>
+    <div class="meta">Spent ${fmtMoney(spent)} of ${fmtMoney(budget)} ${budget ? `· ${pct}% used` : ""}</div>
+    ${budget ? `<div class="bar${pct > 100 ? " bad" : pct > 85 ? " warn" : ""}" style="background:rgba(255,255,255,.25);margin-top:12px"><i style="width:${Math.min(100, pct)}%"></i></div>` : ""}
+  </div>
+  ${over ? `<div class="alert bad">⚠️ You've spent ${fmtMoney(-remaining)} more than your ${fmtMoney(budget)} budget. Time to trim or top up the budget.</div>` : ""}
+  ${low ? `<div class="alert warn">🔔 Less than 10% of your budget remains (${fmtMoney(remaining)}). Spend wisely!</div>` : ""}
+  ${!budget ? `<div class="alert warn">💡 Set a total trip budget on the Trip tab to track spending against it.</div>` : ""}
+  <div class="card">
+    <h2>📊 Spending by category</h2>
+    ${EXP_CATS.map(c => {
+      const v = catTotals[c.id] || 0;
+      const w = Math.round(v / maxCat * 100);
+      return `<div class="catrow"><div class="e">${c.e}</div>
+        <div class="nm">${c.n}<div class="catbar"><i style="width:${w}%"></i></div></div>
+        <div class="amt">${fmtMoney(v)}</div></div>`;
+    }).join("")}
+  </div>
+  <div class="card">
+    <h2>➕ Log expense</h2>
+    <div class="grid2">
+      <div><label class="f">Amount ($)</label><input type="number" id="eAmt" min="0" step="0.01" placeholder="0.00"></div>
+      <div><label class="f">Category</label><select id="eCat">${EXP_CATS.map(c => `<option value="${c.id}">${c.e} ${c.n}</option>`).join("")}</select></div>
+    </div>
+    <div class="grid2">
+      <div><label class="f">Trip day</label><select id="eDay">
+        <option value="">— not tied to a day —</option>
+        ${days.map((d, i) => `<option value="${d}">Day ${i + 1} · ${fmtDate(d)}</option>`).join("")}
+      </select></div>
+      <div><label class="f">Note — optional</label><input type="text" id="eNote" placeholder="e.g. Taxi to airport"></div>
+    </div>
+    <div class="btnrow"><button class="btn coral" data-act="add-exp">＋ Add expense</button></div>
+  </div>
+  <div class="card">
+    <h2>🧾 Expenses <span style="color:var(--muted);font-size:13px;font-weight:400">(${t.expenses.length})</span></h2>
+    ${expSorted.length ? expSorted.map(e => `
+      <div class="exp">
+        <div class="e">${expCatEmoji(e.category)}</div>
+        <div class="b"><div class="t">${esc(e.note || expCatName(e.category))}</div>
+          <div class="m">${expCatName(e.category)}${e.day ? " · Day " + (days.indexOf(e.day) + 1) : ""}</div></div>
+        <div class="a">${fmtMoney(e.amount)}</div>
+        <button class="mini danger" data-act="del-exp" data-id="${e.id}" title="Delete">🗑</button>
+      </div>`).join("")
+    : `<p class="sub">No expenses logged yet. Add your first one above.</p>`}
+  </div>`;
+}
+
+function budgetAction(act, btn) {
+  const t = activeTrip();
+  if (!t) return;
+  if (act === "add-exp") {
+    const amt = parseFloat($("#eAmt").value);
+    if (!(amt > 0)) { toast("Enter an amount greater than $0 💵"); $("#eAmt").focus(); return; }
+    t.expenses.push({
+      id: uid(), amount: Math.round(amt * 100) / 100,
+      category: $("#eCat").value, day: $("#eDay").value || "",
+      note: $("#eNote").value.trim(), createdAt: Date.now()
+    });
+    saveState(); render(); toast("Expense logged 💰");
+  } else if (act === "del-exp") {
+    t.expenses = t.expenses.filter(e => e.id !== btn.dataset.id);
+    saveState(); render(); toast("Expense removed");
+  }
+}
+
+/* ================= PANEL: PACKING ================= */
+function renderPackingPanel(t) {
+  const el = $("#panel-packing");
+  if (!t) { el.innerHTML = `<div class="card"><div class="empty"><div class="big">🎒</div><h2 style="color:var(--ink)">No active trip</h2></div></div>`; return; }
+  const pct = packingPct(t);
+  const doneCount = t.packing.filter(p => p.packed).length;
+  el.innerHTML = `
+  <div class="card">
+    <h2>🎒 Packing checklist</h2>
+    <p class="sub">${doneCount} of ${t.packing.length} items packed · ${pct}%</p>
+    <div class="prog"><i style="width:${pct}%"></i></div>
+    <div class="btnrow">
+      ${t.packing.length === 0 ? `<button class="btn" data-act="starter-pack">✨ Load starter packing list</button>` : ""}
+    </div>
+  </div>
+  ${t.packing.length ? `<div class="card">
+    <h2>➕ Add item</h2>
+    <div class="grid2">
+      <div><label class="f">Item name</label><input type="text" id="pName" placeholder="e.g. Travel adapter"></div>
+      <div><label class="f">Category</label><select id="pCat">${PACK_CATS.map(c => `<option>${c}</option>`).join("")}</select></div>
+    </div>
+    <div class="btnrow"><button class="btn coral" data-act="add-pack">＋ Add item</button></div>
+  </div>` : ""}
+  ${PACK_CATS.map(cat => {
+    const items = t.packing.filter(p => p.category === cat);
+    if (!items.length) return "";
+    const cp = Math.round(items.filter(p => p.packed).length / items.length * 100);
+    return `<div class="card pack-cat">
+      <h3>${catEmoji(cat)} ${cat}<span class="pct">${cp}%</span></h3>
+      ${items.map(p => `
+        <div class="pitem${p.packed ? " packed" : ""}">
+          <button class="pcheck" data-act="toggle-pack" data-id="${p.id}">${p.packed ? "✓" : ""}</button>
+          <div class="nm">${esc(p.name)}</div>
+          <button class="mini danger" data-act="del-pack" data-id="${p.id}" title="Delete">🗑</button>
+        </div>`).join("")}
+    </div>`;
+  }).join("")}
+  ${t.packing.length ? "" : `<div class="card"><p class="sub" style="text-align:center;margin:0">Your list is empty — load the starter kit above or add custom items after loading it.</p></div>`}`;
+}
+
+function catEmoji(cat) {
+  return {"Documents":"🛂","Clothes":"👕","Toiletries":"🧴","Electronics":"🔌","Other":"🎒"}[cat] || "📦";
+}
+
+function packingAction(act, btn) {
+  const t = activeTrip();
+  if (!t) return;
+  if (act === "starter-pack") {
+    Object.keys(STARTER_PACK).forEach(cat => {
+      STARTER_PACK[cat].forEach(name => {
+        if (!t.packing.some(p => p.name === name && p.category === cat))
+          t.packing.push({id: uid(), name, category: cat, packed: false});
+      });
+    });
+    saveState(); render(); toast("Starter packing list loaded ✨");
+  } else if (act === "add-pack") {
+    const name = $("#pName").value.trim();
+    if (!name) { toast("Name the item first ✏️"); $("#pName").focus(); return; }
+    t.packing.push({id: uid(), name, category: $("#pCat").value, packed: false});
+    saveState(); render(); toast("Item added 🎒");
+  } else if (act === "toggle-pack") {
+    const p = t.packing.find(p => p.id === btn.dataset.id);
+    if (p) { p.packed = !p.packed; saveState(); render(); }
+  } else if (act === "del-pack") {
+    t.packing = t.packing.filter(p => p.id !== btn.dataset.id);
+    saveState(); render(); toast("Item removed");
+  }
+}
+
+/* ================= PANEL: BOOKINGS ================= */
+function renderBookingsPanel(t) {
+  const el = $("#panel-bookings");
+  if (!t) { el.innerHTML = `<div class="card"><div class="empty"><div class="big">🎟️</div><h2 style="color:var(--ink)">No active trip</h2></div></div>`; return; }
+  const sorted = t.bookings.slice().sort((a, b) => (a.date || "99") < (b.date || "99") ? -1 : 1);
+  el.innerHTML = `
+  <div class="card">
+    <h2>🎟️ Booking vault</h2>
+    <p class="sub">Flights, hotels, car rentals & tickets — confirmation numbers always one tap away.</p>
+    <div class="grid2">
+      <div><label class="f">Type</label><select id="bType">${BOOK_TYPES.map(x => `<option value="${x.id}">${x.e} ${x.n}</option>`).join("")}</select></div>
+      <div><label class="f">Title</label><input type="text" id="bTitle" placeholder="e.g. Emirates EK507"></div>
+    </div>
+    <div class="grid2">
+      <div><label class="f">Confirmation #</label><input type="text" id="bConf" placeholder="e.g. X7K2PQ"></div>
+      <div><label class="f">Date</label><input type="date" id="bDate"></div>
+    </div>
+    <label class="f">Notes — optional</label>
+    <input type="text" id="bNotes" placeholder="e.g. Terminal 3, seat 14A, check-in 3h early">
+    <div class="btnrow"><button class="btn coral" data-act="add-book">＋ Save booking</button></div>
+  </div>
+  <div class="card">
+    <h2>📋 Saved bookings <span style="color:var(--muted);font-size:13px;font-weight:400">(${t.bookings.length})</span></h2>
+    ${sorted.length ? sorted.map(b => `
+      <div class="book">
+        <div class="top">
+          <span class="type">${bookTypeEmoji(b.type)} ${esc((BOOK_TYPES.find(x => x.id === b.type) || {}).n || "Booking")}</span>
+          <div class="t">${esc(b.title)}</div>
+          <button class="mini danger" data-act="del-book" data-id="${b.id}" title="Delete">🗑</button>
+        </div>
+        <div class="top" style="margin-top:8px;flex-wrap:wrap">
+          ${b.conf ? `<span class="conf">🔑 ${esc(b.conf)}</span>` : ""}
+          ${b.date ? `<span class="m" style="margin:0">📅 ${fmtDate(b.date)}</span>` : ""}
+        </div>
+        ${b.notes ? `<div class="m">📝 ${esc(b.notes)}</div>` : ""}
+      </div>`).join("")
+    : `<p class="sub">No bookings saved yet. Add your first one above.</p>`}
+  </div>`;
+}
+
+function bookingsAction(act, btn) {
+  const t = activeTrip();
+  if (!t) return;
+  if (act === "add-book") {
+    const title = $("#bTitle").value.trim();
+    if (!title) { toast("Give the booking a title first ✏️"); $("#bTitle").focus(); return; }
+    t.bookings.push({
+      id: uid(), type: $("#bType").value, title,
+      conf: $("#bConf").value.trim(), date: $("#bDate").value || "",
+      notes: $("#bNotes").value.trim(), createdAt: Date.now()
+    });
+    saveState(); render(); toast("Booking saved 🎟️");
+  } else if (act === "del-book") {
+    t.bookings = t.bookings.filter(b => b.id !== btn.dataset.id);
+    saveState(); render(); toast("Booking removed");
+  }
+}
+
+/* ================= EVENTS & INIT ================= */
+document.addEventListener("click", e => {
+  const goto = e.target.closest("[data-goto]");
+  if (goto) { switchTab(goto.dataset.goto); return; }
+  const tab = e.target.closest("#tabs .tab");
+  if (tab) { switchTab(tab.dataset.tab); return; }
+  const btn = e.target.closest("[data-act]");
+  if (!btn) return;
+  const act = btn.dataset.act;
+  if (["new-trip","del-trip","switch-trip","save-profile"].includes(act)) tripAction(act, btn);
+  else if (["add-act","del-act","toggle-act","sort-time"].includes(act)) planAction(act, btn);
+  else if (["add-exp","del-exp"].includes(act)) budgetAction(act, btn);
+  else if (["starter-pack","add-pack","toggle-pack","del-pack"].includes(act)) packingAction(act, btn);
+  else if (["add-book","del-book"].includes(act)) bookingsAction(act, btn);
+});
+
+$("#tripSelect").addEventListener("change", e => {
+  if (!e.target.value) return;
+  state.activeTripId = e.target.value;
+  planDay = null;
+  saveState(); render(); toast("Switched trip 🧭");
+});
+$("#btnNewTrip").addEventListener("click", () => tripAction("new-trip"));
+
+// tab badges: unfinished itinerary items, unpacked count
+function renderBadges() {
+  const t = activeTrip();
+  const tabs = $$("#tabs .tab");
+  tabs.forEach(b => { const n = b.querySelector(".n"); if (n) n.remove(); });
+  if (!t) return;
+  const openActs = Object.values(t.itinerary || {}).flat().filter(a => !a.done).length;
+  const unpacked = t.packing.filter(p => !p.packed).length;
+  const set = (name, count) => {
+    if (!count) return;
+    const b = tabs.find(x => x.dataset.tab === name);
+    if (b) b.insertAdjacentHTML("beforeend", `<span class="n">${count}</span>`);
+  };
+  set("plan", openActs);
+  set("packing", unpacked);
+}
+
+const _render = render;
+render = function() { _render(); renderBadges(); };
+
+// seed a demo trip on very first run so the app never opens empty
+(function seed() {
+  if (state.trips.length) return;
+  const t = newTrip();
+  const today = new Date();
+  const s = new Date(today.getTime() + 21 * 86400000);
+  const e = new Date(today.getTime() + 25 * 86400000);
+  t.name = "Kyoto, Japan";
+  t.startDate = toISODate(s); t.endDate = toISODate(e);
+  t.travelers = 2; t.budget = 2500;
+  t.itinerary[t.startDate] = [
+    {id: uid(), time: "09:00", title: "Land at Kansai Airport", notes: "Buy IC card at arrivals", cost: 0, category: "transport", done: false, _ord: 0},
+    {id: uid(), time: "14:00", title: "Check in & explore Gion", notes: "", cost: 0, category: "sight", done: false, _ord: 1},
+    {id: uid(), time: "19:30", title: "Dinner — try yudofu", notes: "", cost: 45, category: "food", done: false, _ord: 2}
+  ];
+  t.expenses = [
+    {id: uid(), amount: 780, category: "flights", day: "", note: "Round-trip flights", createdAt: Date.now()}
+  ];
+  Object.keys(STARTER_PACK).forEach(cat =>
+    STARTER_PACK[cat].slice(0, 3).forEach(name =>
+      t.packing.push({id: uid(), name, category: cat, packed: false})));
+  t.bookings = [
+    {id: uid(), type: "hotel", title: "Gion Ryokan Stay", conf: "RK-88412", date: t.startDate, notes: "Check-in after 3 PM", createdAt: Date.now()}
+  ];
+  state.trips.push(t);
+  state.activeTripId = t.id;
+  saveState();
+})();
+
+render();
+</script>
+</body>
+</html>

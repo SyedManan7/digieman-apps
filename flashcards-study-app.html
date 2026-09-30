@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Recall — Flashcards Study App</title>
+<style>
+/* ============ Recall · paper & ink theme ============ */
+:root{
+  --paper:#F6F2E8; --card:#FFFFFF; --ink:#23201A; --muted:#8B8474; --faint:#CFC8B4;
+  --line:#E8E1CF;
+  --teal:#0E7C6B; --teal-deep:#0A5C50; --teal-soft:#DFF0EA;
+  --amber:#C77408; --amber-soft:#FBEEDB;
+  --coral:#DE3F45; --coral-soft:#FBE3E3;
+  --blue:#3E63DD; --blue-soft:#E4E9FB;
+  --violet:#8E4EC6; --violet-soft:#EFE6FA;
+  --green:#1F9D55; --green-soft:#DFF3E6;
+  --shadow:0 12px 32px rgba(35,32,26,.10);
+  --shadow-sm:0 4px 14px rgba(35,32,26,.08);
+  --r:18px;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:var(--paper); color:var(--ink);
+  min-height:100vh; padding-bottom:calc(90px + env(safe-area-inset-bottom));
+}
+/* ---------- header ---------- */
+header{
+  background:#23201A; color:#F6F2E8;
+  padding:14px 18px calc(14px) 18px;
+  position:sticky; top:0; z-index:50;
+  box-shadow:0 2px 18px rgba(35,32,26,.25);
+}
+.hd-row{display:flex; align-items:center; gap:12px; max-width:980px; margin:0 auto}
+.logo{
+  width:44px;height:44px;border-radius:14px;flex:0 0 44px;
+  background:linear-gradient(135deg,#0E7C6B,#12A594);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:24px;color:#fff;
+  box-shadow:0 4px 12px rgba(14,124,107,.45);
+}
+.hd-title{flex:1;min-width:0}
+.hd-title h1{margin:0;font-size:21px;letter-spacing:.3px}
+.hd-title p{margin:2px 0 0;font-size:12.5px;color:#B9B2A0}
+.streak-pill{
+  display:flex;align-items:center;gap:7px;
+  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.16);
+  padding:8px 14px;border-radius:999px;font-weight:700;font-size:15px;white-space:nowrap;
+}
+.streak-pill .flame{font-size:19px; filter:saturate(1.4)}
+/* ---------- tabs ---------- */
+nav.tabs{
+  background:#23201A; padding:0 18px 14px 18px; position:sticky; top:73px; z-index:49;
+}
+.tabs-inner{max-width:980px;margin:0 auto;display:flex;gap:8px}
+.tab{
+  flex:1;border:0;cursor:pointer;border-radius:14px;padding:11px 6px;
+  background:rgba(255,255,255,.07);color:#CFC8B4;font-weight:700;font-size:14.5px;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  transition:background .18s,color .18s,transform .1s;
+}
+.tab:active{transform:scale(.97)}
+.tab .ti{font-size:17px}
+.tab.active{background:#F6F2E8;color:#23201A}
+/* ---------- layout ---------- */
+main{max-width:980px;margin:0 auto;padding:20px 18px 30px}
+.view{display:none;animation:fadeUp .25s ease}
+.view.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+h2.sec{font-size:20px;margin:6px 0 14px}
+.row-between{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+/* ---------- buttons ---------- */
+.btn{
+  border:0;cursor:pointer;border-radius:14px;font-weight:700;font-size:15px;
+  padding:13px 20px;display:inline-flex;align-items:center;gap:8px;justify-content:center;
+  transition:transform .1s, box-shadow .15s, background .15s;
+}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:linear-gradient(135deg,#0E7C6B,#12A594);color:#fff;box-shadow:0 6px 18px rgba(14,124,107,.35)}
+.btn-dark{background:#23201A;color:#F6F2E8}
+.btn-ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.btn-danger-ghost{background:var(--coral-soft);color:var(--coral)}
+.btn-sm{padding:9px 14px;font-size:13.5px;border-radius:11px}
+.btn-block{width:100%}
+.btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+/* ---------- deck grid ---------- */
+.deck-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.deck-card{
+  background:var(--card);border-radius:var(--r);box-shadow:var(--shadow-sm);
+  border:1px solid var(--line);overflow:hidden;cursor:pointer;
+  transition:transform .12s, box-shadow .15s;position:relative;
+}
+.deck-card:active{transform:scale(.98)}
+.deck-band{height:9px}
+.deck-body{padding:16px 16px 14px}
+.deck-name{font-size:17px;font-weight:800;margin:0 0 4px;display:flex;align-items:center;gap:8px}
+.deck-dot{width:13px;height:13px;border-radius:50%;flex:0 0 13px}
+.deck-sub{font-size:13px;color:var(--muted);margin:0 0 10px}
+.due-badge{
+  display:inline-block;font-size:12.5px;font-weight:800;padding:5px 11px;border-radius:999px;
+  background:var(--amber-soft);color:var(--amber);margin-bottom:10px;
+}
+.due-badge.zero{background:var(--green-soft);color:var(--green)}
+.mastery{margin-top:2px}
+.mastery .lbl{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);font-weight:700;margin-bottom:5px}
+.mbar{height:8px;border-radius:99px;background:#EFEAD9;overflow:hidden}
+.mbar > div{height:100%;border-radius:99px;background:linear-gradient(90deg,#0E7C6B,#12A594);transition:width .4s}
+.deck-actions{position:absolute;top:14px;right:10px;display:flex;gap:2px}
+.icon-btn{
+  border:0;background:rgba(255,255,255,.85);cursor:pointer;width:34px;height:34px;border-radius:10px;
+  font-size:16px;color:var(--muted);display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--line);
+}
+.icon-btn:active{transform:scale(.92)}
+.new-deck{
+  border:2.5px dashed var(--faint);background:transparent;box-shadow:none;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  min-height:170px;color:var(--muted);font-weight:700;font-size:15px;cursor:pointer;border-radius:var(--r);
+}
+.new-deck .plus{font-size:34px;line-height:1;color:var(--teal)}
+.new-deck:active{transform:scale(.98)}
+/* ---------- study setup ---------- */
+.setup-card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);border:1px solid var(--line);padding:24px;max-width:560px;margin:10px auto}
+.setup-card h3{margin:0 0 6px;font-size:22px}
+.setup-card .sub{color:var(--muted);font-size:14px;margin:0 0 18px}
+.stat-row{display:flex;gap:10px;margin-bottom:20px}
+.stat-chip{flex:1;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px 8px;text-align:center}
+.stat-chip .n{font-size:24px;font-weight:800}
+.stat-chip .l{font-size:11.5px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-top:3px}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:13px 16px;margin-bottom:14px;font-weight:700;font-size:14.5px}
+.toggle-row small{display:block;font-weight:400;color:var(--muted);font-size:12.5px;margin-top:2px}
+.switch{position:relative;width:52px;height:30px;flex:0 0 52px}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:#D8D1BC;border-radius:99px;transition:.2s;cursor:pointer}
+.slider:before{content:"";position:absolute;width:24px;height:24px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.2s;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.switch input:checked + .slider{background:var(--teal)}
+.switch input:checked + .slider:before{transform:translateX(22px)}
+/* ---------- session ---------- */
+.sess-top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.sess-count{font-weight:800;font-size:14.5px;white-space:nowrap}
+.pbar{flex:1;height:10px;border-radius:99px;background:#E9E3D2;overflow:hidden}
+.pbar > div{height:100%;border-radius:99px;background:linear-gradient(90deg,#0E7C6B,#12A594);transition:width .3s}
+.quit-btn{border:0;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:8px 13px;font-weight:700;color:var(--muted);cursor:pointer;font-size:13.5px}
+.flash-wrap{perspective:1400px;max-width:620px;margin:0 auto}
+.flashcard{
+  position:relative;width:100%;height:400px;cursor:pointer;
+  transform-style:preserve-3d;transition:transform .55s cubic-bezier(.2,.7,.3,1.15);
+}
+.flashcard.flipped{transform:rotateY(180deg)}
+.face{
+  position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  background:var(--card);border-radius:22px;box-shadow:var(--shadow);border:1px solid var(--line);
+  display:flex;flex-direction:column;padding:26px;overflow:hidden;
+}
+.face::before{content:"";position:absolute;top:0;left:0;right:0;height:7px;background:var(--deckc,#0E7C6B)}
+.face.back{transform:rotateY(180deg)}
+.face .tag{font-size:11.5px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.face .txt{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;font-size:24px;font-weight:600;line-height:1.45;overflow-y:auto;padding:6px 2px}
+.face .hint{margin-top:14px;text-align:center;font-size:13px;color:var(--muted);font-weight:600}
+.face .deckline{margin-top:10px;text-align:center;font-size:12px;color:var(--faint);font-weight:700}
+.new-flag{position:absolute;top:20px;right:20px;background:var(--blue-soft);color:var(--blue);font-size:11.5px;font-weight:800;padding:5px 11px;border-radius:999px;letter-spacing:.6px}
+.grades{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:620px;margin:16px auto 0;opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .3s,transform .3s}
+.grades.show{opacity:1;transform:none;pointer-events:auto}
+.grade{
+  border:0;cursor:pointer;border-radius:15px;padding:13px 6px 11px;font-weight:800;font-size:14.5px;
+  display:flex;flex-direction:column;gap:3px;align-items:center;color:#fff;
+  box-shadow:var(--shadow-sm);transition:transform .1s;
+}
+.grade:active{transform:scale(.95)}
+.grade .iv{font-size:12px;font-weight:700;opacity:.92}
+.grade .key{font-size:10.5px;font-weight:700;opacity:.75;background:rgba(255,255,255,.22);border-radius:6px;padding:1px 7px;margin-top:2px}
+.g-again{background:linear-gradient(135deg,#DE3F45,#F06464)}
+.g-hard{background:linear-gradient(135deg,#C77408,#E89B3D)}
+.g-good{background:linear-gradient(135deg,#0E7C6B,#1FA184)}
+.g-easy{background:linear-gradient(135deg,#3E63DD,#6B8AF5)}
+.flip-cta{max-width:620px;margin:16px auto 0}
+/* ---------- summary ---------- */
+.sum-card{background:var(--card);border-radius:22px;box-shadow:var(--shadow);border:1px solid var(--line);padding:30px 24px;max-width:560px;margin:10px auto;text-align:center}
+.sum-card .trophy{font-size:52px}
+.sum-card h3{margin:10px 0 4px;font-size:24px}
+.sum-card .sub{color:var(--muted);margin:0 0 20px;font-size:14px}
+.sum-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px}
+.sum-cell{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px 6px}
+.sum-cell .n{font-size:22px;font-weight:800}
+.sum-cell .l{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-top:3px}
+.sum-actions{display:flex;gap:10px}
+/* ---------- cards browser ---------- */
+.tools{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.search{flex:1;min-width:180px;position:relative}
+.search input{
+  width:100%;border:2px solid var(--line);border-radius:14px;padding:13px 16px 13px 44px;
+  font-size:15px;background:var(--card);color:var(--ink);outline:none;
+}
+.search input:focus{border-color:var(--teal)}
+.search .mag{position:absolute;left:15px;top:50%;transform:translateY(-50%);font-size:18px;color:var(--muted)}
+select.deckpick{
+  border:2px solid var(--line);border-radius:14px;padding:12px 14px;font-size:15px;font-weight:700;
+  background:var(--card);color:var(--ink);max-width:100%;
+}
+.card-item{
+  background:var(--card);border:1px solid var(--line);border-radius:15px;box-shadow:var(--shadow-sm);
+  padding:14px 16px;margin-bottom:10px;display:flex;gap:12px;align-items:flex-start;
+}
+.card-item .qa{flex:1;min-width:0}
+.card-item .q{font-weight:700;font-size:15px;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.card-item .a{font-size:13.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.card-item .meta{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.pill{font-size:11px;font-weight:800;padding:4px 10px;border-radius:999px;letter-spacing:.3px}
+.pill.new{background:var(--blue-soft);color:var(--blue)}
+.pill.due{background:var(--amber-soft);color:var(--amber)}
+.pill.ok{background:var(--green-soft);color:var(--green)}
+.pill.lapse{background:var(--coral-soft);color:var(--coral)}
+.card-item .ops{display:flex;gap:6px;flex:0 0 auto}
+/* ---------- stats ---------- */
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow-sm);padding:16px 10px;text-align:center}
+.tile .n{font-size:26px;font-weight:800}
+.tile .l{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow-sm);padding:20px;margin-bottom:16px}
+.panel h3{margin:0 0 14px;font-size:17px}
+.mrow{margin-bottom:13px}
+.mrow .top{display:flex;justify-content:space-between;font-size:13.5px;font-weight:700;margin-bottom:6px}
+.mrow .top .pc{color:var(--teal)}
+.chart{display:flex;align-items:flex-end;gap:7px;height:170px;padding-top:10px}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+.bar{width:100%;max-width:44px;border-radius:8px 8px 4px 4px;background:linear-gradient(180deg,#12A594,#0E7C6B);min-height:6px;transition:height .4s}
+.bar.zero{background:#E9E3D2}
+.bar-lab{font-size:10.5px;color:var(--muted);font-weight:700}
+.bar-val{font-size:10.5px;color:var(--muted);font-weight:800}
+/* ---------- modal / toast ---------- */
+.overlay{position:fixed;inset:0;background:rgba(35,32,26,.5);z-index:100;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px)}
+.overlay.show{display:flex;animation:fadeUp .2s ease}
+.modal{background:#FFFDF8;border-radius:22px;box-shadow:0 24px 60px rgba(0,0,0,.3);width:100%;max-width:460px;padding:24px;max-height:88vh;overflow-y:auto}
+.modal h3{margin:0 0 14px;font-size:19px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:13px;font-weight:800;margin-bottom:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.field input[type=text],.field textarea,.field select{
+  width:100%;border:2px solid var(--line);border-radius:12px;padding:12px 14px;font-size:15px;
+  font-family:inherit;color:var(--ink);background:#fff;outline:none;resize:vertical;
+}
+.field input:focus,.field textarea:focus{border-color:var(--teal)}
+.swatch-row{display:flex;gap:10px;flex-wrap:wrap}
+.swatch{width:44px;height:44px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:transform .1s}
+.swatch.sel{border-color:#23201A;transform:scale(1.1)}
+.modal-actions{display:flex;gap:10px;margin-top:18px}
+.modal-actions .btn{flex:1}
+#toast{
+  position:fixed;left:50%;transform:translateX(-50%) translateY(20px);bottom:calc(28px + env(safe-area-inset-bottom));
+  background:#23201A;color:#F6F2E8;padding:13px 22px;border-radius:999px;font-weight:700;font-size:14.5px;
+  opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:200;max-width:90vw;text-align:center;
+}
+#toast.show{opacity:1;transform:translateX(-50%)}
+.empty{text-align:center;padding:44px 20px;color:var(--muted)}
+.empty .big{font-size:46px;margin-bottom:10px}
+.empty p{margin:6px 0 16px;font-size:14.5px}
+.howto{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-top:16px;box-shadow:var(--shadow-sm)}
+.howto h4{margin:0 0 10px;font-size:15px}
+.howto ol{margin:0;padding-left:20px;font-size:13.5px;color:var(--muted);line-height:1.7}
+.howto b{color:var(--ink)}
+.kbd{display:inline-block;background:#23201A;color:#F6F2E8;border-radius:6px;padding:1px 8px;font-size:12px;font-weight:700}
+@media (max-width:640px){
+  .tiles{grid-template-columns:repeat(2,1fr)}
+  .face .txt{font-size:20px}
+  .flashcard{height:330px}
+  .sum-grid{grid-template-columns:repeat(3,1fr)}
+  .tab{font-size:13px}
+  .tab .ti{font-size:15px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="hd-row">
+    <div class="logo">R</div>
+    <div class="hd-title"><h1>Recall</h1><p>Flashcards · Spaced Repetition</p></div>
+    <div class="streak-pill" id="streakPill" title="Study streak — days in a row with at least one review"><span class="flame">🔥</span><span id="streakNum">0</span></div>
+  </div>
+</header>
+<nav class="tabs"><div class="tabs-inner">
+  <button class="tab active" data-view="decks"><span class="ti">🗂</span>Decks</button>
+  <button class="tab" data-view="study"><span class="ti">🧠</span>Study</button>
+  <button class="tab" data-view="cards"><span class="ti">📝</span>Cards</button>
+  <button class="tab" data-view="stats"><span class="ti">📊</span>Stats</button>
+</div></nav>
+<main>
+  <!-- DECKS -->
+  <section class="view active" id="view-decks">
+    <div class="row-between"><h2 class="sec">Your decks</h2>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost btn-sm" id="importBtn">⤓ Import</button>
+        <button class="btn btn-primary btn-sm" id="newDeckBtn">+ New deck</button>
+      </div>
+    </div>
+    <div class="deck-grid" id="deckGrid"></div>
+    <div class="howto"><h4>How spaced repetition works here</h4>
+      <ol>
+        <li>Study a card, then grade yourself: <b>Again</b> (forgot), <b>Hard</b>, <b>Good</b>, <b>Easy</b>.</li>
+        <li>Each grade feeds the <b>SM-2 scheduler</b> — the same algorithm behind SuperMemo &amp; Anki.</li>
+        <li>Cards you know come back <b>later</b> (days → weeks); cards you miss come back <b>soon</b>.</li>
+        <li>Review a little every day — the 🔥 streak keeps you honest.</li>
+      </ol>
+    </div>
+  </section>
+  <!-- STUDY -->
+  <section class="view" id="view-study"><div id="studyRoot"></div></section>
+  <!-- CARDS -->
+  <section class="view" id="view-cards">
+    <div class="row-between"><h2 class="sec">Browse cards</h2>
+      <button class="btn btn-primary btn-sm" id="addCardBtn">+ Add card</button>
+    </div>
+    <div class="tools">
+      <select class="deckpick" id="browseDeck"></select>
+      <div class="search"><span class="mag">🔍</span><input type="text" id="cardSearch" placeholder="Search front or back…"></div>
+    </div>
+    <div id="cardList"></div>
+  </section>
+  <!-- STATS -->
+  <section class="view" id="view-stats"><div id="statsRoot"></div></section>
+</main>
+<div class="overlay" id="overlay"><div class="modal" id="modalBox"></div></div>
+<div id="toast"></div>
+<input type="file" id="importFile" accept="application/json,.json" style="display:none">
+<script>
+/*__FLASHCARDS_CORE_BEGIN__*/
+'use strict';
+/* Core logic for Recall — Flashcards Study App.
+ * DOM-free: runs in Node for tests. UI layer wraps these functions. */
+
+const STORE_KEY = 'flashcards-study-app:v1';
+const GRADES = { AGAIN: 0, HARD: 3, GOOD: 4, EASY: 5 };
+const GRADE_LABELS = { 0: 'Again', 3: 'Hard', 4: 'Good', 5: 'Easy' };
+const DECK_COLORS = ['#DE3F45', '#E8930C', '#0E7C6B', '#3E63DD', '#8E4EC6', '#D6409F'];
+const MASTERY_INTERVAL_DAYS = 21; // a card with interval >= 21d counts as "mastered"
+
+/* ---------- id / time helpers ---------- */
+function uid() {
+  return 'id' + Date.now().toString(36) + Math.floor(Math.random() * 1e9).toString(36);
+}
+function dayKey(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return y + '-' + m + '-' + dd;
+}
+function parseDayKey(k) {
+  const p = k.split('-');
+  return new Date(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10));
+}
+function addDaysKey(key, n) {
+  const d = parseDayKey(key);
+  d.setDate(d.getDate() + n);
+  return dayKey(d);
+}
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+function fmtClock(totalSec) {
+  const m = Math.floor(totalSec / 60), s = Math.floor(totalSec % 60);
+  return m + ':' + String(s).padStart(2, '0');
+}
+
+/* ---------- SM-2 scheduler ----------
+ * grade q: 0=Again, 3=Hard, 4=Good, 5=Easy (classic SM-2 quality scale).
+ * Mutates card in place and returns it. due/todayKey are 'YYYY-MM-DD'. */
+function sm2Schedule(card, q, todayKey) {
+  if (typeof card.ef !== 'number') card.ef = 2.5;
+  if (typeof card.interval !== 'number') card.interval = 0;
+  if (typeof card.reps !== 'number') card.reps = 0;
+  if (typeof card.lapses !== 'number') card.lapses = 0;
+
+  if (q < 3) {
+    // Forgot it: reset repetitions, review again tomorrow (and re-queue in session).
+    card.reps = 0;
+    card.interval = 1;
+    card.lapses += 1;
+  } else {
+    if (card.reps === 0) card.interval = 1;
+    else if (card.reps === 1) card.interval = 6;
+    else card.interval = Math.max(1, Math.round(card.interval * card.ef));
+    if (q === 5) card.interval = Math.max(1, Math.round(card.interval * 1.3)); // easy bonus
+    if (q === 3) card.interval = Math.max(1, Math.round(card.interval * 0.9)); // hard: slightly sooner
+    card.reps += 1;
+  }
+  let ef = card.ef + (0.1 - (5 - q) * (0.08 + (5 - q) * 0.02));
+  if (ef < 1.3) ef = 1.3;
+  card.ef = Math.round(ef * 100) / 100;
+
+  card.due = addDaysKey(todayKey, card.interval);
+  card.lastReviewed = todayKey;
+  card.reviews = (card.reviews || 0) + 1;
+  return card;
+}
+/* What the next interval WOULD be for a grade, without mutating the card. */
+function previewInterval(card, q, todayKey) {
+  const clone = { ef: card.ef, interval: card.interval, reps: card.reps, lapses: card.lapses };
+  sm2Schedule(clone, q, todayKey);
+  return clone.interval;
+}
+function fmtInterval(days) {
+  if (days < 1) return '<1d';
+  if (days === 1) return '1d';
+  if (days < 30) return days + 'd';
+  const mo = Math.round(days / 30.44 * 10) / 10;
+  if (mo < 12) return (mo % 1 === 0 ? mo.toFixed(0) : mo) + 'mo';
+  const yr = Math.round(days / 365.25 * 10) / 10;
+  return (yr % 1 === 0 ? yr.toFixed(0) : yr) + 'y';
+}
+
+/* ---------- store ---------- */
+function blankCard(front, back, todayKey) {
+  return {
+    id: uid(), front: front || '', back: back || '',
+    createdAt: Date.now(),
+    ef: 2.5, interval: 0, reps: 0, lapses: 0,
+    due: todayKey, lastReviewed: null, reviews: 0
+  };
+}
+function blankDeck(name, color) {
+  return { id: uid(), name: name || 'Untitled deck', color: color || DECK_COLORS[2], createdAt: Date.now(), cards: [] };
+}
+function defaultData() {
+  return { version: 1, decks: [], days: {}, settings: { shuffle: false } };
+}
+function sampleDeck(todayKey) {
+  const d = blankDeck('Spanish Basics', '#E8930C');
+  const pairs = [
+    ['Hola', 'Hello'],
+    ['Gracias', 'Thank you'],
+    ['¿Cómo estás?', 'How are you?'],
+    ['La biblioteca', 'The library'],
+    ['Tengo hambre', 'I am hungry'],
+    ['¿Dónde está el baño?', 'Where is the bathroom?']
+  ];
+  d.cards = pairs.map(p => blankCard(p[0], p[1], todayKey));
+  d.sample = true;
+  return d;
+}
+function createStore(storage, todayKeyFn) {
+  const data = defaultData();
+  try {
+    const raw = storage.getItem(STORE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') {
+        if (Array.isArray(parsed.decks)) data.decks = parsed.decks;
+        if (parsed.days && typeof parsed.days === 'object') data.days = parsed.days;
+        if (parsed.settings && typeof parsed.settings === 'object') {
+          data.settings = Object.assign(data.settings, parsed.settings);
+        }
+      }
+    }
+  } catch (e) { /* corrupted -> defaults */ }
+
+  function save() { try { storage.setItem(STORE_KEY, JSON.stringify(data)); } catch (e) {} }
+  function todayKey() { return todayKeyFn ? todayKeyFn() : dayKey(new Date()); }
+  function getDeck(id) { return data.decks.find(d => d.id === id) || null; }
+
+  const store = {
+    data, save, todayKey, getDeck,
+
+    addDeck(name, color) {
+      const d = blankDeck((name || '').trim() || 'Untitled deck', color);
+      data.decks.push(d); save(); return d;
+    },
+    renameDeck(id, name, color) {
+      const d = getDeck(id); if (!d) return false;
+      const n = (name || '').trim();
+      if (n) d.name = n;
+      if (color) d.color = color;
+      save(); return true;
+    },
+    deleteDeck(id) {
+      const i = data.decks.findIndex(d => d.id === id);
+      if (i < 0) return false;
+      data.decks.splice(i, 1); save(); return true;
+    },
+    addCard(deckId, front, back) {
+      const d = getDeck(deckId); if (!d) return null;
+      const f = (front || '').trim(), b = (back || '').trim();
+      if (!f || !b) return null;
+      const c = blankCard(f, b, todayKey());
+      d.cards.push(c); save(); return c;
+    },
+    updateCard(deckId, cardId, front, back) {
+      const d = getDeck(deckId); if (!d) return false;
+      const c = d.cards.find(x => x.id === cardId); if (!c) return false;
+      const f = (front || '').trim(), b = (back || '').trim();
+      if (!f || !b) return false;
+      c.front = f; c.back = b; save(); return true;
+    },
+    deleteCard(deckId, cardId) {
+      const d = getDeck(deckId); if (!d) return false;
+      const i = d.cards.findIndex(x => x.id === cardId);
+      if (i < 0) return false;
+      d.cards.splice(i, 1); save(); return true;
+    },
+    dueCards(deckId) {
+      const d = getDeck(deckId); if (!d) return [];
+      const t = todayKey();
+      return d.cards.filter(c => (c.due || t) <= t);
+    },
+    newCards(deckId) {
+      const d = getDeck(deckId); if (!d) return [];
+      return d.cards.filter(c => (c.reviews || 0) === 0);
+    },
+    /* Build the study queue. mode: 'due' | 'cram'. */
+    buildQueue(deckId, mode) {
+      const d = getDeck(deckId); if (!d) return [];
+      const t = todayKey();
+      let cards = mode === 'cram' ? d.cards.slice() : d.cards.filter(c => (c.due || t) <= t);
+      if (data.settings.shuffle) return shuffle(cards);
+      cards.sort((a, b) => {
+        const an = (a.reviews || 0) === 0, bn = (b.reviews || 0) === 0;
+        if (an !== bn) return an ? 1 : -1;             // due reviews before new cards
+        const ad = a.due || t, bd = b.due || t;
+        if (ad !== bd) return ad < bd ? -1 : 1;
+        return a.createdAt - b.createdAt;
+      });
+      return cards;
+    },
+    /* Grade a card: run SM-2, log the review, return scheduling info. */
+    gradeCard(deckId, cardId, q) {
+      const d = getDeck(deckId); if (!d) return null;
+      const c = d.cards.find(x => x.id === cardId); if (!c) return null;
+      const t = todayKey();
+      const before = c.interval;
+      sm2Schedule(c, q, t);
+      recordReview(t, q);
+      save();
+      return { card: c, prevInterval: before, nextInterval: c.interval, due: c.due };
+    },
+    updateSettings(patch) {
+      Object.assign(data.settings, patch); save();
+    },
+    exportDeck(id) {
+      const d = getDeck(id); if (!d) return null;
+      return JSON.stringify({
+        app: 'recall-flashcards', version: 1, exportedAt: new Date().toISOString(),
+        deck: {
+          name: d.name, color: d.color,
+          cards: d.cards.map(c => ({ front: c.front, back: c.back }))
+        }
+      }, null, 2);
+    },
+    importDeck(jsonText) {
+      let obj;
+      try { obj = JSON.parse(jsonText); } catch (e) { return { ok: false, error: 'Not valid JSON.' }; }
+      const src = obj.deck || obj;
+      if (!src || !Array.isArray(src.cards)) return { ok: false, error: 'No cards found in file.' };
+      const t = todayKey();
+      const d = blankDeck(String(src.name || 'Imported deck').slice(0, 80),
+        DECK_COLORS.includes(src.color) ? src.color : DECK_COLORS[0]);
+      let n = 0;
+      for (const rc of src.cards) {
+        if (!rc || typeof rc.front !== 'string' || typeof rc.back !== 'string') continue;
+        const f = rc.front.trim(), b = rc.back.trim();
+        if (!f || !b) continue;
+        d.cards.push(blankCard(f, b, t)); n++;
+      }
+      if (!n) return { ok: false, error: 'No usable cards found in file.' };
+      data.decks.push(d); save();
+      return { ok: true, deck: d, count: n };
+    },
+    resetAll() {
+      const fresh = defaultData();
+      data.decks = fresh.decks; data.days = fresh.days; data.settings = fresh.settings;
+      save();
+    }
+  };
+
+  function recordReview(t, q) {
+    let day = data.days[t];
+    if (!day) day = data.days[t] = { reviews: 0, q0: 0, q3: 0, q4: 0, q5: 0, seconds: 0 };
+    day.reviews += 1;
+    if (q === 0) day.q0 += 1; else if (q === 3) day.q3 += 1; else if (q === 4) day.q4 += 1; else if (q === 5) day.q5 += 1;
+  }
+  store._recordReview = recordReview;
+  store.addSessionSeconds = function (t, sec) {
+    let day = data.days[t];
+    if (!day) day = data.days[t] = { reviews: 0, q0: 0, q3: 0, q4: 0, q5: 0, seconds: 0 };
+    day.seconds += Math.max(0, Math.round(sec));
+    save();
+  };
+  return store;
+}
+
+/* ---------- stats ---------- */
+function computeStreak(days, today) {
+  let streak = 0;
+  let cursor = parseDayKey(today);
+  if (!days[today] || !days[today].reviews) cursor.setDate(cursor.getDate() - 1); // allow today empty
+  while (true) {
+    const k = dayKey(cursor);
+    if (days[k] && days[k].reviews > 0) { streak++; cursor.setDate(cursor.getDate() - 1); }
+    else break;
+  }
+  return streak;
+}
+function retentionEstimate(days, today, windowDays) {
+  windowDays = windowDays || 30;
+  const start = parseDayKey(today);
+  start.setDate(start.getDate() - (windowDays - 1));
+  let good = 0, total = 0;
+  for (let i = 0; i < windowDays; i++) {
+    const k = dayKey(start);
+    const d = days[k];
+    if (d && d.reviews) { good += (d.q4 || 0) + (d.q5 || 0); total += d.reviews; }
+    start.setDate(start.getDate() + 1);
+  }
+  if (total < 10) return null; // not enough data
+  return Math.round(good / total * 100);
+}
+function deckMastery(deck) {
+  if (!deck.cards.length) return 0;
+  const m = deck.cards.filter(c => (c.interval || 0) >= MASTERY_INTERVAL_DAYS).length;
+  return Math.round(m / deck.cards.length * 100);
+}
+function totalCards(decks) { return decks.reduce((n, d) => n + d.cards.length, 0); }
+function totalReviews(days) {
+  return Object.keys(days).reduce((n, k) => n + (days[k].reviews || 0), 0);
+}
+function lastNDays(days, today, n) {
+  const out = [];
+  const d = parseDayKey(today);
+  d.setDate(d.getDate() - (n - 1));
+  for (let i = 0; i < n; i++) {
+    const k = dayKey(d);
+    out.push({ key: k, label: k.slice(5), reviews: (days[k] && days[k].reviews) || 0, isToday: k === today });
+    d.setDate(d.getDate() + 1);
+  }
+  return out;
+}
+/*__FLASHCARDS_CORE_END__*/
+</script>
+<script>
+(function(){
+'use strict';
+/* ================= UI layer ================= */
+function esc(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+const storage = {
+  getItem: k => { try { return window.localStorage.getItem(k); } catch(e){ return null; } },
+  setItem: (k,v) => { try { window.localStorage.setItem(k, v); } catch(e){} }
+};
+const store = createStore(storage, null);
+if (!store.data.decks.length) {
+  store.data.decks.push(sampleDeck(store.todayKey()));
+  store.save();
+}
+
+/* ---------- toast / modal ---------- */
+const toastEl = document.getElementById('toast');
+let toastT = null;
+function toast(msg){
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  clearTimeout(toastT);
+  toastT = setTimeout(()=>toastEl.classList.remove('show'), 2400);
+}
+const overlay = document.getElementById('overlay');
+const modalBox = document.getElementById('modalBox');
+function openModal(title, bodyHTML, actions){
+  modalBox.innerHTML = '<h3>'+esc(title)+'</h3><div>'+bodyHTML+'</div><div class="modal-actions" id="mActs"></div>';
+  const acts = document.getElementById('mActs');
+  (actions||[]).forEach(a=>{
+    const b = document.createElement('button');
+    b.className = 'btn ' + (a.cls||'btn-ghost');
+    b.innerHTML = a.label;
+    b.onclick = ()=>{ if(a.onClick) a.onClick(); if(!a.keepOpen) closeModal(); };
+    acts.appendChild(b);
+  });
+  overlay.classList.add('show');
+}
+function closeModal(){ overlay.classList.remove('show'); }
+overlay.addEventListener('click', e=>{ if(e.target===overlay) closeModal(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
+
+/* ---------- tabs ---------- */
+const tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
+const views = { decks:'view-decks', study:'view-study', cards:'view-cards', stats:'view-stats' };
+function switchView(name){
+  tabs.forEach(t=>t.classList.toggle('active', t.dataset.view===name));
+  Object.keys(views).forEach(k=>document.getElementById(views[k]).classList.toggle('active', k===name));
+  if(name==='decks') renderDecks();
+  if(name==='study') renderStudyPicker();
+  if(name==='cards') renderCards();
+  if(name==='stats') renderStats();
+  updateStreak();
+  window.scrollTo(0,0);
+}
+tabs.forEach(t=>t.addEventListener('click', ()=>switchView(t.dataset.view)));
+
+function updateStreak(){
+  document.getElementById('streakNum').textContent =
+    computeStreak(store.data.days, store.todayKey());
+}
+
+/* ================= DECKS VIEW ================= */
+function dueBadgeHTML(deck){
+  const n = store.dueCards(deck.id).length;
+  return n > 0
+    ? '<span class="due-badge">🔔 '+n+' due</span>'
+    : '<span class="due-badge zero">✓ all caught up</span>';
+}
+function renderDecks(){
+  updateStreak();
+  const grid = document.getElementById('deckGrid');
+  const ds = store.data.decks;
+  let html = '';
+  ds.forEach(d=>{
+    const m = deckMastery(d);
+    html += '<div class="deck-card" data-deck="'+d.id+'">'
+      + '<div class="deck-band" style="background:'+esc(d.color)+'"></div>'
+      + '<div class="deck-actions">'
+      +   '<button class="icon-btn" data-act="export" data-deck="'+d.id+'" title="Export deck as JSON">⤓</button>'
+      +   '<button class="icon-btn" data-act="rename" data-deck="'+d.id+'" title="Rename deck">✎</button>'
+      +   '<button class="icon-btn" data-act="delete" data-deck="'+d.id+'" title="Delete deck">🗑</button>'
+      + '</div>'
+      + '<div class="deck-body">'
+      +   '<p class="deck-name"><span class="deck-dot" style="background:'+esc(d.color)+'"></span>'+esc(d.name)+'</p>'
+      +   '<p class="deck-sub">'+d.cards.length+' card'+(d.cards.length===1?'':'s')+(d.sample?' · sample':'')+'</p>'
+      +   dueBadgeHTML(d)
+      +   '<div class="mastery"><div class="lbl"><span>Mastery</span><span>'+m+'%</span></div>'
+      +   '<div class="mbar"><div style="width:'+m+'%"></div></div></div>'
+      + '</div></div>';
+  });
+  html += '<button class="new-deck" id="newDeckTile"><span class="plus">＋</span>New deck</button>';
+  grid.innerHTML = html;
+
+  grid.querySelectorAll('.deck-card').forEach(el=>{
+    el.addEventListener('click', e=>{
+      const actBtn = e.target.closest('[data-act]');
+      if(actBtn){
+        e.stopPropagation();
+        const id = actBtn.dataset.deck, act = actBtn.dataset.act;
+        if(act==='export') exportDeck(id);
+        else if(act==='rename') deckModal(id);
+        else if(act==='delete') confirmDeleteDeck(id);
+        return;
+      }
+      switchView('study');
+      openStudySetup(el.dataset.deck);
+    });
+  });
+  document.getElementById('newDeckTile').addEventListener('click', ()=>deckModal(null));
+}
+document.getElementById('newDeckBtn').addEventListener('click', ()=>deckModal(null));
+
+function deckModal(deckId){
+  const d = deckId ? store.getDeck(deckId) : null;
+  const cur = d ? d.color : DECK_COLORS[2];
+  let sw = '<div class="swatch-row">';
+  DECK_COLORS.forEach(c=>{
+    sw += '<div class="swatch'+(c===cur?' sel':'')+'" data-c="'+c+'" style="background:'+c+'"></div>';
+  });
+  sw += '</div>';
+  openModal(d ? 'Rename deck' : 'New deck',
+    '<div class="field"><label>Deck name</label><input type="text" id="fDeckName" maxlength="60" value="'+esc(d?d.name:'')+'" placeholder="e.g. Spanish, Anatomy, Interview prep"></div>'
+    + '<div class="field"><label>Color</label>'+sw+'</div>',
+    [{label: d?'Save':'Create deck', cls:'btn-primary', keepOpen:true, onClick:()=>{
+      const name = document.getElementById('fDeckName').value;
+      const sel = modalBox.querySelector('.swatch.sel');
+      const color = sel ? sel.dataset.c : cur;
+      if(d){ store.renameDeck(d.id, name, color); toast('Deck updated'); }
+      else { store.addDeck(name, color); toast('Deck created'); }
+      closeModal(); renderDecks();
+    }},
+    {label:'Cancel', cls:'btn-ghost'}]);
+  modalBox.querySelectorAll('.swatch').forEach(s=>s.addEventListener('click', ()=>{
+    modalBox.querySelectorAll('.swatch').forEach(x=>x.classList.remove('sel'));
+    s.classList.add('sel');
+  }));
+  setTimeout(()=>{ const i=document.getElementById('fDeckName'); if(i){ i.focus(); i.select(); } }, 60);
+}
+function confirmDeleteDeck(id){
+  const d = store.getDeck(id); if(!d) return;
+  openModal('Delete deck?',
+    '<p style="color:var(--muted);font-size:14.5px;margin:0 0 6px">“'+esc(d.name)+'” and its '+d.cards.length+' card(s) will be permanently deleted. This cannot be undone.</p>',
+    [{label:'Delete', cls:'btn-danger-ghost', onClick:()=>{ store.deleteDeck(id); toast('Deck deleted'); renderDecks(); }},
+     {label:'Cancel', cls:'btn-ghost'}]);
+}
+function exportDeck(id){
+  const d = store.getDeck(id); if(!d) return;
+  const blob = new Blob([store.exportDeck(id)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = d.name.replace(/[^a-z0-9]+/gi,'-').toLowerCase() + '-flashcards.json';
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  toast('Deck exported as JSON');
+}
+document.getElementById('importBtn').addEventListener('click', ()=>document.getElementById('importFile').click());
+document.getElementById('importFile').addEventListener('change', e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = ()=>{
+    const res = store.importDeck(String(r.result||''));
+    if(res.ok){ toast('Imported “'+res.deck.name+'” · '+res.count+' cards'); renderDecks(); }
+    else toast('Import failed: ' + res.error);
+    e.target.value = '';
+  };
+  r.readAsText(f);
+});
+
+/* ================= STUDY ================= */
+let session = null;
+const studyRoot = document.getElementById('studyRoot');
+
+function renderStudyPicker(){
+  session = null;
+  const ds = store.data.decks;
+  if(!ds.length){
+    studyRoot.innerHTML = '<div class="empty"><div class="big">🧠</div><p>No decks yet.<br>Create a deck and add some cards to start studying.</p><button class="btn btn-primary" id="goDecks">Create a deck</button></div>';
+    document.getElementById('goDecks').onclick = ()=>{ deckModal(null); };
+    return;
+  }
+  let html = '<div class="row-between"><h2 class="sec">Pick a deck to study</h2></div><div class="deck-grid">';
+  ds.forEach(d=>{
+    const due = store.dueCards(d.id).length, nw = store.newCards(d.id).length;
+    html += '<div class="deck-card" data-deck="'+d.id+'">'
+      + '<div class="deck-band" style="background:'+esc(d.color)+'"></div>'
+      + '<div class="deck-body"><p class="deck-name"><span class="deck-dot" style="background:'+esc(d.color)+'"></span>'+esc(d.name)+'</p>'
+      + '<p class="deck-sub">'+d.cards.length+' cards · '+nw+' new</p>' + dueBadgeHTML(d) + '</div></div>';
+  });
+  studyRoot.innerHTML = html + '</div>';
+  studyRoot.querySelectorAll('.deck-card').forEach(el=>
+    el.addEventListener('click', ()=>openStudySetup(el.dataset.deck)));
+}
+function openStudySetup(deckId){
+  const d = store.getDeck(deckId); if(!d){ renderStudyPicker(); return; }
+  const due = store.dueCards(deckId), nw = store.newCards(deckId);
+  const sh = store.data.settings.shuffle;
+  studyRoot.innerHTML =
+    '<div class="setup-card">'
+    + '<div class="deck-band" style="height:8px;border-radius:99px;background:'+esc(d.color)+';margin-bottom:16px"></div>'
+    + '<h3>'+esc(d.name)+'</h3><p class="sub">Spaced-repetition review powered by the SM-2 scheduler.</p>'
+    + '<div class="stat-row">'
+    +   '<div class="stat-chip"><div class="n" style="color:var(--amber)">'+due.length+'</div><div class="l">Due now</div></div>'
+    +   '<div class="stat-chip"><div class="n" style="color:var(--blue)">'+nw.length+'</div><div class="l">New</div></div>'
+    +   '<div class="stat-chip"><div class="n">'+d.cards.length+'</div><div class="l">Total</div></div>'
+    + '</div>'
+    + '<div class="toggle-row"><div>Shuffle cards<small>Off = most overdue first (recommended)</small></div>'
+    + '<label class="switch"><input type="checkbox" id="shuffleTgl"'+(sh?' checked':'')+'><span class="slider"></span></label></div>'
+    + '<button class="btn btn-primary btn-block" id="startReview"'+(due.length?'':' disabled')+'>▶ Start review ('+due.length+' due)</button>'
+    + '<div style="height:10px"></div>'
+    + '<button class="btn btn-ghost btn-block" id="startCram"'+(d.cards.length?'':' disabled')+'>⚡ Cram mode — all '+d.cards.length+' cards</button>'
+    + '<div style="height:10px"></div>'
+    + '<button class="btn btn-ghost btn-block" id="backToDecks">← All decks</button>'
+    + (d.cards.length===0 ? '<p class="sub" style="margin:14px 0 0;text-align:center">This deck is empty — add cards first.</p>' : '')
+    + '</div>';
+  document.getElementById('shuffleTgl').addEventListener('change', e=>store.updateSettings({shuffle:e.target.checked}));
+  document.getElementById('backToDecks').addEventListener('click', renderStudyPicker);
+  document.getElementById('startReview').addEventListener('click', ()=>startSession(deckId,'due'));
+  const cram = document.getElementById('startCram');
+  if(cram) cram.addEventListener('click', ()=>startSession(deckId,'cram'));
+}
+function startSession(deckId, mode){
+  const queue = store.buildQueue(deckId, mode).map(c=>c.id);
+  if(!queue.length){ toast('Nothing to study right now'); return; }
+  session = { deckId, mode, queue, pos:0, results:[], againTries:{}, startMs:Date.now(), flipped:false, over:false };
+  renderSessionCard();
+}
+function sessCard(){
+  const d = store.getDeck(session.deckId);
+  return d.cards.find(c=>c.id===session.queue[session.pos]) || null;
+}
+function renderSessionCard(){
+  const d = store.getDeck(session.deckId);
+  const card = sessCard();
+  if(!card){ endSession(); return; }
+  session.flipped = false;
+  const total = session.queue.length, n = session.pos + 1;
+  const isNew = (card.reviews||0) === 0;
+  const previews = {};
+  [0,3,4,5].forEach(q=>{ previews[q] = fmtInterval(previewInterval(card, q, store.todayKey())); });
+  studyRoot.innerHTML =
+    '<div class="sess-top"><button class="quit-btn" id="quitSess">✕ Quit</button>'
+    + '<div class="pbar"><div style="width:'+Math.round((session.pos)/total*100)+'%"></div></div>'
+    + '<div class="sess-count">'+n+' / '+total+'</div></div>'
+    + '<div class="flash-wrap"><div class="flashcard" id="fcard" style="--deckc:'+esc(d.color)+'">'
+    +   '<div class="face front"><div class="tag">Question · '+esc(d.name)+'</div>'
+    +   (isNew?'<span class="new-flag">NEW</span>':'')
+    +   '<div class="txt">'+esc(card.front)+'</div><div class="hint">Tap card to reveal — or press <span class="kbd">Space</span></div></div>'
+    +   '<div class="face back"><div class="tag">Answer</div>'
+    +   '<div class="txt">'+esc(card.back)+'</div><div class="hint">How well did you know it?</div></div>'
+    + '</div></div>'
+    + '<div class="grades" id="gradeRow">'
+    +   gradeBtn(0,'Again','g-again',previews[0],'1')
+    +   gradeBtn(3,'Hard','g-hard',previews[3],'2')
+    +   gradeBtn(4,'Good','g-good',previews[4],'3')
+    +   gradeBtn(5,'Easy','g-easy',previews[5],'4')
+    + '</div>'
+    + '<div class="flip-cta" id="flipCta"><button class="btn btn-dark btn-block" id="flipBtn">Reveal answer</button></div>';
+  document.getElementById('fcard').addEventListener('click', flipSessionCard);
+  document.getElementById('flipBtn').addEventListener('click', flipSessionCard);
+  document.getElementById('quitSess').addEventListener('click', ()=>{
+    openModal('Quit session?', '<p style="color:var(--muted);font-size:14.5px;margin:0">Progress so far is saved — graded cards keep their new schedule.</p>',
+      [{label:'Quit', cls:'btn-danger-ghost', onClick:()=>{ finishSession(true); }},{label:'Keep studying', cls:'btn-ghost'}]);
+  });
+  studyRoot.querySelectorAll('.grade').forEach(b=>
+    b.addEventListener('click', ()=>gradeCurrent(parseInt(b.dataset.q,10))));
+}
+function gradeBtn(q,label,cls,iv,key){
+  return '<button class="grade '+cls+'" data-q="'+q+'">'+label
+    + '<span class="iv">'+iv+'</span><span class="key">'+key+'</span></button>';
+}
+function flipSessionCard(){
+  if(!session || session.flipped || session.over) return;
+  session.flipped = true;
+  document.getElementById('fcard').classList.add('flipped');
+  document.getElementById('gradeRow').classList.add('show');
+  const cta = document.getElementById('flipCta');
+  if(cta) cta.style.display = 'none';
+}
+function gradeCurrent(q){
+  if(!session || !session.flipped || session.over) return;
+  const card = sessCard(); if(!card) return;
+  const res = store.gradeCard(session.deckId, card.id, q);
+  session.results.push({ cardId: card.id, q });
+  if(q === GRADES.AGAIN){
+    const tries = (session.againTries[card.id]||0);
+    if(tries < 2){ // re-queue "Again" cards later in this session (max 2 extra tries)
+      session.againTries[card.id] = tries + 1;
+      const insertAt = Math.min(session.queue.length, session.pos + 4);
+      session.queue.splice(insertAt, 0, card.id);
+    }
+  }
+  session.pos++;
+  renderSessionCard();
+}
+function finishSession(quitEarly){
+  if(!session || session.over) return;
+  session.over = true;
+  const deckId = session.deckId, mode = session.mode;
+  const secs = (Date.now() - session.startMs) / 1000;
+  store.addSessionSeconds(store.todayKey(), secs);
+  const total = session.results.length;
+  const good = session.results.filter(r=>r.q>=4).length;
+  const agains = session.results.filter(r=>r.q===0).length;
+  const uniq = new Set(session.results.map(r=>r.cardId)).size;
+  const acc = total ? Math.round(good/total*100) : 0;
+  const d = store.getDeck(deckId);
+  studyRoot.innerHTML =
+    '<div class="sum-card"><div class="trophy">'+(acc>=80?'🏆':acc>=50?'💪':'🌱')+'</div>'
+    + '<h3>'+(quitEarly?'Session paused':'Session complete!')+'</h3>'
+    + '<p class="sub">'+esc(d?d.name:'')+' · '+(mode==='cram'?'cram mode':'spaced review')+'</p>'
+    + '<div class="sum-grid">'
+    +   '<div class="sum-cell"><div class="n">'+acc+'%</div><div class="l">Accuracy</div></div>'
+    +   '<div class="sum-cell"><div class="n">'+uniq+'</div><div class="l">Cards</div></div>'
+    +   '<div class="sum-cell"><div class="n">'+fmtClock(secs)+'</div><div class="l">Time</div></div>'
+    + '</div>'
+    + '<p class="sub">'+total+' reviews · '+agains+' “again”'+(total?(' · retention this session '+acc+'%'):'')+'</p>'
+    + '<div class="sum-actions"><button class="btn btn-ghost" id="sumDecks" style="flex:1">← Decks</button>'
+    + '<button class="btn btn-primary" id="sumAgain" style="flex:2">Study again</button></div></div>';
+  document.getElementById('sumDecks').addEventListener('click', ()=>{ switchView('decks'); });
+  document.getElementById('sumAgain').addEventListener('click', ()=>openStudySetup(deckId));
+  updateStreak();
+  session = null;
+}
+function endSession(){ finishSession(false); }
+
+/* keyboard shortcuts during study */
+document.addEventListener('keydown', e=>{
+  if(!session || session.over) return;
+  if(document.getElementById('view-study').classList.contains('active')===false) return;
+  if(e.target && (e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT')) return;
+  if(e.code==='Space' || e.key==='Enter'){ e.preventDefault(); flipSessionCard(); }
+  else if(session.flipped && ['1','2','3','4'].includes(e.key)){
+    gradeCurrent([0,3,4,5][parseInt(e.key,10)-1]);
+  }
+});
+
+/* ================= CARDS BROWSER ================= */
+let browseDeckId = null, cardQuery = '';
+function renderCards(){
+  const ds = store.data.decks;
+  const sel = document.getElementById('browseDeck');
+  if(!browseDeckId || !store.getDeck(browseDeckId)) browseDeckId = ds.length ? ds[0].id : null;
+  sel.innerHTML = ds.map(d=>'<option value="'+d.id+'"'+(d.id===browseDeckId?' selected':'')+'>'+esc(d.name)+' ('+d.cards.length+')</option>').join('')
+    || '<option value="">No decks</option>';
+  const list = document.getElementById('cardList');
+  const d = browseDeckId ? store.getDeck(browseDeckId) : null;
+  if(!d){ list.innerHTML = '<div class="empty"><div class="big">📝</div><p>Create a deck first, then add cards.</p></div>'; return; }
+  const q = cardQuery.trim().toLowerCase();
+  const t = store.todayKey();
+  const cards = d.cards.filter(c=>!q || c.front.toLowerCase().includes(q) || c.back.toLowerCase().includes(q));
+  if(!cards.length){
+    list.innerHTML = '<div class="empty"><div class="big">🔍</div><p>'+(q?'No cards match your search.':'No cards yet — add your first one!')+'</p></div>';
+    return;
+  }
+  list.innerHTML = cards.map(c=>{
+    const isNew = (c.reviews||0)===0;
+    const dueNow = (c.due||t) <= t;
+    let pills = isNew ? '<span class="pill new">NEW</span>'
+      : dueNow ? '<span class="pill due">DUE</span>'
+      : '<span class="pill ok">'+fmtInterval(c.interval||0)+'</span>';
+    if((c.lapses||0)>0) pills += '<span class="pill lapse">'+c.lapses+' lapse'+(c.lapses===1?'':'s')+'</span>';
+    return '<div class="card-item"><div class="qa"><div class="q">'+esc(c.front)+'</div>'
+      + '<div class="a">'+esc(c.back)+'</div><div class="meta">'+pills+'</div></div>'
+      + '<div class="ops"><button class="icon-btn" data-edit="'+c.id+'" title="Edit">✎</button>'
+      + '<button class="icon-btn" data-del="'+c.id+'" title="Delete">🗑</button></div></div>';
+  }).join('');
+  list.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click', ()=>cardModal(browseDeckId, b.dataset.edit)));
+  list.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click', ()=>{
+    openModal('Delete card?', '<p style="color:var(--muted);font-size:14.5px;margin:0">This card will be permanently deleted.</p>',
+      [{label:'Delete', cls:'btn-danger-ghost', onClick:()=>{ store.deleteCard(browseDeckId, b.dataset.del); toast('Card deleted'); renderCards(); }},
+       {label:'Cancel', cls:'btn-ghost'}]);
+  }));
+}
+document.getElementById('browseDeck').addEventListener('change', e=>{ browseDeckId = e.target.value; renderCards(); });
+document.getElementById('cardSearch').addEventListener('input', e=>{ cardQuery = e.target.value; renderCards(); });
+document.getElementById('addCardBtn').addEventListener('click', ()=>{
+  if(!store.data.decks.length){ toast('Create a deck first'); deckModal(null); return; }
+  cardModal(browseDeckId || store.data.decks[0].id, null);
+});
+function cardModal(deckId, cardId){
+  const d = store.getDeck(deckId); if(!d) return;
+  const c = cardId ? d.cards.find(x=>x.id===cardId) : null;
+  openModal(c ? 'Edit card' : 'Add card — ' + d.name,
+    '<div class="field"><label>Front (question)</label><textarea id="fFront" rows="3" maxlength="500" placeholder="e.g. What is the capital of Japan?">'+esc(c?c.front:'')+'</textarea></div>'
+    + '<div class="field"><label>Back (answer)</label><textarea id="fBack" rows="3" maxlength="1000" placeholder="e.g. Tokyo">'+esc(c?c.back:'')+'</textarea></div>',
+    [{label: c?'Save':'Add card', cls:'btn-primary', keepOpen:true, onClick:()=>{
+      const f = document.getElementById('fFront').value, b = document.getElementById('fBack').value;
+      let ok;
+      if(c) ok = store.updateCard(deckId, cardId, f, b);
+      else ok = !!store.addCard(deckId, f, b);
+      if(!ok){ toast('Both front and back are required'); return; }
+      closeModal(); toast(c?'Card updated':'Card added'); renderCards();
+    }},
+    {label:'Cancel', cls:'btn-ghost'}]);
+  setTimeout(()=>{ const i=document.getElementById('fFront'); if(i) i.focus(); }, 60);
+}
+
+/* ================= STATS ================= */
+function renderStats(){
+  updateStreak();
+  const days = store.data.days, today = store.todayKey();
+  const decks = store.data.decks;
+  const tc = totalCards(decks), tr = totalReviews(days);
+  const streak = computeStreak(days, today);
+  const ret = retentionEstimate(days, today, 30);
+  let html = '<div class="row-between"><h2 class="sec">Your progress</h2></div>'
+    + '<div class="tiles">'
+    + '<div class="tile"><div class="n">'+tc+'</div><div class="l">Cards</div></div>'
+    + '<div class="tile"><div class="n">'+tr+'</div><div class="l">Reviews</div></div>'
+    + '<div class="tile"><div class="n">'+(ret===null?'—':ret+'%')+'</div><div class="l">Retention</div></div>'
+    + '<div class="tile"><div class="n">🔥 '+streak+'</div><div class="l">Day streak</div></div>'
+    + '</div>';
+  html += '<div class="panel"><h3>Mastery by deck</h3>';
+  if(!decks.length) html += '<p class="sub" style="color:var(--muted)">No decks yet.</p>';
+  decks.forEach(d=>{
+    const m = deckMastery(d);
+    html += '<div class="mrow"><div class="top"><span><span class="deck-dot" style="background:'+esc(d.color)+';display:inline-block;vertical-align:-1px;margin-right:7px"></span>'+esc(d.name)+'</span><span class="pc">'+m+'%</span></div>'
+      + '<div class="mbar"><div style="width:'+m+'%;background:'+esc(d.color)+'"></div></div></div>';
+  });
+  html += '<p style="font-size:12px;color:var(--muted);margin:10px 0 0">Mastery = share of cards with review interval ≥ '+MASTERY_INTERVAL_DAYS+' days.</p></div>';
+  const hist = lastNDays(days, today, 14);
+  const mx = Math.max.apply(null, hist.map(h=>h.reviews).concat([1]));
+  html += '<div class="panel"><h3>Reviews — last 14 days</h3><div class="chart">';
+  hist.forEach(h=>{
+    const pct = Math.round(h.reviews/mx*100);
+    html += '<div class="bar-col"><div class="bar-val">'+(h.reviews||'')+'</div>'
+      + '<div class="bar'+(h.reviews?'':' zero')+'" style="height:'+Math.max(4,pct)+'%"></div>'
+      + '<div class="bar-lab">'+(h.isToday?'Today':h.label.slice(3))+'</div></div>';
+  });
+  html += '</div></div>';
+  html += '<div class="howto"><h4>What “retention” means</h4><ol>'
+    + '<li>After each review you grade yourself <b>Again / Hard / Good / Easy</b>.</li>'
+    + '<li>Retention = the share of <b>Good + Easy</b> grades over the last 30 days.</li>'
+    + '<li>It needs at least 10 reviews to show — then it tracks how well your memory holds.</li></ol></div>';
+  document.getElementById('statsRoot').innerHTML = html;
+}
+
+/* ================= init ================= */
+renderDecks();
+updateStreak();
+})();
+</script>
+</body>
+</html>

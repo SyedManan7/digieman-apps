@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Flowboard — Kanban Project Board</title>
+<meta name="description" content="Flowboard: a private, offline kanban project board. Drag cards, track checklists, never lose a deadline.">
+<style>
+:root{
+  --paper:#f5f3ec; --ink:#23262e; --ink-soft:#5b6070; --ink-faint:#9aa0ae;
+  --card:#ffffff; --line:#e7e2d5; --accent:#4f46e5; --accent-soft:#ecebff;
+  --danger:#dc2626; --danger-soft:#fee2e2; --amber:#b45309; --amber-soft:#fef3c7;
+  --ok:#15803d; --ok-soft:#dcfce7; --radius:14px;
+  --shadow:0 1px 2px rgba(35,38,46,.06),0 8px 24px -12px rgba(35,38,46,.18);
+  --shadow-lg:0 24px 60px -12px rgba(35,38,46,.28);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Helvetica,Arial,sans-serif;
+  background:var(--paper);color:var(--ink);
+  background-image:radial-gradient(rgba(35,38,46,.045) 1px,transparent 1px);
+  background-size:22px 22px;
+  display:flex;flex-direction:column;overflow:hidden;
+}
+/* ---------- header ---------- */
+header{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:12px 18px;background:rgba(255,255,255,.82);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);z-index:30;flex:0 0 auto;
+}
+.brand{display:flex;align-items:center;gap:10px;margin-right:6px}
+.logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#4f46e5,#7c3aed);
+  display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:18px;
+  box-shadow:var(--shadow)}
+.brand h1{font-size:18px;margin:0;letter-spacing:.2px}
+.brand small{display:block;font-size:11px;color:var(--ink-faint);font-weight:500;letter-spacing:.4px}
+.searchbox{position:relative;flex:1 1 180px;max-width:340px}
+.searchbox input{width:100%;padding:9px 12px 9px 36px;border:1px solid var(--line);border-radius:999px;
+  background:#fff;font-size:14px;outline:none}
+.searchbox input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.searchbox .mag{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--ink-faint);font-size:15px}
+.searchbox .clr{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:0;background:var(--paper);
+  width:22px;height:22px;border-radius:50%;color:var(--ink-soft);cursor:pointer;display:none;font-size:12px}
+.labelfilter{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.lchip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 10px;font-size:12.5px;
+  cursor:pointer;display:flex;align-items:center;gap:6px;color:var(--ink-soft);font-weight:600}
+.lchip .dot{width:10px;height:10px;border-radius:50%}
+.lchip.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.hbtns{display:flex;gap:8px;margin-left:auto}
+.btn{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:9px 15px;
+  font-size:13.5px;font-weight:700;cursor:pointer;box-shadow:var(--shadow);white-space:nowrap}
+.btn:hover{transform:translateY(-1px)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.ghost{box-shadow:none}
+/* ---------- stats bar ---------- */
+#statsbar{display:none;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 18px;background:#fff;
+  border-bottom:1px solid var(--line);font-size:13px;color:var(--ink-soft);flex:0 0 auto}
+#statsbar.show{display:flex}
+.stat{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:6px 12px;font-weight:600}
+.stat b{color:var(--ink)}
+.stat.warn{background:var(--danger-soft);border-color:#fecaca;color:var(--danger)}
+.pbar{flex:1 1 140px;max-width:320px;height:10px;background:var(--paper);border:1px solid var(--line);
+  border-radius:999px;overflow:hidden}
+.pbar i{display:block;height:100%;background:linear-gradient(90deg,#4f46e5,#7c3aed);border-radius:999px;
+  transition:width .4s ease}
+/* ---------- board ---------- */
+#boardwrap{flex:1 1 auto;overflow-x:auto;overflow-y:hidden;padding:18px;-webkit-overflow-scrolling:touch}
+#board{display:flex;gap:14px;align-items:flex-start;min-height:100%;padding-bottom:20px}
+.column{flex:0 0 292px;max-width:82vw;background:rgba(255,255,255,.75);border:1px solid var(--line);
+  border-radius:var(--radius);box-shadow:var(--shadow);display:flex;flex-direction:column;max-height:100%}
+.colhead{display:flex;align-items:center;gap:8px;padding:12px 12px 8px}
+.colname{font-weight:800;font-size:14.5px;margin:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:text}
+.colname[contenteditable="true"]{background:#fff;border:1px solid var(--accent);border-radius:8px;padding:4px 8px;outline:none}
+.countbadge{background:var(--paper);border:1px solid var(--line);color:var(--ink-soft);font-size:12px;
+  font-weight:700;border-radius:999px;padding:2px 9px}
+.doneflag{font-size:12px;color:var(--ok);font-weight:800;display:none}
+.column.isdone .doneflag{display:inline}
+.iconbtn{border:1px solid var(--line);background:#fff;border-radius:9px;width:30px;height:30px;cursor:pointer;
+  color:var(--ink-soft);font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center}
+.iconbtn:hover{border-color:var(--accent);color:var(--accent)}
+.cards{min-height:60px;max-height:100%;overflow-y:auto;padding:4px 10px 10px;display:flex;flex-direction:column;gap:10px}
+.cards.dragover{background:var(--accent-soft);border-radius:10px;outline:2px dashed var(--accent);outline-offset:-2px}
+/* ---------- card ---------- */
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 12px;
+  box-shadow:var(--shadow);cursor:grab;position:relative;transition:transform .12s ease,box-shadow .12s ease}
+.card:hover{transform:translateY(-1px);box-shadow:var(--shadow-lg)}
+.card.dragging{opacity:.45;transform:rotate(2deg) scale(1.02);cursor:grabbing}
+.card.dim{opacity:.28}
+.card .labelbar{height:5px;border-radius:999px;margin:-4px -4px 8px;width:52px}
+.card h3{margin:0 0 4px;font-size:14.5px;line-height:1.35;padding-right:26px;word-break:break-word}
+.card .notesprev{font-size:12.5px;color:var(--ink-soft);margin:0 0 6px;display:-webkit-box;-webkit-line-clamp:2;
+  -webkit-box-orient:vertical;overflow:hidden}
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center}
+.badge{font-size:11px;font-weight:700;border-radius:999px;padding:3px 9px;display:inline-flex;align-items:center;gap:4px}
+.badge.due-over{background:var(--danger-soft);color:var(--danger)}
+.badge.due-soon{background:var(--amber-soft);color:var(--amber)}
+.badge.due-later{background:var(--paper);color:var(--ink-soft);border:1px solid var(--line)}
+.badge.check{background:var(--accent-soft);color:var(--accent)}
+.badge.check.full{background:var(--ok-soft);color:var(--ok)}
+.badge.hasnotes{background:var(--paper);color:var(--ink-faint);border:1px solid var(--line)}
+.cardmenu{position:absolute;top:8px;right:8px}
+/* ---------- add card / column ---------- */
+.addcard{border:1.5px dashed var(--line);background:transparent;color:var(--ink-faint);border-radius:12px;
+  padding:10px;font-size:13.5px;font-weight:700;cursor:pointer;width:100%}
+.addcard:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.addcol{flex:0 0 240px;border:1.5px dashed var(--line);border-radius:var(--radius);background:transparent;
+  color:var(--ink-faint);font-size:14px;font-weight:700;cursor:pointer;padding:18px;align-self:flex-start}
+.addcol:hover{border-color:var(--accent);color:var(--accent)}
+.emptyboard{color:var(--ink-faint);text-align:center;padding:60px 20px;font-size:14px}
+/* ---------- dropdown menu ---------- */
+.menu{position:absolute;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow-lg);
+  min-width:190px;padding:6px;z-index:200}
+.menu button{display:flex;width:100%;align-items:center;gap:10px;border:0;background:none;padding:10px 12px;
+  font-size:13.5px;font-weight:600;color:var(--ink);border-radius:8px;cursor:pointer;text-align:left}
+.menu button:hover{background:var(--paper)}
+.menu button.danger{color:var(--danger)}
+.menu button.danger:hover{background:var(--danger-soft)}
+.menu .sep{height:1px;background:var(--line);margin:5px 8px}
+.menu .mtitle{font-size:11px;font-weight:800;color:var(--ink-faint);padding:8px 12px 4px;text-transform:uppercase;letter-spacing:.6px}
+/* ---------- modal ---------- */
+.overlay{position:fixed;inset:0;background:rgba(35,38,46,.45);backdrop-filter:blur(3px);z-index:300;
+  display:flex;align-items:flex-start;justify-content:center;padding:5vh 14px;overflow-y:auto}
+.modal{background:#fff;border-radius:18px;box-shadow:var(--shadow-lg);width:100%;max-width:520px;padding:22px;
+  animation:pop .18s ease}
+@keyframes pop{from{transform:translateY(10px) scale(.98);opacity:0}}
+.modal h2{margin:0 0 14px;font-size:18px}
+.modal h2 .x{float:right}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12.5px;font-weight:800;color:var(--ink-soft);margin-bottom:6px;
+  text-transform:uppercase;letter-spacing:.5px}
+.field input[type=text],.field input[type=date],.field textarea{width:100%;border:1px solid var(--line);
+  border-radius:10px;padding:10px 12px;font-size:14.5px;font-family:inherit;outline:none;background:#fff;color:var(--ink)}
+.field input:focus,.field textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.field textarea{min-height:74px;resize:vertical}
+.swatches{display:flex;gap:8px;flex-wrap:wrap}
+.swatch{width:34px;height:34px;border-radius:50%;cursor:pointer;border:3px solid transparent;position:relative}
+.swatch.sel{border-color:#fff;box-shadow:0 0 0 2px var(--ink)}
+.swatch.none{background:var(--paper);border:1px dashed var(--ink-faint)}
+.checklist{list-style:none;margin:0 0 8px;padding:0;display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto}
+.checklist li{display:flex;align-items:center;gap:10px;background:var(--paper);border:1px solid var(--line);
+  border-radius:10px;padding:8px 10px;font-size:14px}
+.checklist li.done span{text-decoration:line-through;color:var(--ink-faint)}
+.checklist li span{flex:1;word-break:break-word}
+.cbox{width:22px;height:22px;border-radius:7px;border:2px solid var(--ink-faint);background:#fff;cursor:pointer;
+  flex:0 0 auto;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:800}
+li.done .cbox{background:var(--ok);border-color:var(--ok)}
+.cdel{border:0;background:none;color:var(--ink-faint);cursor:pointer;font-size:15px;padding:2px 6px}
+.cdel:hover{color:var(--danger)}
+.cladd{display:flex;gap:8px}
+.cladd input{flex:1;border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14px;outline:none}
+.modalbtns{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+.modalbtns .btn{flex:1;padding:12px}
+.btn.dangerbtn{background:var(--danger-soft);border-color:#fecaca;color:var(--danger)}
+.architem{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;
+  padding:10px 12px;margin-bottom:8px;background:var(--paper)}
+.architem .t{flex:1;font-size:14px;font-weight:600}
+.architem .t small{display:block;color:var(--ink-faint);font-weight:500}
+.confirmbox{text-align:center;padding:8px 4px}
+.confirmbox p{font-size:15px;margin:6px 0 18px}
+/* ---------- toast ---------- */
+#toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--ink);
+  color:#fff;padding:12px 20px;border-radius:999px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;
+  transition:all .25s ease;z-index:500;box-shadow:var(--shadow-lg);max-width:90vw;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* ---------- footer hint ---------- */
+#hint{flex:0 0 auto;text-align:center;font-size:12px;color:var(--ink-faint);padding:8px;background:rgba(255,255,255,.6);
+  border-top:1px solid var(--line)}
+#hint b{color:var(--ink-soft)}
+/* ---------- responsive ---------- */
+@media (max-width:640px){
+  header{padding:10px 12px;gap:8px}
+  .brand h1{font-size:16px}
+  .searchbox{order:3;flex:1 1 100%;max-width:none}
+  .hbtns{margin-left:0}
+  .btn{padding:8px 12px;font-size:12.5px}
+  #boardwrap{padding:12px}
+  .column{flex-basis:272px}
+  #hint{display:none}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="logo">◫</div>
+    <h1>Flowboard<small>KANBAN PROJECT BOARD</small></h1>
+  </div>
+  <div class="searchbox">
+    <span class="mag">⌕</span>
+    <input id="search" type="text" placeholder="Search cards…" autocomplete="off">
+    <button class="clr" id="searchclr" title="Clear">✕</button>
+  </div>
+  <div class="labelfilter" id="labelfilter" title="Filter by label"></div>
+  <div class="hbtns">
+    <button class="btn ghost" id="statsbtn">📊 Stats</button>
+    <button class="btn ghost" id="archivebtn">🗄 Archive</button>
+    <button class="btn primary" id="addcolbtn">+ Column</button>
+  </div>
+</header>
+<div id="statsbar"></div>
+<div id="boardwrap"><div id="board"></div></div>
+<div id="hint">💡 <b>Drag</b> cards between columns · <b>tap ⋯</b> on a card for edit / move / archive · everything saves automatically on your device</div>
+<div id="toast"></div>
+<div id="modalroot"></div>
+<div id="menuroot"></div>
+<script>
+"use strict";
+/* ================= STATE ================= */
+const LS_KEY = 'flowboard.kanban.v1';
+const LABELS = [
+  {id:'none',  name:'No label', color:'#c9cdd6'},
+  {id:'red',   name:'Urgent',   color:'#ef4444'},
+  {id:'amber', name:'Review',   color:'#f59e0b'},
+  {id:'green', name:'Approved', color:'#22c55e'},
+  {id:'blue',  name:'Design',   color:'#3b82f6'},
+  {id:'purple',name:'Research', color:'#8b5cf6'},
+  {id:'teal',  name:'Dev',      color:'#14b8a6'}
+];
+function labelById(id){ return LABELS.find(l=>l.id===id) || LABELS[0]; }
+function uid(p){ return (p||'id')+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function todayStr(d){ d=d||new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function addDays(base,n){ const d=new Date(base+'T12:00:00'); d.setDate(d.getDate()+n); return todayStr(d); }
+
+function blankState(){
+  return { columns:[], archivedCols:[], archivedCards:[], seq:1 };
+}
+function seedState(){
+  const t = todayStr();
+  const mk = (title,notes,label,due,checks)=>({
+    id:uid('c'), title, notes:notes||'', label:label||'none', due:due||'',
+    checklist:(checks||[]).map(x=>({id:uid('k'), text:x[0], done:!!x[1]}))
+  });
+  const s = blankState();
+  s.columns = [
+    {id:uid('col'), name:'To Do', isDone:false, cards:[
+      mk('Design landing page hero','Keep it calm and minimal. Reference the brand palette.', 'blue', addDays(t,1), [['Sketch 3 layout options',true],['Pick final hero copy',false],['Export assets',false]]),
+      mk('Write launch email','Subject line ideas in notes.', 'purple', addDays(t,-1), [['Draft subject lines',true]]),
+      mk('Order packaging samples','', 'none', '', [])
+    ]},
+    {id:uid('col'), name:'In Progress', isDone:false, cards:[
+      mk('Build checkout flow','Stripe test mode first.', 'teal', addDays(t,2), [['Cart page',true],['Payment form',true],['Order confirmation',false]]),
+      mk('Photoshoot for new products','Book studio for Thursday.', 'amber', t, [])
+    ]},
+    {id:uid('col'), name:'Done', isDone:true, cards:[
+      mk('Choose brand fonts','', 'green', '', []),
+      mk('Register domain','', 'green', addDays(t,-6), [])
+    ]}
+  ];
+  return s;
+}
+function loadState(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(!raw){ const s=seedState(); saveState(s); return s; }
+    const s = JSON.parse(raw);
+    if(!s || !Array.isArray(s.columns)) throw new Error('bad');
+    s.archivedCols = s.archivedCols||[]; s.archivedCards = s.archivedCards||[];
+    return s;
+  }catch(e){ const s=seedState(); try{saveState(s);}catch(_){} return s; }
+}
+function saveState(s){ try{ localStorage.setItem(LS_KEY, JSON.stringify(s)); }catch(e){} }
+
+/* ============ PURE LOGIC (testable, no DOM) ============ */
+function dueStatus(due, today){
+  if(!due) return 'none';
+  if(due < today) return 'overdue';
+  const t = new Date(today+'T12:00:00'); t.setDate(t.getDate()+1);
+  const tom = todayStr(t);
+  if(due <= tom) return 'soon';
+  return 'later';
+}
+function dueLabel(due, today){
+  if(!due) return '';
+  const st = dueStatus(due, today);
+  const dd = new Date(due+'T12:00:00');
+  const pretty = dd.toLocaleDateString(undefined,{month:'short',day:'numeric'});
+  if(st==='overdue'){
+    const days = Math.round((new Date(today+'T12:00:00')-dd)/86400000);
+    return '⚠ '+(days<=1?'Overdue':days+'d overdue');
+  }
+  if(due===today) return '● Due today';
+  const t = new Date(today+'T12:00:00'); t.setDate(t.getDate()+1);
+  if(due===todayStr(t)) return '● Tomorrow';
+  return pretty;
+}
+function findCard(s, cardId){
+  for(const col of s.columns){
+    const i = col.cards.findIndex(c=>c.id===cardId);
+    if(i>-1) return {col, index:i, card:col.cards[i]};
+  }
+  return null;
+}
+function moveCardTo(s, cardId, toColId, toIndex){
+  const found = findCard(s, cardId);
+  if(!found) return false;
+  const toCol = s.columns.find(c=>c.id===toColId);
+  if(!toCol) return false;
+  found.col.cards.splice(found.index,1);
+  // adjust index when moving within same column
+  let idx = (toIndex==null)? toCol.cards.length : Math.max(0, Math.min(toIndex, toCol.cards.length));
+  toCol.cards.splice(idx,0,found.card);
+  return true;
+}
+function toggleCheck(s, cardId, itemId){
+  const f = findCard(s, cardId);
+  if(!f) return false;
+  const it = f.card.checklist.find(k=>k.id===itemId);
+  if(!it) return false;
+  it.done = !it.done;
+  return true;
+}
+function checkProgress(card){
+  const n = card.checklist.length;
+  if(!n) return null;
+  const d = card.checklist.filter(k=>k.done).length;
+  return {done:d, total:n, pct:Math.round(d/n*100)};
+}
+function computeStats(s, today){
+  const perColumn = s.columns.map(c=>({name:c.name, count:c.cards.length, isDone:!!c.isDone}));
+  const total = perColumn.reduce((a,c)=>a+c.count,0);
+  const doneCount = s.columns.filter(c=>c.isDone).reduce((a,c)=>a+c.cards.length,0);
+  let overdue = 0;
+  for(const col of s.columns){ if(col.isDone) continue;
+    for(const card of col.cards)
+      if(dueStatus(card.due, today)==='overdue') overdue++; }
+  return {perColumn, total, done:doneCount, pct: total? Math.round(doneCount/total*100):0, overdue};
+}
+function cardMatches(card, q, labelId){
+  if(labelId && labelId!=='all' && card.label!==labelId) return false;
+  if(q){
+    const hay = (card.title+' '+card.notes+' '+card.checklist.map(k=>k.text).join(' ')).toLowerCase();
+    if(!hay.includes(q)) return false;
+  }
+  return true;
+}
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ================= RENDER ================= */
+let S = null;
+let UI = { q:'', label:'all', showStats:false };
+const $ = id => document.getElementById(id);
+
+function render(){
+  renderBoard(); renderLabelFilter(); renderStats();
+  $('searchclr').style.display = UI.q ? 'block':'none';
+}
+function renderBoard(){
+  const board = $('board'); board.innerHTML='';
+  const t = todayStr();
+  if(!S.columns.length){
+    board.innerHTML = '<div class="emptyboard">No columns yet.<br>Tap <b>+ Column</b> to start your board.</div>';
+  }
+  S.columns.forEach((col,ci)=>{
+    const el = document.createElement('div');
+    el.className = 'column'+(col.isDone?' isdone':'');
+    el.dataset.colId = col.id;
+    const visible = col.cards.filter(c=>cardMatches(c,UI.q,UI.label));
+    el.innerHTML =
+      '<div class="colhead">'+
+        '<h2 class="colname" data-act="rename" title="Click to rename">'+esc(col.name)+'</h2>'+
+        '<span class="doneflag" title="Counts toward % complete">✓done</span>'+
+        '<span class="countbadge">'+visible.length+'</span>'+
+        '<button class="iconbtn" data-act="colmenu" title="Column options">⋯</button>'+
+      '</div>'+
+      '<div class="cards" data-col="'+col.id+'"></div>'+
+      '<div style="padding:0 10px 12px"><button class="addcard" data-act="addcard">+ Add card</button></div>';
+    const list = el.querySelector('.cards');
+    visible.forEach(card=> list.appendChild(cardEl(card, t, col.id)));
+    // drop target handlers
+    list.addEventListener('dragover', onDragOver);
+    list.addEventListener('dragleave', onDragLeave);
+    list.addEventListener('drop', onDrop);
+    board.appendChild(el);
+  });
+  const add = document.createElement('button');
+  add.className='addcol'; add.id='addcolbtn2'; add.textContent='+ Add column';
+  add.addEventListener('click', addColumnFlow);
+  board.appendChild(add);
+}
+function cardEl(card, t, colId){
+  const d = document.createElement('div');
+  d.className='card'+((UI.q||UI.label!=='all')&&!cardMatches(card,UI.q,UI.label)?' dim':'');
+  d.draggable = true; d.dataset.cardId = card.id;
+  const lb = labelById(card.label);
+  const st = dueStatus(card.due, t);
+  const prog = checkProgress(card);
+  let badges='';
+  if(card.due){
+    const cls = st==='overdue'?'due-over':(st==='soon'?'due-soon':'due-later');
+    badges += '<span class="badge '+cls+'">📅 '+esc(dueLabel(card.due,t))+'</span>';
+  }
+  if(prog) badges += '<span class="badge check'+(prog.pct===100?' full':'')+'">☑ '+prog.done+'/'+prog.total+'</span>';
+  if(card.notes) badges += '<span class="badge hasnotes">📝</span>';
+  d.innerHTML =
+    (card.label!=='none'?'<div class="labelbar" style="background:'+lb.color+'" title="'+esc(lb.name)+'"></div>':'')+
+    '<h3>'+esc(card.title)+'</h3>'+
+    (card.notes?'<p class="notesprev">'+esc(card.notes)+'</p>':'')+
+    (badges?'<div class="badges">'+badges+'</div>':'')+
+    '<button class="iconbtn cardmenu" data-act="cardmenu" title="Card options">⋯</button>';
+  d.addEventListener('dragstart', onDragStart);
+  d.addEventListener('dragend', onDragEnd);
+  d.addEventListener('click', onCardClick);
+  return d;
+}
+function renderLabelFilter(){
+  const wrap = $('labelfilter'); wrap.innerHTML='';
+  const used = new Set();
+  S.columns.forEach(c=>c.cards.forEach(k=>used.add(k.label)));
+  const mk = (id,name,color)=>{
+    const b=document.createElement('button');
+    b.className='lchip'+(UI.label===id?' on':'');
+    b.innerHTML='<span class="dot" style="background:'+color+'"></span>'+esc(name);
+    b.addEventListener('click',()=>{ UI.label = (UI.label===id?'all':id); render(); });
+    wrap.appendChild(b);
+  };
+  mk('all','All','#9aa0ae');
+  LABELS.filter(l=>l.id!=='none'&&used.has(l.id)).forEach(l=>mk(l.id,l.name,l.color));
+}
+function renderStats(){
+  const bar = $('statsbar');
+  bar.classList.toggle('show', UI.showStats);
+  if(!UI.showStats) return;
+  const st = computeStats(S, todayStr());
+  let html = '<span class="stat">📦 <b>'+st.total+'</b> cards</span>'+
+             '<span class="stat">✅ <b>'+st.pct+'%</b> complete</span>'+
+             (st.overdue?'<span class="stat warn">⚠ <b>'+st.overdue+'</b> overdue</span>':'<span class="stat">🎉 0 overdue</span>');
+  st.perColumn.forEach(c=>{ html += '<span class="stat">'+esc(c.name)+': <b>'+c.count+'</b></span>'; });
+  html += '<div class="pbar"><i style="width:'+st.pct+'%"></i></div>';
+  bar.innerHTML = html;
+}
+/* ================= DRAG & DROP ================= */
+let dragCardId = null;
+function onDragStart(e){
+  dragCardId = e.currentTarget.dataset.cardId;
+  e.currentTarget.classList.add('dragging');
+  e.dataTransfer.effectAllowed='move';
+  try{ e.dataTransfer.setData('text/plain', dragCardId); }catch(_){}
+}
+function onDragEnd(e){ e.currentTarget.classList.remove('dragging'); dragCardId=null;
+  document.querySelectorAll('.cards.dragover').forEach(x=>x.classList.remove('dragover')); }
+function onDragOver(e){ e.preventDefault(); e.dataTransfer.dropEffect='move';
+  e.currentTarget.classList.add('dragover'); }
+function onDragLeave(e){ e.currentTarget.classList.remove('dragover'); }
+function onDrop(e){
+  e.preventDefault();
+  const list = e.currentTarget;
+  list.classList.remove('dragover');
+  const toColId = list.dataset.col;
+  const id = dragCardId || (function(){ try{return e.dataTransfer.getData('text/plain');}catch(_){return null;} })();
+  if(!id) return;
+  // insertion index: card under pointer, else end
+  let idx = null;
+  const after = document.elementFromPoint(e.clientX, e.clientY);
+  const cardElUnder = after && after.closest ? after.closest('.card') : null;
+  if(cardElUnder && cardElUnder.dataset.cardId!==id){
+    const col = S.columns.find(c=>c.id===toColId);
+    idx = col.cards.findIndex(c=>c.id===cardElUnder.dataset.cardId);
+  }
+  if(moveCardTo(S,id,toColId,idx)){ saveState(S); render(); toast('Card moved'); }
+}
+/* ================= CARD CLICK / MENUS ================= */
+function onCardClick(e){
+  const actBtn = e.target.closest('[data-act]');
+  const cardNode = e.currentTarget;
+  const cardId = cardNode.dataset.cardId;
+  if(actBtn && actBtn.dataset.act==='cardmenu'){ e.stopPropagation(); openCardMenu(cardId, actBtn); return; }
+  openCardEditor(cardId);
+}
+function closeMenu(){ $('menuroot').innerHTML=''; document.removeEventListener('click', closeMenu); }
+function openMenu(html, anchor){
+  closeMenu();
+  const m = document.createElement('div');
+  m.className='menu'; m.innerHTML=html;
+  $('menuroot').appendChild(m);
+  const r = anchor.getBoundingClientRect();
+  // fixed positioning using viewport coords
+  m.style.position='fixed';
+  m.style.top = Math.min(window.innerHeight-m.offsetHeight-12, r.bottom+6)+'px';
+  m.style.left = Math.max(8, Math.min(window.innerWidth-m.offsetWidth-8, r.right-m.offsetWidth))+'px';
+  setTimeout(()=>document.addEventListener('click', closeMenu),0);
+  return m;
+}
+function moveSubmenu(cardId){
+  let h = '<div class="mtitle">Move to…</div>';
+  S.columns.forEach(c=>{ h += '<button data-mv="'+c.id+'">→ '+esc(c.name)+'</button>'; });
+  return h;
+}
+function openCardMenu(cardId, anchor){
+  const m = openMenu(
+    '<button data-cact="edit">✏️ Edit card</button>'+
+    '<div class="mtitle">Move to…</div>'+
+    S.columns.map(c=>'<button data-mv="'+c.id+'">→ '+esc(c.name)+'</button>').join('')+
+    '<div class="sep"></div>'+
+    '<button data-cact="archive">🗄 Archive card</button>'+
+    '<button data-cact="del" class="danger">🗑 Delete card</button>',
+    anchor);
+  m.addEventListener('click', e=>{
+    const mv = e.target.closest('[data-mv]');
+    if(mv){ if(moveCardTo(S,cardId,mv.dataset.mv,null)){saveState(S);render();toast('Card moved');} closeMenu(); return; }
+    const b = e.target.closest('[data-cact]'); if(!b) return;
+    const a = b.dataset.cact; closeMenu();
+    if(a==='edit') openCardEditor(cardId);
+    else if(a==='archive'){ archiveCard(cardId); }
+    else if(a==='del') confirmDo('Delete this card permanently?', ()=>{ deleteCard(cardId); });
+  });
+}
+function openColMenu(colId, anchor){
+  const col = S.columns.find(c=>c.id===colId); if(!col) return;
+  const idx = S.columns.indexOf(col);
+  const m = openMenu(
+    '<button data-o="rename">✏️ Rename column</button>'+
+    '<button data-o="done">'+(col.isDone?'✓ ':'')+'Mark as “done” column</button>'+
+    '<div class="sep"></div>'+
+    '<button data-o="left"'+(idx===0?' disabled':'')+'>← Move left</button>'+
+    '<button data-o="right"'+(idx===S.columns.length-1?' disabled':'')+'>Move right →</button>'+
+    '<div class="sep"></div>'+
+    '<button data-o="archive">🗄 Archive column</button>'+
+    '<button data-o="del" class="danger">🗑 Delete column</button>',
+    anchor);
+  m.addEventListener('click', e=>{
+    const b=e.target.closest('[data-o]'); if(!b||b.disabled) return;
+    const o=b.dataset.o; closeMenu();
+    if(o==='rename') renameColumnFlow(col);
+    else if(o==='done'){ col.isDone=!col.isDone; saveState(S); render(); }
+    else if(o==='left'&&idx>0){ S.columns.splice(idx,1); S.columns.splice(idx-1,0,col); saveState(S); render(); }
+    else if(o==='right'&&idx<S.columns.length-1){ S.columns.splice(idx,1); S.columns.splice(idx+1,0,col); saveState(S); render(); }
+    else if(o==='archive'){ S.columns.splice(idx,1); S.archivedCols.push(col); saveState(S); render(); toast('Column archived'); }
+    else if(o==='del') confirmDo('Delete column “'+col.name+'” and its '+col.cards.length+' card(s)?', ()=>{
+      S.columns.splice(S.columns.indexOf(col),1); saveState(S); render(); toast('Column deleted');
+    });
+  });
+}
+
+/* ================= MODALS ================= */
+function openModal(html){
+  const root=$('modalroot'); root.innerHTML='';
+  const ov=document.createElement('div'); ov.className='overlay';
+  ov.innerHTML='<div class="modal">'+html+'</div>';
+  ov.addEventListener('mousedown',e=>{ if(e.target===ov) closeModal(); });
+  root.appendChild(ov);
+  return ov.querySelector('.modal');
+}
+function closeModal(){ $('modalroot').innerHTML=''; }
+let toastT=null;
+function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2200); }
+function confirmDo(msg, fn){
+  const m=openModal('<div class="confirmbox"><h2>Are you sure?</h2><p>'+esc(msg)+'</p>'+
+    '<div class="modalbtns"><button class="btn ghost" data-x="no">Cancel</button>'+
+    '<button class="btn dangerbtn" data-x="yes">Yes, delete</button></div></div>');
+  m.addEventListener('click',e=>{
+    const b=e.target.closest('[data-x]'); if(!b) return;
+    closeModal(); if(b.dataset.x==='yes') fn();
+  });
+}
+/* ---- card editor ---- */
+function openCardEditor(cardId){
+  const f=findCard(S,cardId); if(!f) return;
+  const card=f.card;
+  const sw = LABELS.map(l=>'<div class="swatch'+(card.label===l.id?' sel':'')+(l.id==='none'?' none':'')+'" data-lab="'+l.id+'" title="'+esc(l.name)+'" style="'+(l.id==='none'?'':'background:'+l.color)+'"></div>').join('');
+  const m=openModal(
+    '<h2>Edit card <button class="iconbtn x" data-x="close">✕</button></h2>'+
+    '<div class="field"><label>Title</label><input type="text" id="ce_title" maxlength="120" value="'+esc(card.title)+'"></div>'+
+    '<div class="field"><label>Notes</label><textarea id="ce_notes" placeholder="Details, links, ideas…">'+esc(card.notes)+'</textarea></div>'+
+    '<div class="field"><label>Label</label><div class="swatches" id="ce_sw">'+sw+'</div></div>'+
+    '<div class="field"><label>Due date</label><input type="date" id="ce_due" value="'+esc(card.due)+'">'+
+    ' <button class="btn ghost" id="ce_cleardue" style="margin-top:8px">Clear date</button></div>'+
+    '<div class="field"><label>Checklist <span id="ce_prog"></span></label><ul class="checklist" id="ce_list"></ul>'+
+    '<div class="cladd"><input type="text" id="ce_newitem" placeholder="Add checklist item…" maxlength="120"><button class="btn" id="ce_additem">Add</button></div></div>'+
+    '<div class="modalbtns"><button class="btn ghost" data-x="close">Cancel</button>'+
+    '<button class="btn primary" data-x="save">💾 Save card</button></div>');
+  let draftLabel = card.label;
+  let draftChecks = card.checklist.map(k=>({id:k.id,text:k.text,done:k.done}));
+  const renderChecks=()=>{
+    const ul=m.querySelector('#ce_list'); ul.innerHTML='';
+    draftChecks.forEach(k=>{
+      const li=document.createElement('li'); li.className=k.done?'done':'';
+      li.innerHTML='<div class="cbox">'+(k.done?'✓':'')+'</div><span>'+esc(k.text)+'</span><button class="cdel" title="Remove">✕</button>';
+      li.querySelector('.cbox').addEventListener('click',()=>{k.done=!k.done;renderChecks();});
+      li.querySelector('.cdel').addEventListener('click',()=>{draftChecks=draftChecks.filter(x=>x.id!==k.id);renderChecks();});
+      ul.appendChild(li);
+    });
+    const d=draftChecks.filter(k=>k.done).length;
+    m.querySelector('#ce_prog').textContent = draftChecks.length? '('+d+'/'+draftChecks.length+')':'';
+  };
+  renderChecks();
+  m.querySelector('#ce_sw').addEventListener('click',e=>{
+    const s=e.target.closest('[data-lab]'); if(!s) return;
+    draftLabel=s.dataset.lab;
+    m.querySelectorAll('.swatch').forEach(x=>x.classList.toggle('sel',x===s));
+  });
+  m.querySelector('#ce_cleardue').addEventListener('click',()=>{m.querySelector('#ce_due').value='';});
+  const addItem=()=>{ const inp=m.querySelector('#ce_newitem'); const v=inp.value.trim();
+    if(!v) return; draftChecks.push({id:uid('k'),text:v,done:false}); inp.value=''; renderChecks(); inp.focus(); };
+  m.querySelector('#ce_additem').addEventListener('click',addItem);
+  m.querySelector('#ce_newitem').addEventListener('keydown',e=>{ if(e.key==='Enter') addItem(); });
+  m.addEventListener('click',e=>{
+    const b=e.target.closest('[data-x]'); if(!b) return;
+    if(b.dataset.x==='close'){ closeModal(); return; }
+    const title=m.querySelector('#ce_title').value.trim();
+    if(!title){ toast('Card needs a title'); return; }
+    card.title=title; card.notes=m.querySelector('#ce_notes').value.trim();
+    card.label=draftLabel; card.due=m.querySelector('#ce_due').value||'';
+    card.checklist=draftChecks;
+    saveState(S); closeModal(); render(); toast('Card saved');
+  });
+  setTimeout(()=>{const i=m.querySelector('#ce_title'); i.focus(); i.select();},60);
+}
+/* ---- archive ---- */
+function archiveCard(cardId){
+  const f=findCard(S,cardId); if(!f) return;
+  f.col.cards.splice(f.index,1);
+  S.archivedCards.push({card:f.card, from:f.col.name, at:todayStr()});
+  saveState(S); render(); toast('Card archived');
+}
+function deleteCard(cardId){
+  const f=findCard(S,cardId); if(!f) return;
+  f.col.cards.splice(f.index,1); saveState(S); render(); toast('Card deleted');
+}
+function openArchive(){
+  const m=openModal('<h2>🗄 Archive <button class="iconbtn x" data-x="close">✕</button></h2><div id="archbody"></div>'+
+    '<div class="modalbtns"><button class="btn ghost" data-x="close">Close</button></div>');
+  const body=m.querySelector('#archbody');
+  const draw=()=>{
+    let h='';
+    if(!S.archivedCols.length && !S.archivedCards.length)
+      h='<p style="color:var(--ink-faint);text-align:center">Archive is empty.<br>Archived columns and cards will appear here.</p>';
+    S.archivedCols.forEach((c,i)=>{
+      h+='<div class="architem"><div class="t">📁 '+esc(c.name)+'<small>Column · '+c.cards.length+' cards</small></div>'+
+         '<button class="btn ghost" data-rcol="'+i+'">Restore</button><button class="iconbtn" data-xcol="'+i+'" title="Delete forever">🗑</button></div>';
+    });
+    S.archivedCards.forEach((a,i)=>{
+      h+='<div class="architem"><div class="t">📝 '+esc(a.card.title)+'<small>Card · from “'+esc(a.from)+'”</small></div>'+
+         '<button class="btn ghost" data-rcard="'+i+'">Restore</button><button class="iconbtn" data-xcard="'+i+'" title="Delete forever">🗑</button></div>';
+    });
+    body.innerHTML=h;
+  };
+  draw();
+  m.addEventListener('click',e=>{
+    const x=e.target.closest('[data-x]'); if(x&&x.dataset.x==='close'){closeModal();return;}
+    let b=e.target.closest('[data-rcol]');
+    if(b){ const c=S.archivedCols.splice(+b.dataset.rcol,1)[0]; S.columns.push(c); saveState(S); render(); draw(); toast('Column restored'); return; }
+    b=e.target.closest('[data-xcol]');
+    if(b){ const i=+b.dataset.xcol; confirmDo('Permanently delete archived column and its cards?',()=>{S.archivedCols.splice(i,1);saveState(S);draw();}); return; }
+    b=e.target.closest('[data-rcard]');
+    if(b){ const a=S.archivedCards.splice(+b.dataset.rcard,1)[0];
+      const target=S.columns[0]; if(target){target.cards.push(a.card);} else {S.columns.push({id:uid('col'),name:a.from||'Restored',isDone:false,cards:[a.card]});}
+      saveState(S); render(); draw(); toast('Card restored'); return; }
+    b=e.target.closest('[data-xcard]');
+    if(b){ const i=+b.dataset.xcard; confirmDo('Permanently delete this archived card?',()=>{S.archivedCards.splice(i,1);saveState(S);draw();}); return; }
+  });
+}
+/* ---- column flows ---- */
+function addColumnFlow(){
+  const m=openModal('<h2>New column</h2><div class="field"><label>Name</label>'+
+    '<input type="text" id="nc_name" maxlength="40" placeholder="e.g. Review" value=""></div>'+
+    '<div class="modalbtns"><button class="btn ghost" data-x="no">Cancel</button>'+
+    '<button class="btn primary" data-x="yes">Add column</button></div>');
+  const inp=m.querySelector('#nc_name'); setTimeout(()=>inp.focus(),60);
+  const go=()=>{ const v=inp.value.trim()||'New column';
+    S.columns.push({id:uid('col'),name:v,isDone:false,cards:[]}); saveState(S); closeModal(); render(); toast('Column added'); };
+  inp.addEventListener('keydown',e=>{ if(e.key==='Enter') go(); });
+  m.addEventListener('click',e=>{ const b=e.target.closest('[data-x]'); if(!b) return;
+    if(b.dataset.x==='yes') go(); else closeModal(); });
+}
+function renameColumnFlow(col){
+  const m=openModal('<h2>Rename column</h2><div class="field"><label>Name</label>'+
+    '<input type="text" id="rc_name" maxlength="40" value="'+esc(col.name)+'"></div>'+
+    '<div class="modalbtns"><button class="btn ghost" data-x="no">Cancel</button>'+
+    '<button class="btn primary" data-x="yes">Save</button></div>');
+  const inp=m.querySelector('#rc_name'); setTimeout(()=>{inp.focus();inp.select();},60);
+  const go=()=>{ const v=inp.value.trim(); if(v) col.name=v; saveState(S); closeModal(); render(); };
+  inp.addEventListener('keydown',e=>{ if(e.key==='Enter') go(); });
+  m.addEventListener('click',e=>{ const b=e.target.closest('[data-x]'); if(!b) return;
+    if(b.dataset.x==='yes') go(); else closeModal(); });
+}
+/* ================= EVENTS & INIT ================= */
+function init(){
+  if(!document.getElementById('board')) return;
+  S = loadState();
+  render();
+  $('search').addEventListener('input',e=>{ UI.q=e.target.value.trim().toLowerCase(); render(); });
+  $('searchclr').addEventListener('click',()=>{ $('search').value=''; UI.q=''; render(); $('search').focus(); });
+  $('statsbtn').addEventListener('click',()=>{ UI.showStats=!UI.showStats; render(); });
+  $('archivebtn').addEventListener('click',openArchive);
+  $('addcolbtn').addEventListener('click',addColumnFlow);
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeModal(); closeMenu(); } });
+  // delegated clicks on board (column menus, add card, inline rename)
+  $('board').addEventListener('click',e=>{
+    const colEl=e.target.closest('.column');
+    const actBtn=e.target.closest('[data-act]');
+    if(!actBtn||!colEl) return;
+    const colId=colEl.dataset.colId;
+    const col=S.columns.find(c=>c.id===colId); if(!col) return;
+    const a=actBtn.dataset.act;
+    if(a==='colmenu') openColMenu(colId,actBtn);
+    else if(a==='addcard'){
+      const title=prompt('Card title:'); if(title===null) return;
+      const t=(title||'').trim()||'Untitled card';
+      col.cards.push({id:uid('c'),title:t,notes:'',label:'none',due:'',checklist:[]});
+      saveState(S); render(); toast('Card added — tap it to add details');
+    }
+    else if(a==='rename'&&actBtn.classList.contains('colname')){
+      actBtn.contentEditable='true'; actBtn.focus();
+      const done=()=>{ actBtn.contentEditable='false';
+        const v=actBtn.textContent.trim(); if(v) col.name=v; saveState(S); render(); };
+      actBtn.addEventListener('blur',done,{once:true});
+      actBtn.addEventListener('keydown',ev=>{ if(ev.key==='Enter'){ev.preventDefault();actBtn.blur();} },{once:true});
+    }
+  });
+}
+if(typeof document!=='undefined') document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>
