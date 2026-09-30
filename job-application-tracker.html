@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>HuntBoard — Job Application Tracker</title>
+<style>
+:root{
+  --paper:#F6F1E6; --paper2:#EFE8D6; --ink:#211C12; --ink2:#3A3324;
+  --muted:#8A7F68; --faint:#B9AF93; --line:#E2D8BE;
+  --card:#FFFFFF; --accent:#E4572E; --accent-d:#C7431F;
+  --teal:#0F6B6E; --teal-bg:#DDEEEC;
+  --s-wishlist:#8A7F68; --s-applied:#2D6CDF; --s-interview:#C77408;
+  --s-offer:#1E9E6A; --s-rejected:#B0492F;
+  --amber-bg:#FBF0DA; --red-bg:#F9E3DD;
+  --r:14px; --shadow:0 2px 10px rgba(33,28,18,.08);
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  background:var(--paper); color:var(--ink); min-height:100vh;
+  background-image:radial-gradient(rgba(33,28,18,.045) 1px, transparent 1px);
+  background-size:22px 22px;
+}
+.serif{font-family:Georgia,'Times New Roman',serif;}
+
+/* ---------- top bar ---------- */
+.topbar{
+  position:sticky; top:0; z-index:50;
+  background:var(--ink); color:#F6F1E6;
+  padding:10px 16px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+  box-shadow:0 2px 12px rgba(0,0,0,.25);
+}
+.brand{display:flex; align-items:center; gap:10px; margin-right:auto;}
+.mark{
+  width:38px;height:38px;border-radius:11px; background:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px; font-weight:800; color:#fff; flex:none;
+  box-shadow:0 2px 0 var(--accent-d);
+}
+.brand h1{font-size:20px; margin:0; letter-spacing:.3px;}
+.brand small{display:block; font-family:system-ui; font-weight:400; font-size:11px; color:#CFC6AC; letter-spacing:1.4px; text-transform:uppercase;}
+.searchbox{position:relative; flex:1 1 180px; max-width:340px;}
+.searchbox input{
+  width:100%; padding:9px 12px 9px 36px; border-radius:10px; border:1px solid #4a4332;
+  background:#2E2820; color:#F6F1E6; font-size:14px; outline:none;
+}
+.searchbox input::placeholder{color:#8d8468;}
+.searchbox .mag{position:absolute; left:11px; top:50%; transform:translateY(-50%); color:#8d8468; font-size:15px;}
+.btn{
+  border:none; cursor:pointer; font-weight:700; font-size:14px;
+  padding:10px 16px; border-radius:10px; transition:transform .06s ease, background .15s;
+}
+.btn:active{transform:scale(.97);}
+.btn-primary{background:var(--accent); color:#fff; box-shadow:0 2px 0 var(--accent-d);}
+.btn-primary:hover{background:var(--accent-d);}
+.btn-ghost{background:#2E2820; color:#F6F1E6; border:1px solid #4a4332;}
+.btn-plain{background:var(--card); color:var(--ink); border:1px solid var(--line); box-shadow:var(--shadow);}
+.btn-danger{background:var(--red-bg); color:#A93226; border:1px solid #E7B7AC;}
+.iconbtn{
+  background:#2E2820; color:#F6F1E6; border:1px solid #4a4332; border-radius:10px;
+  width:40px; height:40px; font-size:18px; cursor:pointer; flex:none;
+}
+
+/* ---------- tabs ---------- */
+.tabs{
+  display:flex; gap:8px; padding:12px 16px 0; max-width:1400px; margin:0 auto;
+}
+.tab{
+  flex:1; text-align:center; padding:11px 8px; border-radius:12px 12px 0 0; cursor:pointer;
+  font-weight:700; font-size:14px; color:var(--muted); background:transparent; border:none;
+  border-bottom:3px solid transparent;
+}
+.tab.active{color:var(--ink); background:rgba(255,255,255,.55); border-bottom-color:var(--accent);}
+.tab .n{display:inline-block; min-width:22px; padding:1px 6px; margin-left:6px; border-radius:11px;
+  background:var(--ink); color:#F6F1E6; font-size:11px; vertical-align:2px;}
+
+/* ---------- filter bar ---------- */
+.filterbar{
+  max-width:1400px; margin:0 auto; padding:10px 16px;
+  display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+}
+.filterbar select{
+  padding:9px 12px; border-radius:10px; border:1px solid var(--line);
+  background:var(--card); color:var(--ink); font-size:13.5px; font-weight:600;
+}
+.filterbar .clear{font-size:13px; color:var(--accent); background:none; border:none; cursor:pointer; font-weight:700; display:none;}
+
+/* ---------- views ---------- */
+.view{display:none; max-width:1400px; margin:0 auto; padding:6px 16px 90px;}
+.view.active{display:block;}
+
+/* ---------- kanban board ---------- */
+.board{display:grid; grid-template-columns:repeat(5,minmax(250px,1fr)); gap:12px; align-items:start;}
+@media (max-width:1350px){
+  .board{display:flex; overflow-x:auto; padding-bottom:14px; scroll-snap-type:x proximity;}
+  .col{flex:0 0 300px; scroll-snap-align:start;}
+}
+.col{
+  background:rgba(255,255,255,.5); border:1px solid var(--line); border-radius:var(--r);
+  min-height:200px; display:flex; flex-direction:column; max-height:calc(100vh - 240px);
+}
+.colhead{
+  display:flex; align-items:center; gap:8px; padding:12px 12px 8px;
+  position:sticky; top:0;
+}
+.dot{width:11px;height:11px;border-radius:50%;flex:none;}
+.colhead h2{font-size:13.5px; margin:0; text-transform:uppercase; letter-spacing:1px; color:var(--ink2);}
+.colhead .count{
+  margin-left:auto; background:var(--ink); color:#F6F1E6; font-size:11.5px; font-weight:800;
+  min-width:24px; height:24px; border-radius:12px; display:flex; align-items:center; justify-content:center; padding:0 7px;
+}
+.coladd{
+  margin-left:4px; width:26px; height:26px; border-radius:8px; border:1px dashed var(--faint);
+  background:transparent; color:var(--muted); font-size:16px; cursor:pointer; line-height:1;
+}
+.colbody{padding:4px 10px 12px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; min-height:120px; border-radius:0 0 var(--r) var(--r);}
+.colbody.dragover{background:var(--teal-bg); outline:2px dashed var(--teal); outline-offset:-4px;}
+.empty{color:var(--faint); font-size:13px; text-align:center; padding:18px 6px; border:1.5px dashed var(--line); border-radius:10px;}
+
+/* ---------- cards ---------- */
+.appcard{
+  background:var(--card); border-radius:12px; box-shadow:var(--shadow);
+  padding:12px 12px 10px; cursor:grab; position:relative; overflow:hidden;
+  border:1px solid #EEE7D2;
+}
+.appcard:active{cursor:grabbing;}
+.appcard.dragging{opacity:.45; transform:rotate(1.5deg) scale(.98);}
+.appcard::before{
+  content:''; position:absolute; left:0; top:0; bottom:0; width:5px;
+  background:var(--faint);
+}
+.appcard.pri-high::before{background:#D64545;}
+.appcard.pri-medium::before{background:#E8A13D;}
+.appcard.pri-low::before{background:#B9AF93;}
+.appcard .row1{display:flex; align-items:flex-start; gap:8px;}
+.appcard h3{margin:0; font-size:15px; line-height:1.25; flex:1;}
+.appcard .role{color:var(--muted); font-size:13px; margin:3px 0 8px;}
+.chips{display:flex; flex-wrap:wrap; gap:6px; margin:6px 0;}
+.chip{
+  font-size:11.5px; font-weight:700; padding:3px 9px; border-radius:20px;
+  background:var(--paper2); color:var(--ink2); border:1px solid var(--line);
+}
+.chip.salary{background:#E4EAFB; color:#23408F; border-color:#C6D3F5;}
+.chip.iv{background:var(--amber-bg); color:#8A5A06; border-color:#EBD3A0;}
+.chip.iv.overdue{background:var(--red-bg); color:#A93226; border-color:#E7B7AC; animation:pulse 1.6s infinite;}
+.chip.fu{background:#F3E9F7; color:#6C3483; border-color:#DDC9E8;}
+.chip.fu.overdue{background:var(--red-bg); color:#A93226; border-color:#E7B7AC; animation:pulse 1.6s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
+.cardfoot{display:flex; align-items:center; gap:8px; margin-top:8px;}
+.cardfoot .when{font-size:11.5px; color:var(--faint); margin-right:auto;}
+.menubtn{
+  border:1px solid var(--line); background:var(--card); border-radius:8px;
+  width:30px; height:30px; font-size:15px; cursor:pointer; color:var(--muted); line-height:1;
+}
+
+/* ---------- schedule view ---------- */
+.sched h2{font-size:17px; margin:22px 0 10px; display:flex; align-items:center; gap:8px;}
+.sched h2 .tag{font-size:11px; font-weight:800; padding:3px 10px; border-radius:12px; text-transform:uppercase; letter-spacing:.8px;}
+.tag.red{background:var(--red-bg); color:#A93226;}
+.tag.amber{background:var(--amber-bg); color:#8A5A06;}
+.tag.teal{background:var(--teal-bg); color:var(--teal);}
+.schedrow{
+  background:var(--card); border-radius:12px; box-shadow:var(--shadow); border:1px solid #EEE7D2;
+  padding:13px 15px; margin-bottom:10px; display:flex; align-items:center; gap:12px; cursor:pointer;
+}
+.schedrow:hover{border-color:var(--accent);}
+.schedrow .datebox{
+  flex:none; width:58px; text-align:center; background:var(--paper2); border:1px solid var(--line);
+  border-radius:10px; padding:6px 0;
+}
+.schedrow .datebox b{display:block; font-size:20px; line-height:1;}
+.schedrow .datebox span{font-size:10.5px; text-transform:uppercase; letter-spacing:1px; color:var(--muted); font-weight:700;}
+.schedrow .info{flex:1; min-width:0;}
+.schedrow .info b{font-size:14.5px;}
+.schedrow .info div{font-size:13px; color:var(--muted); margin-top:2px;}
+.schedrow .go{color:var(--faint); font-size:20px;}
+.schedrow.overdue{border-left:5px solid #D64545;}
+.schedrow.soon{border-left:5px solid #E8A13D;}
+
+/* ---------- stats view ---------- */
+.kpis{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:14px 0;}
+@media (max-width:760px){.kpis{grid-template-columns:repeat(2,1fr);}}
+.kpi{background:var(--card); border-radius:var(--r); box-shadow:var(--shadow); border:1px solid #EEE7D2; padding:16px;}
+.kpi .v{font-size:30px; font-weight:800;}
+.kpi .l{font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; font-weight:700; margin-top:4px;}
+.panel{background:var(--card); border-radius:var(--r); box-shadow:var(--shadow); border:1px solid #EEE7D2; padding:18px; margin-bottom:14px;}
+.panel h2{font-size:16px; margin:0 0 4px;}
+.panel p.sub{font-size:13px; color:var(--muted); margin:0 0 14px;}
+.funnelrow{display:flex; align-items:center; gap:10px; margin:10px 0;}
+.funnelrow .fl{width:110px; font-size:13px; font-weight:700; text-align:right; flex:none;}
+.funnelbar{flex:1; height:34px; background:var(--paper2); border-radius:9px; position:relative; overflow:hidden;}
+.funnelbar i{position:absolute; left:0; top:0; bottom:0; border-radius:9px;}
+.funnelbar b{position:absolute; left:10px; top:50%; transform:translateY(-50%); font-size:13px; z-index:2;}
+.funnelconv{font-size:12px; color:var(--muted); width:120px; flex:none;}
+svg.chart{width:100%; height:auto; display:block;}
+
+/* ---------- modal ---------- */
+.overlay{
+  position:fixed; inset:0; background:rgba(33,28,18,.55); z-index:100;
+  display:none; align-items:flex-start; justify-content:center; padding:20px 12px; overflow-y:auto;
+}
+.overlay.open{display:flex;}
+.dialog{
+  background:var(--paper); border-radius:18px; width:100%; max-width:620px;
+  box-shadow:0 20px 60px rgba(0,0,0,.35); overflow:hidden; margin:auto 0;
+  animation:pop .18s ease;
+}
+@keyframes pop{from{transform:scale(.96) translateY(8px); opacity:0}}
+.dhead{background:var(--ink); color:#F6F1E6; padding:16px 20px; display:flex; align-items:center;}
+.dhead h2{margin:0; font-size:18px; flex:1;}
+.dhead .x{background:none; border:none; color:#CFC6AC; font-size:24px; cursor:pointer; line-height:1;}
+.dbody{padding:20px;}
+.fgrid{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+@media (max-width:560px){.fgrid{grid-template-columns:1fr;}}
+.field{display:flex; flex-direction:column; gap:5px;}
+.field.full{grid-column:1/-1;}
+.field label{font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.8px; color:var(--muted);}
+.field input,.field select,.field textarea{
+  padding:10px 12px; border-radius:10px; border:1.5px solid var(--line);
+  background:#fff; font-size:14.5px; color:var(--ink); font-family:inherit; width:100%;
+}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none; border-color:var(--accent);}
+.field textarea{min-height:80px; resize:vertical;}
+.fsec{margin:18px 0 8px; font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:var(--ink2);
+  border-bottom:2px solid var(--line); padding-bottom:6px;}
+.contactrow{display:flex; gap:8px; margin-bottom:8px;}
+.contactrow input{flex:1; padding:9px 10px; border-radius:9px; border:1.5px solid var(--line); font-size:13.5px; background:#fff;}
+.contactrow .rm{flex:none; width:38px; border-radius:9px; border:1px solid #E7B7AC; background:var(--red-bg); color:#A93226; cursor:pointer; font-size:16px;}
+.dfoot{display:flex; gap:10px; padding:16px 20px; border-top:1px solid var(--line); flex-wrap:wrap;}
+.dfoot .spacer{flex:1;}
+
+/* ---------- dropdown menu ---------- */
+.menu{
+  position:fixed; z-index:200; background:#fff; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,.22);
+  border:1px solid var(--line); min-width:200px; padding:6px; display:none;
+}
+.menu.open{display:block;}
+.menu button{display:block; width:100%; text-align:left; background:none; border:none; padding:10px 12px;
+  border-radius:8px; font-size:14px; cursor:pointer; color:var(--ink);}
+.menu button:hover{background:var(--paper2);}
+.menu .mhead{font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:var(--muted); padding:8px 12px 4px;}
+.menu hr{border:none; border-top:1px solid var(--line); margin:4px 0;}
+
+/* ---------- toast ---------- */
+.toast{
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px);
+  background:var(--ink); color:#F6F1E6; padding:12px 22px; border-radius:12px; font-size:14px; font-weight:600;
+  z-index:300; transition:transform .25s ease; box-shadow:0 8px 24px rgba(0,0,0,.3); max-width:90vw; text-align:center;
+}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+.hint{font-size:12.5px; color:var(--muted); background:var(--amber-bg); border:1px solid #EBD3A0; border-radius:10px; padding:10px 14px; margin:10px 0;}
+footer.appfoot{text-align:center; color:var(--faint); font-size:12px; padding:24px 12px 40px;}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <div class="mark">⌖</div>
+    <h1 class="serif">HuntBoard<small>Job Application Tracker</small></h1>
+  </div>
+  <div class="searchbox">
+    <span class="mag">⌕</span>
+    <input id="q" type="search" placeholder="Search company, role, location…" autocomplete="off">
+  </div>
+  <button class="btn btn-primary" id="addBtn">+ Add application</button>
+  <button class="iconbtn" id="menuBtn" aria-label="Menu">⋮</button>
+</header>
+
+<nav class="tabs">
+  <button class="tab active" data-view="board">Pipeline</button>
+  <button class="tab" data-view="schedule">Schedule <span class="n" id="schedCount" style="display:none"></span></button>
+  <button class="tab" data-view="stats">Stats</button>
+</nav>
+
+<div class="filterbar" id="filterbar">
+  <select id="fPri" aria-label="Filter by priority">
+    <option value="">All priorities</option>
+    <option value="high">High priority</option>
+    <option value="medium">Medium priority</option>
+    <option value="low">Low priority</option>
+  </select>
+  <select id="fType" aria-label="Filter by work type">
+    <option value="">On-site · Remote · Hybrid</option>
+    <option value="remote">Remote</option>
+    <option value="hybrid">Hybrid</option>
+    <option value="onsite">On-site</option>
+  </select>
+  <button class="clear" id="clearFilters">✕ Clear filters</button>
+</div>
+
+<main>
+  <section class="view active" id="view-board">
+    <div class="board" id="board"></div>
+  </section>
+
+  <section class="view" id="view-schedule">
+    <div class="sched" id="sched"></div>
+  </section>
+
+  <section class="view" id="view-stats">
+    <div class="kpis" id="kpis"></div>
+    <div class="panel">
+      <h2 class="serif">Applications per week</h2>
+      <p class="sub">New applications added in each of the last 8 weeks.</p>
+      <div id="weekChart"></div>
+    </div>
+    <div class="panel">
+      <h2 class="serif">Pipeline funnel</h2>
+      <p class="sub">How applications move through your pipeline — and where they convert.</p>
+      <div id="funnel"></div>
+    </div>
+    <div class="panel">
+      <h2 class="serif">Stage distribution</h2>
+      <p class="sub">Where everything stands right now.</p>
+      <div id="stageDist"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="appfoot">HuntBoard · your data never leaves this browser · works offline</footer>
+
+<!-- editor modal -->
+<div class="overlay" id="overlay">
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlgTitle">
+    <div class="dhead">
+      <h2 id="dlgTitle" class="serif">New application</h2>
+      <button class="x" id="dlgClose" aria-label="Close">×</button>
+    </div>
+    <div class="dbody">
+      <div class="fgrid">
+        <div class="field"><label>Company *</label><input id="fCompany" placeholder="e.g. Northwind Labs"></div>
+        <div class="field"><label>Role *</label><input id="fRole" placeholder="e.g. Senior Frontend Engineer"></div>
+        <div class="field"><label>Salary min</label><input id="fSalMin" type="number" min="0" placeholder="80000"></div>
+        <div class="field"><label>Salary max</label><input id="fSalMax" type="number" min="0" placeholder="120000"></div>
+        <div class="field"><label>Currency</label>
+          <select id="fCur">
+            <option value="USD">USD $</option><option value="EUR">EUR €</option><option value="GBP">GBP £</option>
+            <option value="PKR">PKR Rs</option><option value="INR">INR ₹</option><option value="AED">AED</option>
+            <option value="CAD">CAD $</option><option value="AUD">AUD $</option>
+          </select>
+        </div>
+        <div class="field"><label>Work type</label>
+          <select id="fType2"><option value="remote">Remote</option><option value="hybrid">Hybrid</option><option value="onsite">On-site</option></select>
+        </div>
+        <div class="field"><label>Location</label><input id="fLoc" placeholder="e.g. Berlin / Remote"></div>
+        <div class="field"><label>Job posting link</label><input id="fLink" type="url" placeholder="https://…"></div>
+        <div class="field"><label>Applied on</label><input id="fApplied" type="date"></div>
+        <div class="field"><label>Priority</label>
+          <select id="fPri2"><option value="medium">Medium</option><option value="high">High</option><option value="low">Low</option></select>
+        </div>
+        <div class="field"><label>Pipeline stage</label>
+          <select id="fStage">
+            <option value="wishlist">Wishlist</option><option value="applied">Applied</option>
+            <option value="interview">Interview</option><option value="offer">Offer</option><option value="rejected">Rejected</option>
+          </select>
+        </div>
+        <div class="field"><label>Interview date &amp; time</label><input id="fInterview" type="datetime-local"></div>
+        <div class="field"><label>Follow-up reminder</label><input id="fFollowup" type="date"></div>
+        <div class="field full"><label>Notes</label><textarea id="fNotes" placeholder="Recruiter name, interview rounds, prep notes…"></textarea></div>
+      </div>
+      <div class="fsec">Contacts</div>
+      <div id="contacts"></div>
+      <button class="btn btn-plain" id="addContact" style="font-size:13px; padding:8px 14px;">+ Add contact</button>
+    </div>
+    <div class="dfoot">
+      <button class="btn btn-danger" id="dlgDelete" style="display:none">Delete</button>
+      <span class="spacer"></span>
+      <button class="btn btn-plain" id="dlgCancel">Cancel</button>
+      <button class="btn btn-primary" id="dlgSave">Save application</button>
+    </div>
+  </div>
+</div>
+
+<div class="menu" id="menu"></div>
+<div class="menu" id="cardmenu"></div>
+<div class="toast" id="toast"></div>
+<script>
+/*__HUNTBOARD_CORE_BEGIN__*/
+'use strict';
+/* HuntBoard core: pure data logic, no DOM. Tested in Node via run-tests.js */
+
+var STORE_KEY = 'huntboard.v1';
+
+var STAGES = ['wishlist', 'applied', 'interview', 'offer', 'rejected'];
+var STAGE_LABEL = { wishlist: 'Wishlist', applied: 'Applied', interview: 'Interview', offer: 'Offer', rejected: 'Rejected' };
+var PRIORITIES = ['high', 'medium', 'low'];
+var WORK_TYPES = ['remote', 'hybrid', 'onsite'];
+var WORK_LABEL = { remote: 'Remote', hybrid: 'Hybrid', onsite: 'On-site' };
+var CUR_SYM = { USD: '$', EUR: '€', GBP: '£', PKR: 'Rs ', INR: '₹', AED: 'AED ', CAD: 'CA$', AUD: 'A$' };
+
+function pad2(n) { return (n < 10 ? '0' : '') + n; }
+function dayKey(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+function parseDayKey(k) {
+  var p = String(k).split('-');
+  return new Date(+p[0], (+p[1]) - 1, +p[2], 12, 0, 0);
+}
+function addDaysKey(k, n) {
+  var d = parseDayKey(k); d.setDate(d.getDate() + n); return dayKey(d);
+}
+function uid() {
+  return 'a' + Date.now().toString(36) + Math.random().toString(36).slice(2, 9);
+}
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+
+/* ---- salary formatting ---- */
+function fmtMoney(n, cur) {
+  var sym = CUR_SYM[cur] || (cur ? cur + ' ' : '$');
+  if (n >= 1000 && n % 1000 === 0) return sym + Math.round(n / 1000) + 'k';
+  return sym + Number(n).toLocaleString('en-US');
+}
+function formatSalary(a) {
+  var cur = a.currency || 'USD';
+  var lo = +a.salaryMin || 0, hi = +a.salaryMax || 0;
+  if (lo > 0 && hi > 0) {
+    if (hi < lo) { var t = lo; lo = hi; hi = t; }
+    return fmtMoney(lo, cur) + '–' + fmtMoney(hi, cur);
+  }
+  if (lo > 0) return fmtMoney(lo, cur) + '+';
+  if (hi > 0) return 'up to ' + fmtMoney(hi, cur);
+  return '';
+}
+
+/* ---- date labels ---- */
+function fmtDay(k) { // 'YYYY-MM-DD' -> 'Sep 30'
+  if (!k) return '';
+  var M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var d = parseDayKey(k);
+  return M[d.getMonth()] + ' ' + d.getDate();
+}
+function fmtDayYear(k) { // -> 'Sep 30, 2026'
+  if (!k) return '';
+  return fmtDay(k) + ', ' + parseDayKey(k).getFullYear();
+}
+function fmtInterview(dt) { // 'YYYY-MM-DDT HH:MM' -> 'Oct 2 · 2:30 PM'
+  if (!dt) return '';
+  var p = String(dt).split('T');
+  var d = parseDayKey(p[0]);
+  var M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var hm = (p[1] || '09:00').split(':');
+  var h = +hm[0], m = hm[1] || '00';
+  var ap = h >= 12 ? 'PM' : 'AM'; h = h % 12; if (h === 0) h = 12;
+  return M[d.getMonth()] + ' ' + d.getDate() + ' · ' + h + ':' + m + ' ' + ap;
+}
+function relDay(k, today) { // 'Today' | 'Tomorrow' | 'Yesterday' | 'in 3 days' | '2 days ago'
+  if (!k) return '';
+  var diff = Math.round((parseDayKey(k) - parseDayKey(today)) / 86400000);
+  if (diff === 0) return 'Today';
+  if (diff === 1) return 'Tomorrow';
+  if (diff === -1) return 'Yesterday';
+  if (diff > 1) return 'in ' + diff + ' days';
+  return Math.abs(diff) + ' days ago';
+}
+
+/* ---- records ---- */
+function blankApplication(today) {
+  return {
+    id: uid(), company: '', role: '',
+    salaryMin: '', salaryMax: '', currency: 'USD',
+    location: '', workType: 'remote', link: '',
+    appliedDate: today, priority: 'medium', stage: 'wishlist',
+    interviewAt: '', followUpDate: '', notes: '',
+    contacts: [],
+    createdAt: new Date().toISOString(),
+    stageHistory: [{ stage: 'wishlist', at: new Date().toISOString() }]
+  };
+}
+function blankContact() { return { name: '', role: '', detail: '' }; }
+
+function sanitizeApp(f) {
+  var a = {
+    company: String(f.company || '').trim(),
+    role: String(f.role || '').trim(),
+    salaryMin: f.salaryMin === '' || f.salaryMin == null ? '' : Math.max(0, Math.floor(+f.salaryMin) || 0),
+    salaryMax: f.salaryMax === '' || f.salaryMax == null ? '' : Math.max(0, Math.floor(+f.salaryMax) || 0),
+    currency: CUR_SYM[f.currency] !== undefined ? f.currency : 'USD',
+    location: String(f.location || '').trim(),
+    workType: WORK_TYPES.indexOf(f.workType) >= 0 ? f.workType : 'remote',
+    link: String(f.link || '').trim(),
+    appliedDate: /^\d{4}-\d{2}-\d{2}$/.test(f.appliedDate || '') ? f.appliedDate : '',
+    priority: PRIORITIES.indexOf(f.priority) >= 0 ? f.priority : 'medium',
+    stage: STAGES.indexOf(f.stage) >= 0 ? f.stage : 'wishlist',
+    interviewAt: String(f.interviewAt || ''),
+    followUpDate: /^\d{4}-\d{2}-\d{2}$/.test(f.followUpDate || '') ? f.followUpDate : '',
+    notes: String(f.notes || ''),
+    contacts: Array.isArray(f.contacts) ? f.contacts.map(function (c) {
+      return { name: String(c.name || '').trim(), role: String(c.role || '').trim(), detail: String(c.detail || '').trim() };
+    }).filter(function (c) { return c.name || c.role || c.detail; }) : []
+  };
+  return a;
+}
+
+/* ---- store ---- */
+function createStore(storage, nowFn) {
+  nowFn = nowFn || function () { return new Date(); };
+  var data = { apps: [] };
+  try {
+    var raw = storage.getItem(STORE_KEY);
+    if (raw) {
+      var parsed = JSON.parse(raw);
+      if (parsed && Array.isArray(parsed.apps)) data = parsed;
+    }
+  } catch (e) { data = { apps: [] }; }
+
+  function save() {
+    try { storage.setItem(STORE_KEY, JSON.stringify(data)); } catch (e) {}
+  }
+  function get(id) {
+    for (var i = 0; i < data.apps.length; i++) if (data.apps[i].id === id) return data.apps[i];
+    return null;
+  }
+  function touchStage(app, stage) {
+    var last = app.stageHistory[app.stageHistory.length - 1];
+    if (!last || last.stage !== stage) app.stageHistory.push({ stage: stage, at: nowFn().toISOString() });
+  }
+
+  return {
+    data: data, save: save,
+    get: get,
+    add: function (fields) {
+      var a = sanitizeApp(fields || {});
+      if (!a.company || !a.role) return null;
+      var app = blankApplication(dayKey(nowFn()));
+      for (var k in a) app[k] = a[k];
+      app.id = uid();
+      if (!app.appliedDate) app.appliedDate = dayKey(nowFn());
+      app.createdAt = nowFn().toISOString();
+      app.stageHistory = [{ stage: app.stage, at: nowFn().toISOString() }];
+      data.apps.unshift(app);
+      save();
+      return app;
+    },
+    update: function (id, fields) {
+      var app = get(id);
+      if (!app) return false;
+      var a = sanitizeApp(fields || {});
+      if (!a.company || !a.role) return false;
+      var stageChanged = a.stage !== app.stage;
+      for (var k in a) app[k] = a[k];
+      if (stageChanged) touchStage(app, app.stage);
+      save();
+      return true;
+    },
+    remove: function (id) {
+      var i;
+      for (i = 0; i < data.apps.length; i++) if (data.apps[i].id === id) break;
+      if (i >= data.apps.length) return false;
+      data.apps.splice(i, 1);
+      save();
+      return true;
+    },
+    moveStage: function (id, stage) {
+      var app = get(id);
+      if (!app || STAGES.indexOf(stage) < 0) return false;
+      if (app.stage === stage) return true;
+      app.stage = stage;
+      if (stage === 'applied' && !app.appliedDate) app.appliedDate = dayKey(nowFn());
+      touchStage(app, stage);
+      save();
+      return true;
+    },
+    clear: function () { data.apps = []; save(); },
+    importJSON: function (text) {
+      var obj;
+      try { obj = JSON.parse(text); } catch (e) { return { ok: false, error: 'Not valid JSON.' }; }
+      var list = Array.isArray(obj) ? obj : obj.apps;
+      if (!Array.isArray(list)) return { ok: false, error: 'No applications found in file.' };
+      var n = 0;
+      for (var i = 0; i < list.length; i++) {
+        var a = sanitizeApp(list[i] || {});
+        if (!a.company || !a.role) continue;
+        var app = blankApplication(dayKey(nowFn()));
+        for (var k in a) app[k] = a[k];
+        app.id = uid();
+        if (!app.createdAt) app.createdAt = nowFn().toISOString();
+        if (!Array.isArray(app.stageHistory) || !app.stageHistory.length)
+          app.stageHistory = [{ stage: app.stage, at: nowFn().toISOString() }];
+        data.apps.push(app);
+        n++;
+      }
+      save();
+      return { ok: true, count: n };
+    },
+    exportJSON: function () { return JSON.stringify({ app: 'HuntBoard', version: 1, apps: data.apps }, null, 2); }
+  };
+}
+
+/* ---- scheduling ---- */
+function isTerminal(stage) { return stage === 'offer' || stage === 'rejected'; }
+
+function overdueFollowUps(apps, today) {
+  return apps.filter(function (a) {
+    return a.followUpDate && a.followUpDate < today && !isTerminal(a.stage);
+  }).sort(function (x, y) { return x.followUpDate < y.followUpDate ? -1 : 1; });
+}
+function upcomingFollowUps(apps, today, daysAhead) {
+  daysAhead = daysAhead == null ? 14 : daysAhead;
+  var end = addDaysKey(today, daysAhead);
+  return apps.filter(function (a) {
+    return a.followUpDate && a.followUpDate >= today && a.followUpDate <= end && !isTerminal(a.stage);
+  }).sort(function (x, y) { return x.followUpDate < y.followUpDate ? -1 : 1; });
+}
+function upcomingInterviews(apps, today, daysAhead) {
+  daysAhead = daysAhead == null ? 14 : daysAhead;
+  var start = today + 'T00:00', end = addDaysKey(today, daysAhead) + 'T23:59';
+  return apps.filter(function (a) {
+    return a.interviewAt && a.interviewAt >= start && a.interviewAt <= end && !isTerminal(a.stage);
+  }).sort(function (x, y) { return x.interviewAt < y.interviewAt ? -1 : 1; });
+}
+function pastInterviews(apps, today) {
+  var start = today + 'T00:00';
+  return apps.filter(function (a) {
+    return a.interviewAt && a.interviewAt < start && a.stage === 'interview';
+  }).sort(function (x, y) { return x.interviewAt < y.interviewAt ? -1 : 1; });
+}
+
+/* ---- stats ---- */
+function appsPerWeek(apps, today, weeks) {
+  weeks = weeks || 8;
+  var out = [];
+  var end = parseDayKey(today);
+  // week buckets: most recent 7-day window ending today, going back
+  for (var w = weeks - 1; w >= 0; w--) {
+    var bEnd = new Date(end.getTime() - w * 7 * 86400000);
+    var bStart = new Date(bEnd.getTime() - 6 * 86400000);
+    var ks = dayKey(bStart), ke = dayKey(bEnd);
+    var count = apps.filter(function (a) {
+      var dk = a.createdAt ? dayKey(new Date(a.createdAt)) : '';
+      return dk >= ks && dk <= ke;
+    }).length;
+    out.push({ key: ks, label: fmtDay(ks), count: count, isCurrent: w === 0 });
+  }
+  return out;
+}
+function funnelCounts(apps) {
+  var c = { wishlist: 0, applied: 0, interview: 0, offer: 0, rejected: 0 };
+  apps.forEach(function (a) { if (c[a.stage] !== undefined) c[a.stage]++; });
+  return c;
+}
+function responseRate(apps) {
+  var denom = 0, num = 0;
+  apps.forEach(function (a) {
+    if (a.stage === 'wishlist') return;
+    denom++;
+    if (a.stage === 'interview' || a.stage === 'offer') num++;
+  });
+  return denom === 0 ? 0 : Math.round(num / denom * 100);
+}
+function conversion(apps, from, to) {
+  // share of `from`-or-later pool that reached at least `to`
+  var order = { applied: 0, interview: 1, offer: 2 };
+  var pool = 0, reached = 0;
+  apps.forEach(function (a) {
+    if (a.stage === 'wishlist' || a.stage === 'rejected') return;
+    if (order[a.stage] >= order[from]) {
+      pool++;
+      if (order[a.stage] >= order[to]) reached++;
+    }
+  });
+  return pool === 0 ? 0 : Math.round(reached / pool * 100);
+}
+function interviewToOffer(apps) {
+  var pool = 0, got = 0;
+  apps.forEach(function (a) {
+    if (a.stage === 'interview') pool++;
+    if (a.stage === 'offer') { pool++; got++; }
+  });
+  return pool === 0 ? 0 : Math.round(got / pool * 100);
+}
+
+/* ---- search & filter ---- */
+function filterApps(apps, opts) {
+  opts = opts || {};
+  var q = String(opts.q || '').trim().toLowerCase();
+  var pris = opts.priorities || [], types = opts.workTypes || [];
+  return apps.filter(function (a) {
+    if (q) {
+      var hay = (a.company + ' ' + a.role + ' ' + a.location + ' ' + a.notes).toLowerCase();
+      if (hay.indexOf(q) < 0) return false;
+    }
+    if (pris.length && pris.indexOf(a.priority) < 0) return false;
+    if (types.length && types.indexOf(a.workType) < 0) return false;
+    return true;
+  });
+}
+
+/* ---- sample data ---- */
+function sampleData(today) {
+  function mk(o) {
+    var a = blankApplication(today);
+    for (var k in o) a[k] = o[k];
+    a.id = uid();
+    return a;
+  }
+  var daysAgo = function (n, hh) { var d = new Date(parseDayKey(addDaysKey(today, -n))); d.setHours(hh || 12, 0, 0, 0); return d.toISOString(); };
+  var list = [
+    mk({ company: 'Northwind Labs', role: 'Senior Frontend Engineer', salaryMin: 120000, salaryMax: 150000,
+      location: 'Remote', workType: 'remote', priority: 'high', stage: 'interview',
+      appliedDate: addDaysKey(today, -9), interviewAt: addDaysKey(today, 1) + 'T14:00',
+      followUpDate: addDaysKey(today, 4), notes: '3 rounds: screen, tech, system design. Prep React perf.',
+      contacts: [{ name: 'Sara Q.', role: 'Recruiter', detail: 'sara@northwind.dev' }],
+      createdAt: daysAgo(16), stageHistory: [{ stage: 'wishlist', at: daysAgo(16) }, { stage: 'applied', at: daysAgo(9) }, { stage: 'interview', at: daysAgo(2) }] }),
+    mk({ company: 'Acme Corp', role: 'Product Designer', salaryMin: 90000, salaryMax: 110000,
+      location: 'Berlin', workType: 'hybrid', priority: 'medium', stage: 'applied',
+      appliedDate: addDaysKey(today, -6), followUpDate: addDaysKey(today, -1),
+      notes: 'Portfolio link sent. Follow up with Jonas.',
+      contacts: [{ name: 'Jonas Weber', role: 'Hiring Manager', detail: 'jonas@acme.io' }],
+      createdAt: daysAgo(6), stageHistory: [{ stage: 'wishlist', at: daysAgo(8) }, { stage: 'applied', at: daysAgo(6) }] }),
+    mk({ company: 'Globex', role: 'Backend Engineer (Go)', salaryMin: 130000, salaryMax: 160000,
+      location: 'Remote', workType: 'remote', priority: 'low', stage: 'wishlist',
+      notes: 'Interesting infra team. Apply after Northwind process.',
+      createdAt: daysAgo(2), stageHistory: [{ stage: 'wishlist', at: daysAgo(2) }] }),
+    mk({ company: 'Initech', role: 'DevOps Engineer', salaryMin: 105000, salaryMax: 125000,
+      location: 'Austin, TX', workType: 'onsite', priority: 'medium', stage: 'applied',
+      appliedDate: addDaysKey(today, -13), followUpDate: addDaysKey(today, 2),
+      link: 'https://example.com/jobs/initech-devops',
+      createdAt: daysAgo(13), stageHistory: [{ stage: 'applied', at: daysAgo(13) }] }),
+    mk({ company: 'Umbrella Health', role: 'Data Analyst', salaryMin: 85000, salaryMax: 100000, currency: 'USD',
+      location: 'Remote', workType: 'remote', priority: 'high', stage: 'interview',
+      appliedDate: addDaysKey(today, -11), interviewAt: addDaysKey(today, 3) + 'T10:30',
+      followUpDate: addDaysKey(today, 6), notes: 'SQL + case study round.',
+      contacts: [{ name: 'Priya N.', role: 'Recruiter', detail: '+1 555-0134' }],
+      createdAt: daysAgo(23), stageHistory: [{ stage: 'wishlist', at: daysAgo(23) }, { stage: 'applied', at: daysAgo(11) }, { stage: 'interview', at: daysAgo(1) }] }),
+    mk({ company: 'Stark Industries', role: 'Full-stack Developer', salaryMin: 140000, salaryMax: 170000,
+      location: 'New York', workType: 'hybrid', priority: 'high', stage: 'offer',
+      appliedDate: addDaysKey(today, -30), notes: 'Offer received! Negotiate start date.',
+      createdAt: daysAgo(37), stageHistory: [{ stage: 'wishlist', at: daysAgo(37) }, { stage: 'applied', at: daysAgo(30) }, { stage: 'interview', at: daysAgo(18) }, { stage: 'offer', at: daysAgo(3) }] }),
+    mk({ company: 'Hooli', role: 'Junior QA Engineer', salaryMin: 60000, salaryMax: 70000,
+      location: 'Remote', workType: 'remote', priority: 'low', stage: 'rejected',
+      appliedDate: addDaysKey(today, -40), notes: 'Rejection email after screen. Ask for feedback.',
+      createdAt: daysAgo(44), stageHistory: [{ stage: 'applied', at: daysAgo(40) }, { stage: 'rejected', at: daysAgo(33) }] })
+  ];
+  return list;
+}
+/*__HUNTBOARD_CORE_END__*/
+</script>
+<script>
+'use strict';
+/* HuntBoard UI layer (DOM). Core logic above is tested in Node. */
+var store = createStore(window.localStorage || { getItem: function(){return null;}, setItem: function(){} });
+var todayKey = dayKey(new Date());
+var editingId = null;
+var dragId = null;
+var justDragged = false;
+
+var STAGE_COLOR = { wishlist:'#8A7F68', applied:'#2D6CDF', interview:'#C77408', offer:'#1E9E6A', rejected:'#B0492F' };
+var PRI_LABEL = { high:'High', medium:'Medium', low:'Low' };
+
+function $(id){ return document.getElementById(id); }
+function toast(msg){
+  var t = $('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._h); t._h = setTimeout(function(){ t.classList.remove('show'); }, 2600);
+}
+function filters(){
+  return { q: $('q').value,
+    priorities: $('fPri').value ? [$('fPri').value] : [],
+    workTypes: $('fType').value ? [$('fType').value] : [] };
+}
+function clearVisible(){ $('clearFilters').style.display = ($('q').value || $('fPri').value || $('fType').value) ? '' : 'none'; }
+
+/* ---------- board ---------- */
+function cardHTML(a){
+  var sal = formatSalary(a);
+  var chips = '';
+  if (sal) chips += '<span class="chip salary">' + esc(sal) + '</span>';
+  chips += '<span class="chip">' + esc(WORK_LABEL[a.workType] || a.workType) + '</span>';
+  if (a.location) chips += '<span class="chip">' + esc(a.location) + '</span>';
+  if (a.interviewAt && !isTerminal(a.stage)){
+    var ivDay = String(a.interviewAt).split('T')[0];
+    var cls = ivDay < todayKey ? 'iv overdue' : 'iv';
+    chips += '<span class="chip ' + cls + '">◷ ' + esc(fmtInterview(a.interviewAt)) + '</span>';
+  }
+  if (a.followUpDate && !isTerminal(a.stage)){
+    var fuCls = a.followUpDate < todayKey ? 'fu overdue' : 'fu';
+    var fuTxt = a.followUpDate < todayKey ? 'Follow-up OVERDUE' : 'Follow up ' + relDay(a.followUpDate, todayKey);
+    chips += '<span class="chip ' + fuCls + '">✉ ' + esc(fuTxt) + '</span>';
+  }
+  var applied = a.appliedDate ? '<span class="when">Applied ' + esc(fmtDay(a.appliedDate)) + '</span>' : '<span class="when"></span>';
+  return '<div class="appcard pri-' + esc(a.priority) + '" draggable="true" data-id="' + esc(a.id) + '">' +
+    '<div class="row1"><h3>' + esc(a.company) + '</h3>' +
+    '<button class="menubtn" data-menu="' + esc(a.id) + '" aria-label="Card options">⋯</button></div>' +
+    '<div class="role">' + esc(a.role) + '</div>' +
+    '<div class="chips">' + chips + '</div>' +
+    '<div class="cardfoot">' + applied + '</div></div>';
+}
+
+function renderBoard(){
+  var f = filters();
+  var board = $('board'); board.innerHTML = '';
+  STAGES.forEach(function(st){
+    var col = document.createElement('div');
+    col.className = 'col'; col.dataset.stage = st;
+    var apps = filterApps(store.data.apps.filter(function(a){ return a.stage === st; }), f);
+    var head = '<div class="colhead"><span class="dot" style="background:' + STAGE_COLOR[st] + '"></span>' +
+      '<h2>' + STAGE_LABEL[st] + '</h2><span class="count">' + apps.length + '</span>' +
+      '<button class="coladd" data-addstage="' + st + '" aria-label="Add to ' + STAGE_LABEL[st] + '">+</button></div>';
+    var body = document.createElement('div');
+    body.className = 'colbody'; body.dataset.stage = st;
+    body.innerHTML = apps.length ? apps.map(cardHTML).join('') : '<div class="empty">Drop cards here<br>or tap + to add</div>';
+    col.innerHTML = head;
+    col.appendChild(body);
+    board.appendChild(col);
+  });
+  bindCards();
+  bindDrops();
+  var alerts = overdueFollowUps(store.data.apps, todayKey).length + pastInterviews(store.data.apps, todayKey).length;
+  var sc = $('schedCount');
+  if (alerts > 0){ sc.style.display = ''; sc.textContent = alerts; } else { sc.style.display = 'none'; }
+}
+
+function bindCards(){
+  document.querySelectorAll('.appcard').forEach(function(el){
+    el.addEventListener('click', function(e){
+      if (justDragged) return;
+      if (e.target.closest('.menubtn')) return;
+      openEditor(el.dataset.id);
+    });
+    el.addEventListener('dragstart', function(e){
+      justDragged = true;
+      dragId = el.dataset.id; el.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      try { e.dataTransfer.setData('text/plain', dragId); } catch(err){}
+    });
+    el.addEventListener('dragend', function(){ el.classList.remove('dragging'); dragId = null;
+      setTimeout(function(){ justDragged = false; }, 60);
+      document.querySelectorAll('.colbody.dragover').forEach(function(c){ c.classList.remove('dragover'); });
+    });
+  });
+  document.querySelectorAll('[data-menu]').forEach(function(b){
+    b.addEventListener('click', function(e){ e.stopPropagation(); openCardMenu(b, b.dataset.menu); });
+  });
+  document.querySelectorAll('[data-addstage]').forEach(function(b){
+    b.addEventListener('click', function(){ openEditor(null, b.dataset.addstage); });
+  });
+}
+function bindDrops(){
+  document.querySelectorAll('.colbody').forEach(function(col){
+    col.addEventListener('dragover', function(e){ e.preventDefault(); col.classList.add('dragover'); });
+    col.addEventListener('dragleave', function(){ col.classList.remove('dragover'); });
+    col.addEventListener('drop', function(e){
+      e.preventDefault(); col.classList.remove('dragover');
+      var id = dragId; dragId = null;
+      if (!id) return;
+      var st = col.dataset.stage;
+      if (store.moveStage(id, st)){ toast('Moved to ' + STAGE_LABEL[st]); renderAll(); }
+    });
+  });
+}
+
+/* ---------- card "move to" menu (touch-friendly) ---------- */
+function closeMenus(){ $('menu').classList.remove('open'); $('cardmenu').classList.remove('open'); }
+function placeMenu(m, x, y){
+  m.style.left = Math.min(x, window.innerWidth - 230) + 'px';
+  m.style.top = Math.min(y, window.innerHeight - 320) + 'px';
+  m.classList.add('open');
+}
+function openCardMenu(btn, id){
+  closeMenus();
+  var a = store.get(id); if (!a) return;
+  var m = $('cardmenu');
+  var html = '<div class="mhead">Move to</div>';
+  STAGES.forEach(function(st){
+    if (st === a.stage) return;
+    html += '<button data-mv="' + st + '" data-id="' + esc(id) + '">' +
+      '<span class="dot" style="display:inline-block;background:' + STAGE_COLOR[st] + ';margin-right:8px"></span>' +
+      STAGE_LABEL[st] + '</button>';
+  });
+  html += '<hr><button data-edit="' + esc(id) + '">✎ Edit details</button>' +
+          '<button data-del="' + esc(id) + '" style="color:#A93226">🗑 Delete</button>';
+  m.innerHTML = html;
+  var r = btn.getBoundingClientRect();
+  placeMenu(m, r.left - 160, r.bottom + 6);
+  m.querySelectorAll('[data-mv]').forEach(function(b){
+    b.addEventListener('click', function(){
+      if (store.moveStage(b.dataset.id, b.dataset.mv)){ toast('Moved to ' + STAGE_LABEL[b.dataset.mv]); renderAll(); }
+      closeMenus();
+    });
+  });
+  m.querySelectorAll('[data-edit]').forEach(function(b){
+    b.addEventListener('click', function(){ closeMenus(); openEditor(b.dataset.edit); });
+  });
+  m.querySelectorAll('[data-del]').forEach(function(b){
+    b.addEventListener('click', function(){ closeMenus(); askDelete(b.dataset.del); });
+  });
+}
+
+/* ---------- schedule view ---------- */
+function schedRow(a, dateLabel, sub, cls){
+  var d = parseDayKey(String(dateLabel).split('T')[0]);
+  var M = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  return '<div class="schedrow ' + cls + '" data-open="' + esc(a.id) + '">' +
+    '<div class="datebox"><b>' + d.getDate() + '</b><span>' + M[d.getMonth()] + '</span></div>' +
+    '<div class="info"><b>' + esc(a.company) + ' — ' + esc(a.role) + '</b><div>' + esc(sub) + '</div></div>' +
+    '<div class="go">›</div></div>';
+}
+function renderSchedule(){
+  var el = $('sched');
+  var od = overdueFollowUps(store.data.apps, todayKey);
+  var past = pastInterviews(store.data.apps, todayKey);
+  var ivs = upcomingInterviews(store.data.apps, todayKey, 14);
+  var fus = upcomingFollowUps(store.data.apps, todayKey, 14);
+  var html = '';
+  if (od.length || past.length){
+    html += '<h2>Needs your attention <span class="tag red">' + (od.length + past.length) + ' overdue</span></h2>';
+    od.forEach(function(a){
+      html += schedRow(a, a.followUpDate, 'Follow-up was due ' + relDay(a.followUpDate, todayKey) + ' · ' + STAGE_LABEL[a.stage], 'overdue');
+    });
+    past.forEach(function(a){
+      html += schedRow(a, a.interviewAt, 'Interview was ' + relDay(String(a.interviewAt).split('T')[0], todayKey) + ' — update the stage', 'overdue');
+    });
+  }
+  html += '<h2>Upcoming interviews <span class="tag amber">' + ivs.length + '</span></h2>';
+  html += ivs.length ? ivs.map(function(a){
+    return schedRow(a, a.interviewAt, fmtInterview(a.interviewAt) + ' (' + relDay(String(a.interviewAt).split('T')[0], todayKey) + ')', 'soon');
+  }).join('') : '<div class="empty">No interviews scheduled in the next 14 days.</div>';
+  html += '<h2>Upcoming follow-ups <span class="tag teal">' + fus.length + '</span></h2>';
+  html += fus.length ? fus.map(function(a){
+    return schedRow(a, a.followUpDate, 'Remind yourself to follow up ' + relDay(a.followUpDate, todayKey), '');
+  }).join('') : '<div class="empty">No follow-ups due in the next 14 days.</div>';
+  el.innerHTML = html;
+  el.querySelectorAll('[data-open]').forEach(function(r){
+    r.addEventListener('click', function(){ openEditor(r.dataset.open); });
+  });
+}
+
+/* ---------- stats view ---------- */
+function barSVG(data){
+  var W = 640, H = 190, padL = 8, padB = 26, padT = 14;
+  var max = Math.max.apply(null, data.map(function(d){ return d.count; }).concat([1]));
+  var bw = (W - padL * 2) / data.length;
+  var s = '';
+  data.forEach(function(d, i){
+    var h = Math.max(4, (H - padB - padT) * d.count / max);
+    var x = padL + i * bw + bw * 0.18, w = bw * 0.64;
+    var y = H - padB - h;
+    var col = d.isCurrent ? '#E4572E' : (d.count ? '#0F6B6E' : '#DCD2B8');
+    s += '<rect x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + h.toFixed(1) +
+         '" rx="5" fill="' + col + '"/>';
+    if (d.count) s += '<text x="' + (x + w / 2).toFixed(1) + '" y="' + (y - 7).toFixed(1) +
+         '" text-anchor="middle" font-size="13" font-weight="700" fill="#3A3324">' + d.count + '</text>';
+    s += '<text x="' + (x + w / 2).toFixed(1) + '" y="' + (H - 8) + '" text-anchor="middle" font-size="11.5" fill="#8A7F68">' +
+         esc(d.label) + '</text>';
+  });
+  return '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" role="img">' + s + '</svg>';
+}
+function renderStats(){
+  var apps = store.data.apps;
+  var total = apps.length;
+  var rr = responseRate(apps);
+  var ivCount = apps.filter(function(a){ return a.stage === 'interview'; }).length;
+  var offers = apps.filter(function(a){ return a.stage === 'offer'; }).length;
+  $('kpis').innerHTML =
+    kpi(total, 'Applications') + kpi(rr + '%', 'Response rate') +
+    kpi(ivCount, 'In interview') + kpi(offers, 'Offers');
+  $('weekChart').innerHTML = barSVG(appsPerWeek(apps, todayKey, 8));
+
+  var fc = funnelCounts(apps);
+  var stages = [['wishlist','Wishlist'],['applied','Applied'],['interview','Interview'],['offer','Offer']];
+  var maxF = Math.max.apply(null, stages.map(function(s){ return fc[s[0]]; }).concat([1]));
+  var fh = '';
+  stages.forEach(function(s, i){
+    var pct = Math.round(fc[s[0]] / maxF * 100);
+    fh += '<div class="funnelrow"><div class="fl">' + s[1] + '</div>' +
+      '<div class="funnelbar"><i style="width:' + pct + '%;background:' + STAGE_COLOR[s[0]] + '"></i>' +
+      '<b>' + fc[s[0]] + '</b></div><div class="funnelconv">';
+    if (i > 0){
+      var prev = stages[i-1][0], cur = s[0];
+      var conv = cur === 'offer' ? interviewToOffer(apps) : conversion(apps, prev === 'wishlist' ? 'applied' : prev, cur);
+      fh += (prev === 'wishlist' ? '—' : conv + '% convert');
+    }
+    fh += '</div></div>';
+  });
+  fh += '<p class="sub" style="margin-top:10px">Response rate: <b>' + rr + '%</b> of submitted applications reached interview or offer. ' +
+        'Interview → offer: <b>' + interviewToOffer(apps) + '%</b>.</p>';
+  $('funnel').innerHTML = fh;
+
+  var sd = '';
+  STAGES.forEach(function(st){
+    var n = fc[st];
+    var pct = total ? Math.round(n / total * 100) : 0;
+    sd += '<div class="funnelrow"><div class="fl">' + STAGE_LABEL[st] + '</div>' +
+      '<div class="funnelbar"><i style="width:' + pct + '%;background:' + STAGE_COLOR[st] + '"></i>' +
+      '<b>' + n + ' · ' + pct + '%</b></div><div class="funnelconv"></div></div>';
+  });
+  $('stageDist').innerHTML = sd;
+}
+function kpi(v, l){
+  return '<div class="kpi"><div class="v serif">' + v + '</div><div class="l">' + l + '</div></div>';
+}
+
+/* ---------- editor ---------- */
+function contactRow(c){
+  c = c || blankContact();
+  var div = document.createElement('div');
+  div.className = 'contactrow';
+  div.innerHTML = '<input placeholder="Name" value="' + esc(c.name) + '" data-k="name">' +
+    '<input placeholder="Role" value="' + esc(c.role) + '" data-k="role">' +
+    '<input placeholder="Email / phone" value="' + esc(c.detail) + '" data-k="detail">' +
+    '<button class="rm" aria-label="Remove contact">×</button>';
+  div.querySelector('.rm').addEventListener('click', function(){ div.remove(); });
+  return div;
+}
+function openEditor(id, presetStage){
+  editingId = id || null;
+  var a = id ? store.get(id) : null;
+  if (id && !a) return;
+  $('dlgTitle').textContent = a ? 'Edit application' : 'New application';
+  $('dlgDelete').style.display = a ? '' : 'none';
+  var g = function(k){ return a ? (a[k] == null ? '' : a[k]) : ''; };
+  $('fCompany').value = g('company'); $('fRole').value = g('role');
+  $('fSalMin').value = g('salaryMin'); $('fSalMax').value = g('salaryMax');
+  $('fCur').value = a ? a.currency : 'USD';
+  $('fType2').value = a ? a.workType : 'remote';
+  $('fLoc').value = g('location'); $('fLink').value = g('link');
+  $('fApplied').value = g('appliedDate') || (a ? '' : todayKey);
+  $('fPri2').value = a ? a.priority : 'medium';
+  $('fStage').value = a ? a.stage : (presetStage || 'wishlist');
+  $('fInterview').value = g('interviewAt'); $('fFollowup').value = g('followUpDate');
+  $('fNotes').value = g('notes');
+  var cc = $('contacts'); cc.innerHTML = '';
+  (a && a.contacts.length ? a.contacts : [blankContact()]).forEach(function(c){ cc.appendChild(contactRow(c)); });
+  $('overlay').classList.add('open');
+  setTimeout(function(){ $('fCompany').focus(); }, 60);
+}
+function closeEditor(){ $('overlay').classList.remove('open'); editingId = null; }
+function readContacts(){
+  var out = [];
+  document.querySelectorAll('#contacts .contactrow').forEach(function(r){
+    var c = { name: '', role: '', detail: '' };
+    r.querySelectorAll('input').forEach(function(i){ c[i.dataset.k] = i.value; });
+    if (c.name.trim() || c.role.trim() || c.detail.trim()) out.push(c);
+  });
+  return out;
+}
+function saveEditor(){
+  var fields = {
+    company: $('fCompany').value, role: $('fRole').value,
+    salaryMin: $('fSalMin').value, salaryMax: $('fSalMax').value, currency: $('fCur').value,
+    workType: $('fType2').value, location: $('fLoc').value, link: $('fLink').value,
+    appliedDate: $('fApplied').value, priority: $('fPri2').value, stage: $('fStage').value,
+    interviewAt: $('fInterview').value, followUpDate: $('fFollowup').value,
+    notes: $('fNotes').value, contacts: readContacts()
+  };
+  if (!fields.company.trim() || !fields.role.trim()){ toast('Company and role are required'); return; }
+  if (editingId){
+    if (store.update(editingId, fields)) toast('Application updated');
+  } else {
+    var app = store.add(fields);
+    if (!app){ toast('Could not save — company and role are required'); return; }
+    toast('Added to ' + STAGE_LABEL[app.stage]);
+  }
+  closeEditor(); renderAll();
+}
+function askDelete(id){
+  var a = store.get(id); if (!a) return;
+  if (confirm('Delete "' + a.company + ' — ' + a.role + '"? This cannot be undone.')){
+    store.remove(id); closeEditor(); renderAll(); toast('Application deleted');
+  }
+}
+
+/* ---------- main menu ---------- */
+function openMenu(){
+  closeMenus();
+  var m = $('menu');
+  var hasData = store.data.apps.length > 0;
+  m.innerHTML =
+    '<button data-act="export">⤓ Export backup (JSON)</button>' +
+    '<button data-act="import">⤒ Import backup (JSON)</button><hr>' +
+    '<button data-act="sample">✨ Load sample data</button>' +
+    (hasData ? '<button data-act="reset" style="color:#A93226">⟲ Clear all data</button>' : '');
+  var r = $('menuBtn').getBoundingClientRect();
+  placeMenu(m, r.right - 220, r.bottom + 8);
+  m.querySelectorAll('[data-act]').forEach(function(b){
+    b.addEventListener('click', function(){ closeMenus(); menuAct(b.dataset.act); });
+  });
+}
+function menuAct(act){
+  if (act === 'export'){
+    var blob = new Blob([store.exportJSON()], { type: 'application/json' });
+    var u = URL.createObjectURL(blob);
+    var l = document.createElement('a');
+    l.href = u; l.download = 'huntboard-backup-' + todayKey + '.json';
+    document.body.appendChild(l); l.click(); l.remove();
+    setTimeout(function(){ URL.revokeObjectURL(u); }, 2000);
+    toast('Backup downloaded');
+  } else if (act === 'import'){
+    var inp = document.createElement('input');
+    inp.type = 'file'; inp.accept = '.json,application/json';
+    inp.onchange = function(){
+      var f = inp.files[0]; if (!f) return;
+      var rd = new FileReader();
+      rd.onload = function(){
+        var res = store.importJSON(rd.result);
+        if (res.ok){ renderAll(); toast('Imported ' + res.count + ' application' + (res.count === 1 ? '' : 's')); }
+        else toast('Import failed: ' + res.error);
+      };
+      rd.readAsText(f);
+    };
+    inp.click();
+  } else if (act === 'sample'){
+    if (store.data.apps.length && !confirm('Load 7 sample applications? Your current data stays — samples are added.')) return;
+    sampleData(todayKey).forEach(function(a){ store.data.apps.push(a); });
+    store.save(); renderAll(); toast('Sample data loaded — explore away');
+  } else if (act === 'reset'){
+    if (confirm('Delete ALL applications? This cannot be undone.')){
+      store.clear(); renderAll(); toast('All data cleared');
+    }
+  }
+}
+
+/* ---------- init ---------- */
+function renderAll(){ renderBoard(); renderSchedule(); renderStats(); clearVisible(); }
+
+document.querySelectorAll('.tab').forEach(function(t){
+  t.addEventListener('click', function(){
+    document.querySelectorAll('.tab').forEach(function(x){ x.classList.remove('active'); });
+    t.classList.add('active');
+    document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
+    $('view-' + t.dataset.view).classList.add('active');
+    $('filterbar').style.display = t.dataset.view === 'board' ? '' : 'none';
+    closeMenus();
+  });
+});
+['q','fPri','fType'].forEach(function(id){
+  $(id).addEventListener('input', function(){ renderBoard(); clearVisible(); });
+});
+$('clearFilters').addEventListener('click', function(){
+  $('q').value = ''; $('fPri').value = ''; $('fType').value = '';
+  renderBoard(); clearVisible();
+});
+$('addBtn').addEventListener('click', function(){ openEditor(null); });
+$('menuBtn').addEventListener('click', function(e){ e.stopPropagation(); openMenu(); });
+$('dlgClose').addEventListener('click', closeEditor);
+$('dlgCancel').addEventListener('click', closeEditor);
+$('dlgSave').addEventListener('click', saveEditor);
+$('dlgDelete').addEventListener('click', function(){ if (editingId) askDelete(editingId); });
+$('addContact').addEventListener('click', function(){ $('contacts').appendChild(contactRow()); });
+$('overlay').addEventListener('click', function(e){ if (e.target === $('overlay')) closeEditor(); });
+document.addEventListener('click', function(e){
+  if (!e.target.closest('.menu') && !e.target.closest('#menuBtn') && !e.target.closest('[data-menu]')) closeMenus();
+});
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape'){ closeMenus(); if ($('overlay').classList.contains('open')) closeEditor(); }
+});
+
+renderAll();
+</script>
+</body>
+</html>

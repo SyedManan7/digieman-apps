@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ClientDesk — Simple CRM for Freelancers</title>
+<style>
+:root{
+  --paper:#F6F2E9; --card:#FFFFFF; --ink:#1D2534; --ink-soft:#5A6478;
+  --line:#E7E0D2; --accent:#D96C2C; --accent-deep:#B4531F; --navy:#22304A;
+  --green:#2E9E5B; --red:#D64545; --amber:#C98A1B; --blue:#2F6FED;
+  --shadow:0 2px 10px rgba(29,37,52,.08), 0 10px 30px rgba(29,37,52,.06);
+  --r:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Helvetica,Arial,sans-serif;
+  background:var(--paper); color:var(--ink); min-height:100vh; font-size:15px; line-height:1.45;
+  background-image:radial-gradient(rgba(29,37,52,.045) 1px, transparent 1px);
+  background-size:22px 22px;
+}
+button{font:inherit;cursor:pointer}
+input,select,textarea{font:inherit;color:var(--ink)}
+/* ---------- top bar ---------- */
+.topbar{position:sticky;top:0;z-index:40;background:rgba(246,242,233,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar-in{max-width:1280px;margin:0 auto;padding:12px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;letter-spacing:-.3px}
+.logo-mark{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-deep));display:flex;align-items:center;justify-content:center;color:#fff;font-size:19px;box-shadow:var(--shadow)}
+.logo small{font-weight:600;color:var(--ink-soft);font-size:12px;display:block;letter-spacing:.4px}
+.tabs{display:flex;gap:6px;background:#EDE7D8;padding:5px;border-radius:12px}
+.tab{border:0;background:transparent;padding:9px 18px;border-radius:9px;font-weight:700;color:var(--ink-soft)}
+.tab.active{background:#fff;color:var(--ink);box-shadow:var(--shadow)}
+.search{flex:1;min-width:160px;max-width:340px;position:relative}
+.search input{width:100%;padding:10px 14px 10px 38px;border:1px solid var(--line);border-radius:11px;background:#fff}
+.search::before{content:"⌕";position:absolute;left:13px;top:9px;color:var(--ink-soft);font-size:17px}
+.btn{border:0;border-radius:11px;padding:10px 18px;font-weight:700;background:var(--navy);color:#fff;box-shadow:var(--shadow)}
+.btn:hover{filter:brightness(1.08)}
+.btn.accent{background:linear-gradient(135deg,var(--accent),var(--accent-deep))}
+.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.btn.small{padding:7px 12px;font-size:13px;border-radius:9px}
+.btn.danger{background:var(--red)}
+/* ---------- layout ---------- */
+.wrap{max-width:1280px;margin:0 auto;padding:22px 18px 80px}
+.view{display:none}.view.active{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+/* ---------- dashboard ---------- */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:20px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;box-shadow:var(--shadow)}
+.stat .lbl{font-size:12px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.6px}
+.stat .val{font-size:28px;font-weight:800;letter-spacing:-.5px;margin-top:4px}
+.stat .sub{font-size:12.5px;color:var(--ink-soft);margin-top:2px}
+.stat.alert{border-left:5px solid var(--red)}
+.stat.good{border-left:5px solid var(--green)}
+.stat.warm{border-left:5px solid var(--accent)}
+.grid2{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:18px}
+.panel h3{font-size:16px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.panel h3 .count{background:var(--navy);color:#fff;font-size:12px;border-radius:20px;padding:2px 10px}
+.rem-item{display:flex;gap:12px;align-items:flex-start;padding:11px 4px;border-top:1px solid var(--line)}
+.rem-item:first-of-type{border-top:0}
+.rem-check{width:22px;height:22px;border-radius:7px;border:2px solid var(--line);background:#fff;flex:none;margin-top:2px}
+.rem-check.done{background:var(--green);border-color:var(--green);color:#fff;font-size:14px;line-height:1}
+.rem-body{flex:1}
+.rem-text{font-weight:600}
+.rem-meta{font-size:12.5px;color:var(--ink-soft)}
+.flag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.5px;border-radius:6px;padding:2px 8px;margin-left:8px;text-transform:uppercase}
+.flag.overdue{background:#FBE3E3;color:#B02A2A}
+.flag.today{background:#FDF0DC;color:#9A6206}
+.flag.soon{background:#E7F4EC;color:#1E7A44}
+.stagebar{margin:10px 0}
+.stagebar .row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px}
+.stagebar .track{height:10px;background:#EFE9DA;border-radius:6px;overflow:hidden}
+.stagebar .fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--accent),var(--amber))}
+.feed-item{padding:9px 4px;border-top:1px solid var(--line);font-size:13.5px}
+.feed-item:first-of-type{border-top:0}
+.feed-item time{color:var(--ink-soft);font-size:12px;display:block}
+.empty{padding:26px;text-align:center;color:var(--ink-soft)}
+.empty .big{font-size:34px;margin-bottom:8px}
+/* ---------- pipeline ---------- */
+.pipe-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+.pipe-head h2{font-size:22px;letter-spacing:-.4px}
+.board{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(250px,1fr);gap:14px;overflow-x:auto;padding-bottom:14px;align-items:start}
+.col{background:#EFE9DA;border:1px solid var(--line);border-radius:var(--r);padding:12px;min-height:200px}
+.col.dragover{background:#E4DCC8;outline:2px dashed var(--accent-deep);outline-offset:-4px}
+.col-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.col-name{font-weight:800;font-size:14px;display:flex;align-items:center;gap:8px}
+.dot{width:11px;height:11px;border-radius:50%;flex:none}
+.col-count{background:#fff;border:1px solid var(--line);border-radius:14px;font-size:12px;font-weight:700;padding:1px 10px;color:var(--ink-soft)}
+.col-total{font-size:12px;color:var(--ink-soft);margin-bottom:10px}
+.deal{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;box-shadow:var(--shadow);cursor:grab;position:relative}
+.deal:active{cursor:grabbing}
+.deal.dragging{opacity:.45;transform:rotate(2deg)}
+.deal.won{border-left:5px solid var(--green)}
+.deal.lost{border-left:5px solid var(--red);opacity:.75}
+.deal .t{font-weight:700;font-size:14.5px;padding-right:26px}
+.deal .c{font-size:12.5px;color:var(--ink-soft);margin-top:2px}
+.deal .v{font-size:19px;font-weight:800;margin-top:8px;letter-spacing:-.3px}
+.deal .meta{display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-size:12px;color:var(--ink-soft)}
+.pill{font-size:11px;font-weight:800;background:#EFE9DA;border-radius:7px;padding:2px 9px;color:var(--ink-soft)}
+.deal .menu-btn{position:absolute;top:8px;right:8px;border:0;background:#F1ECE0;width:26px;height:26px;border-radius:8px;font-weight:800;color:var(--ink-soft)}
+.deal .close-flag{color:var(--red);font-weight:700}
+.add-deal{width:100%;border:1.5px dashed #CFC5AC;background:transparent;border-radius:11px;padding:10px;color:var(--ink-soft);font-weight:700}
+.add-deal:hover{border-color:var(--accent);color:var(--accent-deep)}
+/* ---------- contacts ---------- */
+.cta-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+.cta-head h2{font-size:22px;letter-spacing:-.4px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.filters select{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.chip{border:1px solid var(--line);background:#fff;border-radius:20px;padding:6px 14px;font-size:13px;font-weight:600;color:var(--ink-soft)}
+.chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.contact-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--shadow);cursor:pointer;transition:transform .12s}
+.contact-card:hover{transform:translateY(-2px)}
+.avatar{width:46px;height:46px;border-radius:13px;background:linear-gradient(135deg,var(--navy),#3A4E75);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;flex:none}
+.cc-top{display:flex;gap:12px;align-items:center;margin-bottom:10px}
+.cc-top .nm{font-weight:800;font-size:16px}
+.cc-top .co{font-size:13px;color:var(--ink-soft)}
+.cc-row{font-size:13px;color:var(--ink-soft);margin-top:4px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tag{font-size:11.5px;font-weight:700;border-radius:7px;padding:3px 10px;background:#EFE9DA;color:#6B5B3E}
+.src{font-size:11.5px;font-weight:700;color:var(--ink-soft)}
+.cc-stats{display:flex;gap:14px;margin-top:10px;font-size:12.5px;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:10px}
+.cc-stats b{color:var(--ink)}
+/* ---------- drawer & modal ---------- */
+.scrim{position:fixed;inset:0;background:rgba(29,37,52,.45);z-index:60;display:none}
+.scrim.show{display:block}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(480px,100%);background:var(--paper);z-index:70;transform:translateX(105%);transition:transform .25s ease;overflow-y:auto;box-shadow:-10px 0 40px rgba(0,0,0,.15)}
+.drawer.show{transform:none}
+.drawer-in{padding:22px}
+.drawer-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px}
+.x{border:0;background:#EDE7D8;width:34px;height:34px;border-radius:10px;font-size:16px;font-weight:800;color:var(--ink-soft)}
+.d-sec{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-top:14px;box-shadow:var(--shadow)}
+.d-sec h4{font-size:13px;text-transform:uppercase;letter-spacing:.7px;color:var(--ink-soft);margin-bottom:10px}
+.kv{display:grid;grid-template-columns:110px 1fr;gap:6px 10px;font-size:14px}
+.kv dt{color:var(--ink-soft)}.kv dd{font-weight:600;word-break:break-word}
+.tl{position:relative;padding-left:22px}
+.tl::before{content:"";position:absolute;left:6px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.tl-item{position:relative;padding:0 0 16px}
+.tl-item::before{content:"";position:absolute;left:-20px;top:5px;width:10px;height:10px;border-radius:50%;background:var(--accent);border:2px solid #fff;box-shadow:0 0 0 2px var(--line)}
+.tl-item time{font-size:12px;color:var(--ink-soft)}
+.tl-item p{font-size:14px;margin-top:2px}
+.modal{position:fixed;inset:0;z-index:80;display:none;align-items:center;justify-content:center;padding:16px}
+.modal.show{display:flex}
+.modal-card{background:var(--paper);border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.25);width:min(520px,100%);max-height:92vh;overflow-y:auto;padding:24px}
+.modal-card h3{margin-bottom:16px;font-size:19px}
+.f-row{margin-bottom:13px}
+.f-row label{display:block;font-size:12.5px;font-weight:700;color:var(--ink-soft);margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px}
+.f-row input,.f-row select,.f-row textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff}
+.f-row textarea{resize:vertical;min-height:70px}
+.f-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.f-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+.hint{font-size:12.5px;color:var(--ink-soft);margin-top:4px}
+/* context menu */
+.ctx{position:fixed;z-index:90;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 34px rgba(0,0,0,.18);padding:6px;display:none;min-width:190px}
+.ctx.show{display:block}
+.ctx button{display:block;width:100%;text-align:left;border:0;background:none;padding:9px 12px;border-radius:8px;font-size:14px}
+.ctx button:hover{background:#F1ECE0}
+.ctx .sep{height:1px;background:var(--line);margin:5px 4px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 22px;border-radius:12px;font-weight:600;z-index:100;opacity:0;transition:.25s;pointer-events:none;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%)}
+@media(max-width:900px){.grid2{grid-template-columns:1fr}.search{order:3;flex-basis:100%;max-width:none}}
+@media(max-width:640px){
+  .stats{grid-template-columns:1fr 1fr}
+  .stat .val{font-size:23px}
+  .f-2{grid-template-columns:1fr}
+  .topbar-in{gap:10px}
+  .tab{padding:8px 12px;font-size:14px}
+  .board{grid-auto-columns:78vw}
+  .drawer-in{padding:16px}
+}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-in">
+  <div class="logo"><div class="logo-mark">◈</div><div>ClientDesk<small>SIMPLE CRM</small></div></div>
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-view="dashboard">Dashboard</button>
+    <button class="tab" data-view="pipeline">Pipeline</button>
+    <button class="tab" data-view="contacts">Contacts</button>
+  </nav>
+  <div class="search"><input id="globalSearch" type="search" placeholder="Search contacts, deals, tags…" autocomplete="off"></div>
+  <button class="btn accent" id="btnNew">+ New</button>
+</div></header>
+
+<main class="wrap">
+  <!-- DASHBOARD -->
+  <section class="view active" id="view-dashboard">
+    <div class="stats" id="statsRow"></div>
+    <div class="grid2">
+      <div class="panel"><h3>⏰ Follow-ups <span class="count" id="fuCount">0</span></h3><div id="followups"></div></div>
+      <div class="panel"><h3>📊 Pipeline by stage</h3><div id="stageBars"></div></div>
+    </div>
+    <div class="panel" style="margin-top:16px"><h3>🕘 Recent activity</h3><div id="activityFeed"></div></div>
+  </section>
+
+  <!-- PIPELINE -->
+  <section class="view" id="view-pipeline">
+    <div class="pipe-head"><h2>Deal pipeline</h2><button class="btn small accent" id="btnAddDeal">+ Add deal</button></div>
+    <div class="board" id="board"></div>
+  </section>
+
+  <!-- CONTACTS -->
+  <section class="view" id="view-contacts">
+    <div class="cta-head"><h2>Contacts</h2>
+      <div style="display:flex;gap:8px">
+        <button class="btn small ghost" id="btnExport">⤓ Export CSV</button>
+        <button class="btn small accent" id="btnAddContact">+ Add contact</button>
+      </div>
+    </div>
+    <div class="filters" id="contactFilters"></div>
+    <div class="cards" id="contactCards"></div>
+  </section>
+</main>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer"><div class="drawer-in" id="drawerIn"></div></aside>
+<div class="modal" id="modal"><div class="modal-card" id="modalCard"></div></div>
+<div class="ctx" id="ctx"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* ================================================================
+   ClientDesk — pure logic layer (no DOM). Tested headless in node.
+   ================================================================ */
+var STAGES = [
+  {id:"lead",       name:"Lead",       prob:10, color:"#8A94A6"},
+  {id:"contacted",  name:"Contacted",  prob:25, color:"#2F6FED"},
+  {id:"proposal",   name:"Proposal",   prob:50, color:"#C98A1B"},
+  {id:"negotiation",name:"Negotiation",prob:75, color:"#D96C2C"},
+  {id:"won",        name:"Won",        prob:100,color:"#2E9E5B"},
+  {id:"lost",       name:"Lost",       prob:0,  color:"#D64545"}
+];
+var SOURCES = ["Referral","Website","Cold outreach","Social media","Marketplace","Repeat client","Other"];
+var OPEN_STAGES = ["lead","contacted","proposal","negotiation"];
+
+function uid(){ return "id" + Date.now().toString(36) + Math.random().toString(36).slice(2,9); }
+function pad2(n){ return (n<10?"0":"")+n; }
+function todayStr(d){ d = d || new Date(); return d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate()); }
+function addDaysStr(n, base){ var d = base ? new Date(base.getTime()) : new Date(); d.setDate(d.getDate()+n); return todayStr(d); }
+function parseDay(s){ /* "YYYY-MM-DD" -> local midnight Date */ var p = String(s||"").split("-"); return new Date(+p[0], (+p[1]||1)-1, +p[2]||1); }
+function startOfToday(now){ var d = now ? new Date(now.getTime()) : new Date(); d.setHours(0,0,0,0); return d; }
+function money(n){ n = +n||0; return "$" + Math.round(n).toLocaleString("en-US"); }
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+function fmtDate(s){ if(!s) return "—"; var d = parseDay(s); return d.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}); }
+function relDay(s, now){
+  if(!s) return "";
+  var t = startOfToday(now).getTime(), d = parseDay(s).getTime(), diff = Math.round((d-t)/86400000);
+  if(diff===0) return "today"; if(diff===1) return "tomorrow"; if(diff===-1) return "yesterday";
+  if(diff>1 && diff<7) return "in "+diff+" days"; if(diff<0) return Math.abs(diff)+"d overdue";
+  return fmtDate(s);
+}
+
+function stageById(id){ for(var i=0;i<STAGES.length;i++) if(STAGES[i].id===id) return STAGES[i]; return null; }
+function safeStage(id){ return stageById(id) || STAGES[0]; }
+function isOpenStage(id){ return OPEN_STAGES.indexOf(id) !== -1; }
+function effectiveProb(deal){
+  if(deal.probOverride==null || deal.probOverride==="") return safeStage(deal.stage).prob;
+  var p = +deal.probOverride; if(isNaN(p)) return safeStage(deal.stage).prob;
+  return Math.max(0, Math.min(100, p));
+}
+function openDeals(deals){ return deals.filter(function(d){ return isOpenStage(d.stage); }); }
+function weightedForecast(deals){
+  return openDeals(deals).reduce(function(s,d){ return s + (+d.value||0) * effectiveProb(d)/100; }, 0);
+}
+function pipelineValue(deals){ return openDeals(deals).reduce(function(s,d){ return s + (+d.value||0); }, 0); }
+function closedDeals(deals){ return deals.filter(function(d){ return d.stage==="won"||d.stage==="lost"; }); }
+function winRate(deals){
+  var won = deals.filter(function(d){return d.stage==="won";}).length;
+  var lost = deals.filter(function(d){return d.stage==="lost";}).length;
+  var total = won+lost;
+  return { won:won, lost:lost, total:total, rate: total? Math.round(won/total*100) : null };
+}
+function revenueWonInMonth(deals, now){
+  now = now || new Date();
+  var y = now.getFullYear(), m = now.getMonth();
+  return deals.filter(function(d){
+    if(d.stage!=="won" || !d.closedAt) return false;
+    var c = new Date(d.closedAt); return c.getFullYear()===y && c.getMonth()===m;
+  }).reduce(function(s,d){ return s + (+d.value||0); }, 0);
+}
+function allReminders(state){
+  var out = [];
+  state.contacts.forEach(function(c){
+    (c.reminders||[]).forEach(function(r){
+      out.push({ id:r.id, contactId:c.id, contactName:c.name, company:c.company||"",
+                 text:r.text, due:r.due, done:!!r.done, createdAt:r.createdAt });
+    });
+  });
+  return out;
+}
+function isOverdueRem(rem, now){ return !rem.done && !!rem.due && parseDay(rem.due).getTime() < startOfToday(now).getTime(); }
+function isDueRem(rem, now){ return !rem.done && !!rem.due && parseDay(rem.due).getTime() <= startOfToday(now).getTime(); }
+function followupsDue(state, now){
+  return allReminders(state).filter(function(r){ return isDueRem(r, now); })
+    .sort(function(a,b){
+      var ao = isOverdueRem(a,now)?0:1, bo = isOverdueRem(b,now)?0:1;
+      if(ao!==bo) return ao-bo;
+      return parseDay(a.due)-parseDay(b.due);
+    });
+}
+function csvEscape(v){
+  v = String(v==null?"":v);
+  return /[",\n\r]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v;
+}
+function buildContactsCSV(contacts, deals){
+  var head = ["Name","Company","Email","Phone","Website","Address","Tags","Source","Created","Notes count","Open deals","Open deal value"];
+  var lines = [head.map(csvEscape).join(",")];
+  contacts.forEach(function(c){
+    var cd = (deals||[]).filter(function(d){ return d.contactId===c.id && isOpenStage(d.stage); });
+    lines.push([
+      c.name, c.company||"", c.email||"", c.phone||"", c.website||"", c.address||"",
+      (c.tags||[]).join("; "), c.source||"", (c.createdAt||"").slice(0,10),
+      (c.notes||[]).length, cd.length,
+      Math.round(cd.reduce(function(s,d){return s+(+d.value||0);},0))
+    ].map(csvEscape).join(","));
+  });
+  return "\uFEFF" + lines.join("\r\n");
+}
+function normQ(q){ return String(q||"").trim().toLowerCase(); }
+function contactMatches(c, q, tag, source){
+  q = normQ(q);
+  if(q){
+    var hay = [c.name,c.company,c.email,c.phone,(c.tags||[]).join(" ")].join(" ").toLowerCase();
+    if(hay.indexOf(q)===-1) return false;
+  }
+  if(tag && (c.tags||[]).indexOf(tag)===-1) return false;
+  if(source && c.source!==source) return false;
+  return true;
+}
+function dealMatches(d, contactsById, q){
+  q = normQ(q); if(!q) return true;
+  var c = contactsById[d.contactId] || {};
+  var hay = [d.title, c.name, c.company].join(" ").toLowerCase();
+  return hay.indexOf(q)!==-1;
+}
+function allTags(contacts){
+  var m = {};
+  contacts.forEach(function(c){ (c.tags||[]).forEach(function(t){ m[t]=1; }); });
+  return Object.keys(m).sort();
+}
+
+/* ---------------- DB: state mutations ---------------- */
+function blankState(){ return { contacts:[], deals:[], activity:[], seq:1 }; }
+var DB = {
+  log: function(state, text, ts){ state.activity.unshift({id:uid(), ts: ts||Date.now(), text:text}); state.activity = state.activity.slice(0,120); },
+  createContact: function(state, data){
+    var c = { id:uid(), name:(data.name||"").trim(), company:(data.company||"").trim(),
+      email:(data.email||"").trim(), phone:(data.phone||"").trim(), website:(data.website||"").trim(),
+      address:(data.address||"").trim(), tags:(data.tags||[]).map(function(t){return String(t).trim();}).filter(Boolean),
+      source:data.source||"", createdAt:new Date().toISOString(), notes:[], reminders:[] };
+    if(!c.name) throw new Error("Name is required");
+    state.contacts.push(c);
+    DB.log(state, "Added contact " + c.name + (c.company? " ("+c.company+")":""));
+    return c;
+  },
+  updateContact: function(state, id, data){
+    var c = DB.getContact(state,id); if(!c) return null;
+    ["name","company","email","phone","website","address","source"].forEach(function(k){ if(data[k]!==undefined) c[k]=String(data[k]).trim(); });
+    if(data.tags!==undefined) c.tags = data.tags.map(function(t){return String(t).trim();}).filter(Boolean);
+    DB.log(state, "Updated contact " + c.name);
+    return c;
+  },
+  deleteContact: function(state, id){
+    var i = state.contacts.findIndex(function(c){return c.id===id;}); if(i===-1) return false;
+    var c = state.contacts[i];
+    state.deals = state.deals.filter(function(d){ return d.contactId!==id; });
+    state.contacts.splice(i,1);
+    DB.log(state, "Deleted contact " + c.name + " (and their deals)");
+    return true;
+  },
+  getContact: function(state, id){ return state.contacts.filter(function(c){return c.id===id;})[0] || null; },
+  addNote: function(state, contactId, text){
+    var c = DB.getContact(state,contactId); if(!c) return null;
+    text = String(text||"").trim(); if(!text) return null;
+    var n = {id:uid(), ts:Date.now(), text:text};
+    c.notes.unshift(n);
+    DB.log(state, "Note added for " + c.name);
+    return n;
+  },
+  deleteNote: function(state, contactId, noteId){
+    var c = DB.getContact(state,contactId); if(!c) return false;
+    var i = (c.notes||[]).findIndex(function(n){return n.id===noteId;}); if(i===-1) return false;
+    c.notes.splice(i,1); return true;
+  },
+  addReminder: function(state, contactId, text, due){
+    var c = DB.getContact(state,contactId); if(!c) return null;
+    text = String(text||"").trim(); if(!text) throw new Error("Reminder text required");
+    if(!due) throw new Error("Reminder date required");
+    var r = {id:uid(), text:text, due:due, done:false, createdAt:new Date().toISOString()};
+    c.reminders.push(r);
+    DB.log(state, "Follow-up set for " + c.name + " (" + fmtDate(due) + ")");
+    return r;
+  },
+  toggleReminder: function(state, contactId, remId){
+    var c = DB.getContact(state,contactId); if(!c) return null;
+    var r = (c.reminders||[]).filter(function(x){return x.id===remId;})[0]; if(!r) return null;
+    r.done = !r.done;
+    DB.log(state, (r.done?"Completed":"Reopened") + " follow-up for " + c.name + ": " + r.text);
+    return r;
+  },
+  deleteReminder: function(state, contactId, remId){
+    var c = DB.getContact(state,contactId); if(!c) return false;
+    var i = (c.reminders||[]).findIndex(function(x){return x.id===remId;}); if(i===-1) return false;
+    c.reminders.splice(i,1); return true;
+  },
+  createDeal: function(state, data){
+    if(!data.contactId || !DB.getContact(state, data.contactId)) throw new Error("Choose a contact");
+    var d = { id:uid(), contactId:data.contactId, title:(data.title||"").trim()||"Untitled deal",
+      value:Math.max(0, +data.value||0), stage:data.stage||"lead",
+      probOverride:(data.probOverride===""||data.probOverride==null)?null:Math.max(0,Math.min(100,+data.probOverride)),
+      expectedClose:data.expectedClose||"", createdAt:new Date().toISOString(),
+      updatedAt:new Date().toISOString(), closedAt:null, notes:[] };
+    if(!stageById(d.stage)) d.stage = "lead";
+    state.deals.push(d);
+    var c = DB.getContact(state, d.contactId);
+    DB.log(state, "New deal “" + d.title + "” (" + money(d.value) + ") for " + (c?c.name:"?"));
+    return d;
+  },
+  moveDeal: function(state, dealId, toStage){
+    var d = state.deals.filter(function(x){return x.id===dealId;})[0]; if(!d) return null;
+    if(!stageById(toStage)) return null;
+    var from = d.stage; d.stage = toStage; d.updatedAt = new Date().toISOString();
+    if(toStage==="won"||toStage==="lost"){ d.closedAt = d.closedAt || new Date().toISOString(); }
+    else { d.closedAt = null; }
+    var c = DB.getContact(state, d.contactId);
+    DB.log(state, "Deal “" + d.title + "” moved " + safeStage(from).name + " → " + safeStage(toStage).name + (c? " ("+c.name+")":""));
+    return d;
+  },
+  updateDeal: function(state, dealId, data){
+    var d = state.deals.filter(function(x){return x.id===dealId;})[0]; if(!d) return null;
+    if(data.title!==undefined) d.title = String(data.title).trim()||d.title;
+    if(data.value!==undefined) d.value = Math.max(0, +data.value||0);
+    if(data.expectedClose!==undefined) d.expectedClose = data.expectedClose;
+    if(data.probOverride!==undefined) d.probOverride = (data.probOverride===""||data.probOverride==null)?null:Math.max(0,Math.min(100,+data.probOverride));
+    if(data.contactId!==undefined && DB.getContact(state, data.contactId)) d.contactId = data.contactId;
+    d.updatedAt = new Date().toISOString();
+    DB.log(state, "Updated deal “" + d.title + "”");
+    return d;
+  },
+  deleteDeal: function(state, dealId){
+    var i = state.deals.findIndex(function(x){return x.id===dealId;}); if(i===-1) return false;
+    var d = state.deals[i]; state.deals.splice(i,1);
+    DB.log(state, "Deleted deal “" + d.title + "”");
+    return true;
+  },
+  save: function(store, state){ store.setItem("clientdesk.v1", JSON.stringify(state)); },
+  load: function(store){
+    try{ var raw = store.getItem("clientdesk.v1"); if(!raw) return null; var s = JSON.parse(raw);
+      if(!s || !Array.isArray(s.contacts) || !Array.isArray(s.deals)) return null; return s;
+    }catch(e){ return null; }
+  }
+};
+
+function seedState(){
+  var s = blankState();
+  var a = DB.createContact(s,{name:"Ayesha Khan",company:"Bloom Studio",email:"ayesha@bloomstudio.co",phone:"+92 300 1112233",source:"Referral",tags:["branding","retainer"]});
+  var b = DB.createContact(s,{name:"Danish Ali",company:"TechNova",email:"danish@technova.io",phone:"+92 321 4455667",website:"technova.io",source:"Website",tags:["web","urgent"]});
+  var c = DB.createContact(s,{name:"Maria Siddiqui",company:"Café Aroma",email:"maria@cafearoma.pk",source:"Cold outreach",tags:["print"]});
+  var d = DB.createContact(s,{name:"Omar Farooq",company:"FitLife Gym",email:"omar@fitlife.pk",phone:"+92 333 7788990",source:"Social media",tags:["web"]});
+  DB.addNote(s,a.id,"Kickoff call went great — they want a full rebrand before the autumn launch.");
+  DB.addNote(s,b.id,"Sent the proposal v2 with the maintenance plan. Waiting on feedback.");
+  DB.addReminder(s,a.id,"Send revised brand proposal", addDaysStr(-1));   /* overdue */
+  DB.addReminder(s,b.id,"Call about maintenance plan", todayStr());        /* due today */
+  DB.addReminder(s,d.id,"Share gym website mockups", addDaysStr(3));
+  DB.createDeal(s,{contactId:a.id,title:"Full brand identity",value:2400,stage:"proposal",expectedClose:addDaysStr(14)});
+  DB.createDeal(s,{contactId:b.id,title:"Website rebuild + care plan",value:1800,stage:"negotiation",expectedClose:addDaysStr(7)});
+  DB.createDeal(s,{contactId:d.id,title:"Gym website",value:950,stage:"contacted",expectedClose:addDaysStr(21)});
+  DB.createDeal(s,{contactId:c.id,title:"Menu & print pack",value:320,stage:"lead",expectedClose:addDaysStr(30)});
+  var w = DB.createDeal(s,{contactId:c.id,title:"Loyalty cards",value:180,stage:"won"}); w.closedAt = new Date().toISOString();
+  var l = DB.createDeal(s,{contactId:a.id,title:"Social templates",value:150,stage:"lost"}); l.closedAt = new Date().toISOString();
+  s.activity = [];
+  DB.log(s,"Welcome to ClientDesk — your sample clients and deals are loaded. Delete them anytime.");
+  return s;
+}
+/* ================================================================
+   ClientDesk — UI layer (DOM only). Not executed in node tests.
+   ================================================================ */
+function initUI(){
+"use strict";
+var $ = function(id){ return document.getElementById(id); };
+var store = (function(){
+  try{ localStorage.setItem("__cd_t","1"); localStorage.removeItem("__cd_t"); return localStorage; }
+  catch(e){ var m={}; return { getItem:function(k){return m[k]||null;}, setItem:function(k,v){m[k]=v;}, removeItem:function(k){delete m[k];} }; }
+})();
+var state = DB.load(store) || seedState();
+DB.save(store, state);
+
+var currentView = "dashboard", searchQ = "", activeTag = "", activeSource = "";
+
+function contactsById(){ var m={}; state.contacts.forEach(function(c){ m[c.id]=c; }); return m; }
+function toast(msg){ var t=$("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(t._h); t._h=setTimeout(function(){t.classList.remove("show");},2200); }
+function persist(){ DB.save(store, state); }
+function showView(v){
+  currentView = v;
+  document.querySelectorAll(".tab").forEach(function(b){ b.classList.toggle("active", b.getAttribute("data-view")===v); });
+  document.querySelectorAll(".view").forEach(function(s){ s.classList.toggle("active", s.id==="view-"+v); });
+  renderAll();
+}
+function dealContactName(d){ var c = contactsById()[d.contactId]; return c ? c.name : "—"; }
+
+/* ---------------- dashboard ---------------- */
+function renderStats(){
+  var fus = followupsDue(state), overdueN = fus.filter(function(r){return isOverdueRem(r);}).length;
+  var wr = winRate(state.deals);
+  var wonMonth = revenueWonInMonth(state.deals);
+  var openN = openDeals(state.deals).length;
+  $("statsRow").innerHTML =
+    stat("Follow-ups due", fus.length, overdueN? overdueN+" overdue" : "all clear", overdueN?"alert":"") +
+    stat("Weighted forecast", money(weightedForecast(state.deals)), "probability × value", "warm") +
+    stat("Open pipeline", money(pipelineValue(state.deals)), openN+" open deals", "") +
+    stat("Win rate", wr.rate==null?"—":wr.rate+"%", wr.total? wr.won+" won · "+wr.lost+" lost" : "no closed deals yet", wr.rate!=null&&wr.rate>=50?"good":"") +
+    stat("Won this month", money(wonMonth), new Date().toLocaleDateString("en-US",{month:"long"}), wonMonth>0?"good":"") +
+    stat("Contacts", state.contacts.length, allTags(state.contacts).length+" tags in use", "");
+  function stat(lbl,val,sub,cls){ return '<div class="stat '+cls+'"><div class="lbl">'+lbl+'</div><div class="val">'+val+'</div><div class="sub">'+sub+'</div></div>'; }
+}
+function renderFollowups(){
+  var now = new Date(), fus = followupsDue(state).slice(0,10);
+  $("fuCount").textContent = followupsDue(state).length;
+  if(!fus.length){ $("followups").innerHTML = '<div class="empty"><div class="big">✓</div>No follow-ups due. You are all caught up.</div>'; return; }
+  $("followups").innerHTML = fus.map(function(r){
+    var od = isOverdueRem(r, now);
+    return '<div class="rem-item"><button class="rem-check" data-rem="'+r.id+'" data-c="'+r.contactId+'" aria-label="mark done"></button>'+
+      '<div class="rem-body"><div class="rem-text">'+esc(r.text)+
+      (od?'<span class="flag overdue">Overdue</span>':(r.due===todayStr()?'<span class="flag today">Due today</span>':""))+'</div>'+
+      '<div class="rem-meta"><a href="#" data-open-contact="'+r.contactId+'" style="color:inherit;font-weight:700">'+esc(r.contactName)+'</a> · due '+esc(relDay(r.due, now))+'</div></div></div>';
+  }).join("");
+  bindFollowupClicks($("followups"));
+}
+function bindFollowupClicks(root){
+  root.querySelectorAll(".rem-check").forEach(function(b){
+    b.addEventListener("click", function(){ DB.toggleReminder(state, b.getAttribute("data-c"), b.getAttribute("data-rem")); persist(); renderAll(); toast("Follow-up completed"); });
+  });
+  root.querySelectorAll("[data-open-contact]").forEach(function(a){
+    a.addEventListener("click", function(e){ e.preventDefault(); openContact(a.getAttribute("data-open-contact")); });
+  });
+}
+function renderStageBars(){
+  var max = 1;
+  var rows = STAGES.map(function(st){
+    var ds = state.deals.filter(function(d){return d.stage===st.id;});
+    var v = ds.reduce(function(s,d){return s+(+d.value||0);},0);
+    max = Math.max(max, v);
+    return {st:st, n:ds.length, v:v};
+  });
+  $("stageBars").innerHTML = rows.map(function(r){
+    return '<div class="stagebar"><div class="row"><span><span class="dot" style="display:inline-block;background:'+r.st.color+';margin-right:7px"></span>'+r.st.name+' · '+r.n+'</span><b>'+money(r.v)+'</b></div>'+
+      '<div class="track"><div class="fill" style="width:'+Math.round(r.v/max*100)+'%;background:'+r.st.color+'"></div></div></div>';
+  }).join("");
+}
+function renderActivity(){
+  var items = state.activity.slice(0,15);
+  $("activityFeed").innerHTML = items.length ? items.map(function(a){
+    var d = new Date(a.ts);
+    return '<div class="feed-item"><time>'+d.toLocaleDateString("en-US",{month:"short",day:"numeric"})+' · '+d.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"})+'</time>'+esc(a.text)+'</div>';
+  }).join("") : '<div class="empty">No activity yet.</div>';
+}
+
+/* ---------------- pipeline ---------------- */
+function renderBoard(){
+  var cbm = contactsById();
+  $("board").innerHTML = STAGES.map(function(st){
+    var ds = state.deals.filter(function(d){ return d.stage===st.id && dealMatches(d, cbm, searchQ); });
+    var tot = ds.reduce(function(s,d){return s+(+d.value||0);},0);
+    var wtd = ds.reduce(function(s,d){return s+(+d.value||0)*effectiveProb(d)/100;},0);
+    var cards = ds.map(function(d){
+      var c = cbm[d.contactId]||{};
+      var ecOver = isOpenStage(d.stage) && d.expectedClose && parseDay(d.expectedClose).getTime() < startOfToday().getTime();
+      return '<div class="deal'+(d.stage==="won"?" won":"")+(d.stage==="lost"?" lost":"")+'" draggable="true" data-deal="'+d.id+'">'+
+        '<button class="menu-btn" data-menu="'+d.id+'">⋯</button>'+
+        '<div class="t">'+esc(d.title)+'</div><div class="c">'+esc(c.name||"—")+(c.company?" · "+esc(c.company):"")+'</div>'+
+        '<div class="v">'+money(d.value)+'</div>'+
+        '<div class="meta"><span class="pill">'+effectiveProb(d)+'%</span>'+
+        '<span>'+(d.expectedClose? esc(fmtDate(d.expectedClose))+(ecOver?' <span class="close-flag">● overdue</span>':"") : "no date")+'</span></div></div>';
+    }).join("");
+    return '<div class="col" data-col="'+st.id+'"><div class="col-head"><div class="col-name"><span class="dot" style="background:'+st.color+'"></span>'+st.name+'</div><span class="col-count">'+ds.length+'</span></div>'+
+      '<div class="col-total">'+money(tot)+' · weighted '+money(wtd)+'</div>'+cards+
+      (isOpenStage(st.id)?'<button class="add-deal" data-adddeal="'+st.id+'">+ Add deal</button>':"")+'</div>';
+  }).join("");
+  bindBoard();
+}
+function bindBoard(){
+  document.querySelectorAll(".deal").forEach(function(card){
+    card.addEventListener("dragstart", function(e){ e.dataTransfer.setData("text/plain", card.getAttribute("data-deal")); card.classList.add("dragging"); });
+    card.addEventListener("dragend", function(){ card.classList.remove("dragging"); });
+    card.addEventListener("click", function(e){ if(e.target.closest("[data-menu]")) return; openDealMenu(card.getAttribute("data-deal"), card); });
+  });
+  document.querySelectorAll("[data-menu]").forEach(function(b){
+    b.addEventListener("click", function(e){ e.stopPropagation(); openDealMenu(b.getAttribute("data-menu"), b); });
+  });
+  document.querySelectorAll(".col").forEach(function(col){
+    col.addEventListener("dragover", function(e){ e.preventDefault(); col.classList.add("dragover"); });
+    col.addEventListener("dragleave", function(){ col.classList.remove("dragover"); });
+    col.addEventListener("drop", function(e){
+      e.preventDefault(); col.classList.remove("dragover");
+      var id = e.dataTransfer.getData("text/plain");
+      var d = state.deals.filter(function(x){return x.id===id;})[0];
+      if(d && d.stage!==col.getAttribute("data-col")){ DB.moveDeal(state, id, col.getAttribute("data-col")); persist(); renderAll(); toast("Deal moved to "+safeStage(col.getAttribute("data-col")).name); }
+    });
+  });
+  document.querySelectorAll("[data-adddeal]").forEach(function(b){
+    b.addEventListener("click", function(){ dealModal({stage:b.getAttribute("data-adddeal")}); });
+  });
+}
+var ctxEl = $("ctx");
+function closeCtx(){ ctxEl.classList.remove("show"); }
+function openDealMenu(dealId, anchor){
+  var d = state.deals.filter(function(x){return x.id===dealId;})[0]; if(!d) return;
+  var html = '<div style="padding:6px 12px;font-size:11px;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.5px">Move to</div>' +
+    STAGES.filter(function(s){return s.id!==d.stage;}).map(function(s){
+      return '<button data-mv="'+s.id+'"><span class="dot" style="display:inline-block;background:'+s.color+';margin-right:8px"></span>'+s.name+' ('+s.prob+'%)</button>';
+    }).join("") + '<div class="sep"></div><button data-edit="1">Edit deal</button><button data-del="1" style="color:var(--red)">Delete deal</button>';
+  ctxEl.innerHTML = html; ctxEl.classList.add("show");
+  var r = anchor.getBoundingClientRect();
+  ctxEl.style.top = Math.min(window.innerHeight-320, r.bottom+6)+"px";
+  ctxEl.style.left = Math.max(8, Math.min(window.innerWidth-210, r.left-160))+"px";
+  ctxEl.querySelectorAll("[data-mv]").forEach(function(b){
+    b.addEventListener("click", function(){ DB.moveDeal(state, dealId, b.getAttribute("data-mv")); persist(); renderAll(); closeCtx(); toast("Deal moved"); });
+  });
+  ctxEl.querySelector("[data-edit]").addEventListener("click", function(){ closeCtx(); dealModal({edit:dealId}); });
+  ctxEl.querySelector("[data-del]").addEventListener("click", function(){ closeCtx(); if(confirm("Delete this deal?")){ DB.deleteDeal(state, dealId); persist(); renderAll(); } });
+}
+document.addEventListener("click", function(e){ if(!e.target.closest(".ctx")) closeCtx(); });
+
+/* ---------------- contacts ---------------- */
+function renderFilters(){
+  var tags = allTags(state.contacts);
+  $("contactFilters").innerHTML =
+    '<select id="fSource"><option value="">All sources</option>'+SOURCES.map(function(s){return '<option'+(activeSource===s?" selected":"")+'>'+s+'</option>';}).join("")+'</select>' +
+    '<button class="chip'+(activeTag===""?" on":"")+'" data-tag="">All tags</button>' +
+    tags.map(function(t){return '<button class="chip'+(activeTag===t?" on":"")+'" data-tag="'+esc(t)+'">'+esc(t)+'</button>';}).join("");
+  $("fSource").addEventListener("change", function(){ activeSource = this.value; renderContacts(); });
+  document.querySelectorAll("#contactFilters .chip").forEach(function(ch){
+    ch.addEventListener("click", function(){ activeTag = ch.getAttribute("data-tag"); renderFilters(); renderContacts(); });
+  });
+}
+function renderContacts(){
+  var list = state.contacts.filter(function(c){ return contactMatches(c, searchQ, activeTag, activeSource); });
+  if(!list.length){ $("contactCards").innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="big">—</div>No contacts match. Add your first client!</div>'; return; }
+  $("contactCards").innerHTML = list.map(function(c){
+    var cd = state.deals.filter(function(d){ return d.contactId===c.id && isOpenStage(d.stage); });
+    var openV = cd.reduce(function(s,d){return s+(+d.value||0);},0);
+    var dueN = (c.reminders||[]).filter(function(r){return isDueRem(r);}).length;
+    var initials = c.name.split(/\s+/).map(function(w){return w[0];}).join("").slice(0,2).toUpperCase();
+    return '<div class="contact-card" data-contact="'+c.id+'"><div class="cc-top"><div class="avatar">'+esc(initials)+'</div>'+
+      '<div><div class="nm">'+esc(c.name)+'</div><div class="co">'+esc(c.company||"—")+'</div></div></div>'+
+      (c.email?'<div class="cc-row">'+esc(c.email)+'</div>':"")+(c.phone?'<div class="cc-row">'+esc(c.phone)+'</div>':"")+
+      '<div class="cc-row"><span class="src">via '+esc(c.source||"—")+'</span>'+(dueN?' <span class="flag overdue">'+dueN+' due</span>':"")+'</div>'+
+      ((c.tags||[]).length?'<div class="tags">'+c.tags.map(function(t){return '<span class="tag">'+esc(t)+'</span>';}).join("")+'</div>':"")+
+      '<div class="cc-stats"><span><b>'+cd.length+'</b> open deals</span><span><b>'+money(openV)+'</b> pipeline</span><span><b>'+(c.notes||[]).length+'</b> notes</span></div></div>';
+  }).join("");
+  document.querySelectorAll(".contact-card").forEach(function(card){
+    card.addEventListener("click", function(){ openContact(card.getAttribute("data-contact")); });
+  });
+}
+
+/* ---------------- contact drawer ---------------- */
+function openContact(id){
+  var c = DB.getContact(state, id); if(!c) return;
+  var now = new Date();
+  var cd = state.deals.filter(function(d){ return d.contactId===id; });
+  var initials = c.name.split(/\s+/).map(function(w){return w[0];}).join("").slice(0,2).toUpperCase();
+  var rems = (c.reminders||[]).slice().sort(function(a,b){
+    if(a.done!==b.done) return a.done?1:-1;
+    return parseDay(a.due)-parseDay(b.due);
+  });
+  function kv(k,v){ return v? '<dt>'+k+'</dt><dd>'+esc(v)+'</dd>' : ""; }
+  $("drawerIn").innerHTML =
+    '<div class="drawer-head"><div style="display:flex;gap:12px;align-items:center"><div class="avatar" style="width:54px;height:54px;font-size:20px">'+esc(initials)+'</div>'+
+    '<div><div style="font-size:20px;font-weight:800">'+esc(c.name)+'</div><div style="color:var(--ink-soft)">'+esc(c.company||"—")+' · via '+esc(c.source||"—")+'</div></div></div>'+
+    '<button class="x" id="drawerX">✕</button></div>'+
+    '<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><button class="btn small ghost" id="dEdit">Edit</button><button class="btn small ghost" id="dDeal">+ Deal</button><button class="btn small danger" id="dDel">Delete</button></div>'+
+    ((c.tags||[]).length?'<div class="tags" style="margin-top:12px">'+c.tags.map(function(t){return '<span class="tag">'+esc(t)+'</span>';}).join("")+'</div>':"")+
+    '<div class="d-sec"><h4>Contact info</h4><dl class="kv">'+
+      kv("Email",c.email)+kv("Phone",c.phone)+kv("Website",c.website)+kv("Address",c.address)+
+      '<dt>Client since</dt><dd>'+esc((c.createdAt||"").slice(0,10))+'</dd></dl></div>'+
+    '<div class="d-sec"><h4>Follow-ups ('+rems.filter(function(r){return !r.done;}).length+' open)</h4><div id="dRems">'+
+      (rems.length? rems.map(function(r){
+        var od = isOverdueRem(r, now);
+        return '<div class="rem-item"><button class="rem-check'+(r.done?" done":"")+'" data-r="'+r.id+'">'+(r.done?"✓":"")+'</button>'+
+          '<div class="rem-body"><div class="rem-text" style="'+(r.done?"text-decoration:line-through;color:var(--ink-soft)":"")+'">'+esc(r.text)+
+          (!r.done && od?'<span class="flag overdue">Overdue</span>':(!r.done && r.due===todayStr()?'<span class="flag today">Due today</span>':""))+'</div>'+
+          '<div class="rem-meta">due '+esc(fmtDate(r.due))+' ('+esc(relDay(r.due,now))+')</div></div>'+
+          '<button class="x" style="width:28px;height:28px" data-rdel="'+r.id+'">✕</button></div>';
+      }).join("") : '<div class="empty">No follow-ups yet.</div>')+'</div>'+
+      '<div class="f-row" style="margin-top:12px"><label>New follow-up</label><input id="nRemText" placeholder="e.g. Call about the invoice"></div>'+
+      '<div class="f-2"><div class="f-row"><label>Due date</label><input id="nRemDue" type="date" value="'+todayStr()+'"></div>'+
+      '<div class="f-row"><label>&nbsp;</label><button class="btn small accent" id="nRemAdd" style="width:100%">+ Add</button></div></div></div>'+
+    '<div class="d-sec"><h4>Notes timeline ('+(c.notes||[]).length+')</h4>'+
+      '<div class="f-row"><textarea id="nNoteText" placeholder="Log a call, decision, idea…"></textarea></div>'+
+      '<button class="btn small accent" id="nNoteAdd">+ Add note</button><div style="height:14px"></div>'+
+      '<div class="tl">'+((c.notes||[]).length? c.notes.map(function(n){
+        var d=new Date(n.ts);
+        return '<div class="tl-item"><time>'+d.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})+' · '+d.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"})+'</time><p>'+esc(n.text)+'</p></div>';
+      }).join(""):'<div class="empty">No notes yet.</div>')+'</div></div>'+
+    '<div class="d-sec"><h4>Deals ('+cd.length+')</h4>'+
+      (cd.length? cd.map(function(d){
+        return '<div class="rem-item"><div class="rem-body"><div class="rem-text">'+esc(d.title)+'</div>'+
+        '<div class="rem-meta">'+safeStage(d.stage).name+' · '+money(d.value)+' · '+effectiveProb(d)+'%</div></div></div>';
+      }).join(""):'<div class="empty">No deals yet.</div>')+'</div>';
+  $("scrim").classList.add("show"); $("drawer").classList.add("show");
+  $("drawerX").addEventListener("click", closeDrawer);
+  $("dEdit").addEventListener("click", function(){ contactModal({edit:id}); });
+  $("dDel").addEventListener("click", function(){ if(confirm("Delete "+c.name+" and all their deals, notes and reminders?")){ DB.deleteContact(state,id); persist(); closeDrawer(); renderAll(); toast("Contact deleted"); } });
+  $("dDeal").addEventListener("click", function(){ dealModal({contactId:id}); });
+  $("nNoteAdd").addEventListener("click", function(){
+    var t=$("nNoteText").value; if(!t.trim()){ toast("Write the note first"); return; }
+    DB.addNote(state,id,t); persist(); openContact(id); renderAll();
+  });
+  $("nRemAdd").addEventListener("click", function(){
+    try{ DB.addReminder(state,id,$("nRemText").value,$("nRemDue").value); persist(); openContact(id); renderAll(); toast("Follow-up added"); }
+    catch(e){ toast(e.message); }
+  });
+  $("drawerIn").querySelectorAll(".rem-check").forEach(function(b){
+    b.addEventListener("click", function(){ DB.toggleReminder(state,id,b.getAttribute("data-r")); persist(); openContact(id); renderAll(); });
+  });
+  $("drawerIn").querySelectorAll("[data-rdel]").forEach(function(b){
+    b.addEventListener("click", function(){ if(confirm("Delete this follow-up?")){ DB.deleteReminder(state,id,b.getAttribute("data-rdel")); persist(); openContact(id); renderAll(); } });
+  });
+}
+function closeDrawer(){ $("scrim").classList.remove("show"); $("drawer").classList.remove("show"); }
+$("scrim").addEventListener("click", closeDrawer);
+
+/* ---------------- modals ---------------- */
+function openModal(html){ $("modalCard").innerHTML = html; $("modal").classList.add("show"); }
+function closeModal(){ $("modal").classList.remove("show"); }
+$("modal").addEventListener("click", function(e){ if(e.target===$("modal")) closeModal(); });
+
+function contactModal(opts){
+  opts = opts||{};
+  var c = opts.edit ? DB.getContact(state, opts.edit) : null;
+  openModal('<h3>'+(c?"Edit contact":"New contact")+'</h3>'+
+    '<div class="f-row"><label>Full name *</label><input id="mName" value="'+esc(c?c.name:"")+'" placeholder="e.g. Ayesha Khan"></div>'+
+    '<div class="f-2"><div class="f-row"><label>Company</label><input id="mCompany" value="'+esc(c?c.company:"")+'"></div>'+
+    '<div class="f-row"><label>Source</label><select id="mSource"><option value="">—</option>'+SOURCES.map(function(s){return '<option'+(c&&c.source===s?" selected":"")+'>'+s+'</option>';}).join("")+'</select></div></div>'+
+    '<div class="f-2"><div class="f-row"><label>Email</label><input id="mEmail" type="email" value="'+esc(c?c.email:"")+'"></div>'+
+    '<div class="f-row"><label>Phone</label><input id="mPhone" value="'+esc(c?c.phone:"")+'"></div></div>'+
+    '<div class="f-2"><div class="f-row"><label>Website</label><input id="mWebsite" value="'+esc(c?c.website:"")+'"></div>'+
+    '<div class="f-row"><label>Address</label><input id="mAddress" value="'+esc(c?c.address:"")+'"></div></div>'+
+    '<div class="f-row"><label>Tags (comma separated)</label><input id="mTags" value="'+esc(c?(c.tags||[]).join(", "):"")+'" placeholder="branding, retainer, urgent"><div class="hint">Tags power the contact filters.</div></div>'+
+    '<div class="f-actions"><button class="btn ghost" id="mCancel">Cancel</button><button class="btn accent" id="mSave">'+(c?"Save changes":"Add contact")+'</button></div>');
+  $("mCancel").addEventListener("click", closeModal);
+  $("mSave").addEventListener("click", function(){
+    var data = { name:$("mName").value, company:$("mCompany").value, source:$("mSource").value,
+      email:$("mEmail").value, phone:$("mPhone").value, website:$("mWebsite").value, address:$("mAddress").value,
+      tags:$("mTags").value.split(",") };
+    try{
+      if(c){ DB.updateContact(state, c.id, data); toast("Contact updated"); }
+      else { var nc = DB.createContact(state, data); toast("Contact added"); }
+      persist(); closeModal(); if(c) openContact(c.id); renderAll();
+    }catch(e){ toast(e.message); }
+  });
+}
+
+function dealModal(opts){
+  opts = opts||{};
+  var d = opts.edit ? state.deals.filter(function(x){return x.id===opts.edit;})[0] : null;
+  var selContact = d? d.contactId : (opts.contactId||"");
+  if(!state.contacts.length){ toast("Add a contact first"); contactModal({}); return; }
+  openModal('<h3>'+(d?"Edit deal":"New deal")+'</h3>'+
+    '<div class="f-row"><label>Deal title *</label><input id="dTitle" value="'+esc(d?d.title:"")+'" placeholder="e.g. Website redesign"></div>'+
+    '<div class="f-2"><div class="f-row"><label>Contact *</label><select id="dContact">'+state.contacts.map(function(c){return '<option value="'+c.id+'"'+(selContact===c.id?" selected":"")+'>'+esc(c.name+(c.company?" ("+c.company+")":""))+'</option>';}).join("")+'</select></div>'+
+    '<div class="f-row"><label>Value (USD) *</label><input id="dValue" type="number" min="0" step="1" value="'+(d?d.value:"")+'" placeholder="1500"></div></div>'+
+    '<div class="f-2"><div class="f-row"><label>Stage</label><select id="dStage">'+STAGES.map(function(s){return '<option value="'+s.id+'"'+((d?d.stage:(opts.stage||"lead"))===s.id?" selected":"")+'>'+s.name+' ('+s.prob+'%)</option>';}).join("")+'</select></div>'+
+    '<div class="f-row"><label>Expected close</label><input id="dClose" type="date" value="'+(d&&d.expectedClose?d.expectedClose:"")+'"></div></div>'+
+    '<div class="f-row"><label>Win probability % (blank = stage default)</label><input id="dProb" type="number" min="0" max="100" value="'+(d&&d.probOverride!=null?d.probOverride:"")+'" placeholder="auto"><div class="hint">Weighted forecast uses this × value.</div></div>'+
+    '<div class="f-actions"><button class="btn ghost" id="dCancel">Cancel</button><button class="btn accent" id="dSave">'+(d?"Save changes":"Add deal")+'</button></div>');
+  $("dCancel").addEventListener("click", closeModal);
+  $("dSave").addEventListener("click", function(){
+    var data = { title:$("dTitle").value, contactId:$("dContact").value, value:$("dValue").value,
+      stage:$("dStage").value, expectedClose:$("dClose").value, probOverride:$("dProb").value };
+    try{
+      if(d){ DB.updateDeal(state, d.id, data); toast("Deal updated"); }
+      else { DB.createDeal(state, data); toast("Deal added"); }
+      persist(); closeModal(); renderAll();
+    }catch(e){ toast(e.message); }
+  });
+}
+
+function newMenu(){
+  openModal('<h3>What do you want to add?</h3>'+
+    '<div style="display:grid;gap:10px">'+
+    '<button class="btn accent" id="nmContact" style="padding:16px">👤 New contact</button>'+
+    '<button class="btn" id="nmDeal" style="padding:16px">💼 New deal</button>'+
+    '<button class="btn ghost" id="nmCancel">Cancel</button></div>');
+  $("nmCancel").addEventListener("click", closeModal);
+  $("nmContact").addEventListener("click", function(){ contactModal({}); });
+  $("nmDeal").addEventListener("click", function(){ dealModal({}); });
+}
+
+/* ---------------- csv export ---------------- */
+function exportCSV(){
+  var list = state.contacts.filter(function(c){ return contactMatches(c, searchQ, activeTag, activeSource); });
+  if(!list.length){ toast("Nothing to export"); return; }
+  var csv = buildContactsCSV(list, state.deals);
+  var blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "clientdesk-contacts-"+todayStr()+".csv";
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  toast("Exported "+list.length+" contacts");
+}
+
+/* ---------------- boot ---------------- */
+function renderAll(){
+  renderStats(); renderFollowups(); renderStageBars(); renderActivity();
+  renderBoard(); renderFilters(); renderContacts();
+}
+document.querySelectorAll(".tab").forEach(function(b){
+  b.addEventListener("click", function(){ showView(b.getAttribute("data-view")); });
+});
+$("globalSearch").addEventListener("input", function(){
+  searchQ = this.value;
+  if(currentView==="dashboard"){ renderFollowups(); renderBoard(); }
+  else if(currentView==="pipeline") renderBoard();
+  else renderContacts();
+});
+$("btnNew").addEventListener("click", newMenu);
+$("btnAddDeal").addEventListener("click", function(){ dealModal({}); });
+$("btnAddContact").addEventListener("click", function(){ contactModal({}); });
+$("btnExport").addEventListener("click", exportCSV);
+document.addEventListener("keydown", function(e){ if(e.key==="Escape"){ closeModal(); closeDrawer(); closeCtx(); } });
+renderAll();
+}
+if (typeof document !== "undefined" && typeof document.getElementById === "function") {
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initUI);
+  else initUI();
+}
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = { STAGES:STAGES, SOURCES:SOURCES, OPEN_STAGES:OPEN_STAGES, DB:DB, seedState:seedState,
+    stageById:stageById, safeStage:safeStage, isOpenStage:isOpenStage, effectiveProb:effectiveProb, openDeals:openDeals,
+    weightedForecast:weightedForecast, pipelineValue:pipelineValue, winRate:winRate,
+    revenueWonInMonth:revenueWonInMonth, allReminders:allReminders, isOverdueRem:isOverdueRem,
+    isDueRem:isDueRem, followupsDue:followupsDue, csvEscape:csvEscape, buildContactsCSV:buildContactsCSV,
+    contactMatches:contactMatches, dealMatches:dealMatches, allTags:allTags, todayStr:todayStr,
+    addDaysStr:addDaysStr, parseDay:parseDay, money:money, uid:uid };
+}
+</script>
+</body>
+</html>
+
