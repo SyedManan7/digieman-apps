@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10241a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Christmas Planner 2026">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='42' fill='%2310241a'/%3E%3Ctext x='90' y='125' font-size='96' text-anchor='middle'%3E%F0%9F%8E%84%3C/text%3E%3C/svg%3E">
+<title>Christmas Planner 2026</title>
+<style>
+:root{
+  --bg0:#0a1710;
+  --bg1:#10241a;
+  --card:#14261c;
+  --card2:#182e22;
+  --ink:#f6f1e6;
+  --muted:#cbbfae;
+  --faint:#8a9a8e;
+  --line:rgba(255,255,255,.09);
+  --gold:#f0b429;
+  --gold-soft:rgba(240,180,41,.14);
+  --red:#d6455b;
+  --red-soft:rgba(214,69,91,.14);
+  --pine:#2e8b5f;
+  --green:#7bd88f;
+  --green-soft:rgba(123,216,143,.14);
+  --violet:#b388ff;
+  --violet-soft:rgba(179,136,255,.14);
+  --radius:18px;
+  --shadow:0 12px 32px rgba(0,0,0,.35);
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font);
+  color:var(--ink);
+  background:
+    radial-gradient(1100px 500px at 85% -5%, rgba(240,180,41,.10), transparent 60%),
+    radial-gradient(900px 480px at -10% 10%, rgba(214,69,91,.09), transparent 60%),
+    radial-gradient(700px 600px at 50% 110%, rgba(46,139,95,.10), transparent 60%),
+    linear-gradient(180deg,var(--bg1),var(--bg0));
+  min-height:100vh;
+  padding:26px 22px 60px;
+}
+.wrap{max-width:1180px;margin:0 auto}
+
+/* ---------- sticky header (topbar + tabs) ---------- */
+.sticky-head{position:sticky;top:14px;z-index:20}
+.topbar{
+  display:flex;justify-content:space-between;align-items:center;gap:14px;
+  padding:14px 18px;
+  background:rgba(20,38,28,.82);border:1px solid var(--line);
+  border-radius:var(--radius) var(--radius) 0 0;box-shadow:var(--shadow);
+  backdrop-filter:blur(8px);
+}
+.brand{display:flex;align-items:center;gap:13px}
+.logo{
+  width:46px;height:46px;border-radius:14px;flex:0 0 46px;
+  background:conic-gradient(from 200deg,var(--gold),var(--red),var(--pine),var(--gold));
+  display:flex;align-items:center;justify-content:center;
+  font-size:25px;
+  box-shadow:0 4px 14px rgba(240,180,41,.35);
+}
+.brand h1{font-size:21px;letter-spacing:.2px}
+.brand h1 .accent{background:linear-gradient(90deg,var(--gold),var(--red));-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand p{font-size:13px;color:var(--muted);margin-top:2px}
+.top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.count-pill{
+  display:flex;align-items:center;gap:7px;
+  background:var(--gold-soft);border:1px solid rgba(240,180,41,.35);
+  color:var(--gold);font-weight:700;font-size:14px;
+  padding:9px 14px;border-radius:999px;white-space:nowrap;
+}
+.tabbar{
+  display:flex;gap:8px;padding:10px 14px;margin-bottom:22px;
+  background:rgba(20,38,28,.82);border:1px solid var(--line);border-top:none;
+  border-radius:0 0 var(--radius) var(--radius);box-shadow:var(--shadow);
+  backdrop-filter:blur(8px);
+  overflow-x:auto;
+}
+.tab-btn{
+  flex:1 0 auto;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;
+  padding:10px 14px;border-radius:12px;border:1px solid transparent;
+  background:transparent;color:var(--muted);white-space:nowrap;
+  transition:all .16s ease;
+}
+.tab-btn:hover{color:var(--ink);background:rgba(255,255,255,.05)}
+.tab-btn.active{background:var(--gold-soft);border-color:rgba(240,180,41,.45);color:var(--gold)}
+.btn{
+  font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;
+  border:none;border-radius:12px;padding:10px 16px;
+  background:linear-gradient(135deg,var(--gold),var(--red));color:#241206;
+  box-shadow:0 4px 14px rgba(214,69,91,.30);
+  transition:transform .12s ease, box-shadow .12s ease, filter .12s ease;
+}
+.btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(214,69,91,.38)}
+.btn:active{transform:scale(.96)}
+.btn.ghost{
+  background:transparent;color:var(--ink);
+  border:1px solid var(--line);box-shadow:none;
+}
+.btn.ghost:hover{border-color:rgba(240,180,41,.5);box-shadow:none}
+.btn.small{padding:7px 12px;font-size:13px;border-radius:10px}
+.btn.danger{background:transparent;color:var(--red);border:1px solid rgba(214,69,91,.5);box-shadow:none}
+.btn.danger:hover{border-color:var(--red);box-shadow:none}
+
+/* ---------- layout ---------- */
+.grid{columns:2;column-gap:20px}
+.card{
+  break-inside:avoid;margin-bottom:20px;
+  background:linear-gradient(180deg,var(--card2),var(--card));
+  border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:22px;
+}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px;flex-wrap:wrap}
+.card-head h2{font-size:16px;letter-spacing:.4px;display:flex;align-items:center;gap:9px}
+.card-head h2 .ico{
+  width:30px;height:30px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;
+  font-size:16px;background:rgba(255,255,255,.06);border:1px solid var(--line);
+}
+.hint{font-size:12.5px;color:var(--faint)}
+.tabpage{display:none}
+.tabpage.active{display:block;animation:rise .45s cubic-bezier(.22,.8,.32,1) both}
+
+/* ---------- forms ---------- */
+.add-row{display:flex;gap:9px;margin-bottom:14px;flex-wrap:wrap}
+.add-row input[type=text], .add-row input[type=number], .add-row input[type=date], .add-row input[type=time], .add-row select,
+.form-grid input[type=text], .form-grid input[type=number], .form-grid input[type=date], .form-grid input[type=time], .form-grid select{
+  font-family:var(--font);font-size:14.5px;color:var(--ink);
+  background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:12px;
+  padding:11px 14px;outline:none;
+}
+.add-row input[type=text]:focus, .add-row input[type=number]:focus, .add-row select:focus,
+.form-grid input:focus, .form-grid select:focus{border-color:rgba(240,180,41,.6)}
+.add-row select, .form-grid select{background:#101d14}
+.add-row input[type=text]{flex:1}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.form-grid .full{grid-column:1 / -1}
+.field label{display:block;font-size:11.5px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+input[type=date]::-webkit-calendar-picker-indicator, input[type=time]::-webkit-calendar-picker-indicator{filter:invert(.7)}
+
+/* ---------- stat cards ---------- */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.stat{
+  background:rgba(0,0,0,.22);border:1px solid var(--line);border-radius:14px;padding:16px;
+}
+.stat .k{font-size:11.5px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
+.stat .v{font-size:26px;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums}
+.stat .v small{font-size:14px;font-weight:600;color:var(--muted)}
+.stat .sub{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.5}
+
+/* ---------- progress bars ---------- */
+.progress-wrap{margin-bottom:6px}
+.progress-meta{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:7px;gap:8px}
+.progress-meta b{color:var(--gold);font-variant-numeric:tabular-nums}
+.progress{height:10px;border-radius:99px;background:rgba(0,0,0,.35);overflow:hidden;border:1px solid var(--line)}
+.progress > div{
+  height:100%;width:0;border-radius:99px;
+  background:linear-gradient(90deg,var(--gold),var(--red));
+  transition:width .35s ease;
+}
+.progress > div.over{background:var(--red)}
+
+/* ---------- lists ---------- */
+.row-item{
+  display:flex;align-items:center;gap:11px;
+  padding:10px 12px;border-radius:12px;margin-bottom:7px;
+  background:rgba(0,0,0,.22);border:1px solid transparent;
+  transition:border-color .15s ease;
+}
+.row-item:hover{border-color:var(--line)}
+.row-item .txt{flex:1;font-size:14.5px;line-height:1.4;min-width:0}
+.row-item .meta{font-size:12.5px;color:var(--faint)}
+.del{
+  background:none;border:none;color:var(--faint);font-size:18px;cursor:pointer;
+  padding:2px 6px;border-radius:8px;line-height:1;flex:0 0 auto;
+}
+.del:hover{color:var(--red);background:var(--red-soft)}
+.icon-btn{
+  background:none;border:none;color:var(--faint);cursor:pointer;font-size:14px;
+  padding:4px 7px;border-radius:8px;
+}
+.icon-btn:hover{color:var(--gold);background:var(--gold-soft)}
+.empty{font-size:13.5px;color:var(--faint);padding:12px 4px;font-style:italic}
+.empty-hero{
+  text-align:center;padding:26px 16px;border-radius:14px;margin-bottom:6px;
+  background:rgba(240,180,41,.06);border:1px dashed rgba(240,180,41,.35);
+}
+.empty-hero .big{font-size:30px;margin-bottom:8px}
+.empty-hero p{font-size:13.5px;color:var(--muted);line-height:1.6}
+
+/* ---------- gifts ---------- */
+.status-pill{
+  font-family:var(--font);font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap;
+  padding:6px 12px;border-radius:999px;border:1px solid;
+}
+.status-Idea{background:var(--gold-soft);border-color:rgba(240,180,41,.5);color:var(--gold)}
+.status-Bought{background:var(--green-soft);border-color:rgba(123,216,143,.5);color:var(--green)}
+.status-Wrapped{background:var(--violet-soft);border-color:rgba(179,136,255,.5);color:var(--violet)}
+.status-Shipped{background:rgba(110,180,255,.12);border-color:rgba(110,180,255,.5);color:#9ecbff}
+.recipient-head{
+  display:flex;justify-content:space-between;align-items:center;gap:8px;
+  margin:14px 0 7px;padding:9px 12px;border-radius:11px;
+  background:rgba(240,180,41,.07);border:1px solid rgba(240,180,41,.22);
+}
+.recipient-head .rname{font-weight:800;font-size:14.5px;color:var(--gold)}
+.recipient-head .rsub{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.gift-row .money{font-size:13px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.gift-row .money b{color:var(--ink)}
+
+/* ---------- budget ---------- */
+.cat-row{margin-bottom:12px}
+.cat-row .cat-meta{display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:6px;gap:8px}
+.cat-row .cat-meta .cname{font-weight:700}
+.cat-row .cat-meta .cnums{color:var(--muted);font-variant-numeric:tabular-nums}
+.cat-row .cat-meta .cnums b{color:var(--ink)}
+.cat-budgets{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.cat-budgets .field input{width:100%}
+.total-line{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+  margin-top:12px;padding:13px 15px;border-radius:12px;
+  background:rgba(0,0,0,.28);border:1px solid var(--line);flex-wrap:wrap;
+}
+.total-line .tl{font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--faint)}
+.total-line .tv{font-size:21px;font-weight:800;font-variant-numeric:tabular-nums}
+.tv.pos{color:var(--green)} .tv.neg{color:var(--red)}
+
+/* ---------- meals ---------- */
+.dish{
+  border:1px solid var(--line);border-radius:14px;padding:15px;margin-bottom:13px;
+  background:rgba(0,0,0,.20);
+}
+.dish-head{display:flex;align-items:center;justify-content:space-between;gap:9px;margin-bottom:4px}
+.dish-head .dname{font-weight:800;font-size:15px}
+.dish-head .dmeta{font-size:12.5px;color:var(--faint)}
+.course-tag{
+  font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;
+  background:var(--red-soft);border:1px solid rgba(214,69,91,.45);color:#f0969f;
+  padding:4px 10px;border-radius:999px;white-space:nowrap;
+}
+.ing-row{display:flex;align-items:center;gap:9px;padding:7px 4px;border-bottom:1px dashed rgba(255,255,255,.06);font-size:13.5px}
+.ing-row:last-of-type{border-bottom:none}
+.ing-row .iname{flex:1}
+.ing-row .iqty{color:var(--faint);font-size:12.5px}
+.ing-add{display:flex;gap:8px;margin-top:10px}
+.ing-add input{flex:1;font-family:var(--font);font-size:13.5px;color:var(--ink);background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:10px;padding:9px 12px;outline:none}
+.ing-add input:focus{border-color:rgba(240,180,41,.6)}
+.shop-item{display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:11px;margin-bottom:6px;background:rgba(0,0,0,.22)}
+.shop-item .sname{flex:1;font-size:14px}
+.shop-item .sfrom{font-size:12px;color:var(--faint)}
+.shop-item.done .sname{color:var(--faint);text-decoration:line-through}
+.check{
+  width:23px;height:23px;flex:0 0 23px;border-radius:50%;cursor:pointer;
+  border:2px solid var(--faint);background:transparent;
+  display:flex;align-items:center;justify-content:center;
+  color:transparent;font-size:14px;font-weight:800;
+  transition:all .15s ease;
+}
+.check:hover{border-color:var(--green)}
+.shop-item.done .check{background:var(--green);border-color:var(--green);color:#152a1a}
+
+/* ---------- events ---------- */
+.event{position:relative}
+.event .dt{font-size:13px;font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums}
+.event.overdue{border-color:rgba(214,69,91,.55);background:rgba(214,69,91,.07)}
+.event.done-ev .txt{color:var(--faint);text-decoration:line-through}
+.event .enotes{font-size:12.5px;color:var(--faint);margin-top:3px}
+.overdue-tag{
+  font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;
+  color:var(--red);background:var(--red-soft);border:1px solid rgba(214,69,91,.5);
+  padding:3px 9px;border-radius:999px;white-space:nowrap;
+}
+
+/* ---------- checklist ---------- */
+.chk-item{display:flex;align-items:center;gap:11px;padding:9px 10px;font-size:14px}
+.chk-item .box{
+  width:23px;height:23px;flex:0 0 23px;border-radius:8px;
+  border:2px solid var(--faint);display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:800;color:transparent;
+}
+.chk-item.done .box{background:var(--green);border-color:var(--green);color:#152a1a}
+.chk-item.done{color:var(--faint)}
+
+/* ---------- footer ---------- */
+.foot{text-align:center;margin-top:26px;color:var(--faint);font-size:12.5px;line-height:1.7}
+.foot .lock{color:var(--green)}
+.storage-warn{
+  display:none;max-width:1180px;margin:0 auto 16px;padding:12px 18px;border-radius:14px;
+  background:rgba(214,69,91,.12);border:1px solid rgba(214,69,91,.45);
+  color:#ffb3a7;font-size:13.5px;font-weight:600;text-align:center;
+}
+.storage-warn.show{display:block}
+
+/* ---------- motion & polish ---------- */
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.card{animation:rise .55s cubic-bezier(.22,.8,.32,1) both}
+.card:nth-of-type(2){animation-delay:.07s}
+.card:nth-of-type(3){animation-delay:.14s}
+.card:nth-of-type(4){animation-delay:.21s}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+
+/* ---------- responsive ---------- */
+@media (max-width:860px){
+  .grid{columns:1}
+  body{padding:16px 12px 50px}
+  .sticky-head{position:static}
+  .topbar{flex-direction:column;align-items:stretch;border-radius:var(--radius) var(--radius) 0 0}
+  .top-actions{justify-content:space-between}
+  .tabbar{overflow-x:auto}
+  .tab-btn{flex:1 0 auto}
+  .form-grid{grid-template-columns:1fr}
+  .cat-budgets{grid-template-columns:1fr}
+  .stat-grid{grid-template-columns:1fr 1fr}
+  .gift-row{flex-wrap:wrap}
+  .gift-row .money{flex:1 1 100%}
+}
+
+/* ---------- print ---------- */
+@media print{
+  body{background:#fff;color:#111;padding:0}
+  .topbar{position:static;box-shadow:none;background:#fff;border:1px solid #ddd;backdrop-filter:none}
+  .card{box-shadow:none;break-inside:avoid;background:#fff;border:1px solid #ddd;margin-bottom:14px}
+  .grid{columns:1}
+  .top-actions,.tabbar,.add-row,.del,.icon-btn,.btn{display:none !important}
+  .brand h1 .accent{color:#b3541e;-webkit-text-fill-color:#b3541e;background:none}
+  .logo{box-shadow:none}
+  .foot{color:#666}
+}
+</style>
+</head>
+<body>
+<noscript><div style="max-width:640px;margin:40px auto;padding:22px;border-radius:14px;background:#182e22;border:1px solid rgba(240,180,41,.4);color:#f6f1e6;font-family:-apple-system,'Segoe UI',Roboto,sans-serif;text-align:center">⚠️ The Christmas Planner 2026 needs JavaScript enabled to run. Please enable JavaScript in your browser settings and reload this page.</div></noscript>
+<div class="wrap">
+  <div class="storage-warn" id="storageWarn">⚠️ Your browser is blocking local storage, so your data can&rsquo;t be saved between visits. Enable cookies / site data for this file to keep your progress.</div>
+
+  <div class="sticky-head">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">🎄</div>
+        <div>
+          <h1>Christmas <span class="accent">Planner 2026</span></h1>
+          <p>Your holiday command center</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <div class="count-pill" id="countPill">❄ — days to Christmas</div>
+      </div>
+    </header>
+    <nav class="tabbar" id="tabbar">
+      <button class="tab-btn active" data-tab="dashboard">🏠 Dashboard</button>
+      <button class="tab-btn" data-tab="gifts">🎁 Gifts</button>
+      <button class="tab-btn" data-tab="budget">💰 Budget</button>
+      <button class="tab-btn" data-tab="meals">🍽️ Meals</button>
+      <button class="tab-btn" data-tab="events">📅 Events</button>
+    </nav>
+  </div>
+
+  <main>
+
+    <!-- DASHBOARD -->
+    <div class="tabpage active" id="page-dashboard">
+      <div class="grid">
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">🏠</span> Holiday at a Glance</h2>
+            <span class="hint" id="todayLine"></span>
+          </div>
+          <div class="stat-grid">
+            <div class="stat">
+              <div class="k">Days to Christmas</div>
+              <div class="v" id="statDays">—</div>
+              <div class="sub">Dec 25, 2026 🎄</div>
+            </div>
+            <div class="stat">
+              <div class="k">Gift budget spent</div>
+              <div class="v" id="statGiftSpent">—</div>
+              <div class="progress" style="margin-top:9px"><div id="statGiftBar"></div></div>
+              <div class="sub" id="statGiftSub">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Gifts ready</div>
+              <div class="v" id="statGifts">—</div>
+              <div class="sub">bought, wrapped or shipped</div>
+            </div>
+            <div class="stat">
+              <div class="k">Next event</div>
+              <div class="v" id="statEvent" style="font-size:19px">—</div>
+              <div class="sub" id="statEventSub">—</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">✅</span> Holiday Checklist</h2>
+            <span class="hint">Auto-checks as you plan</span>
+          </div>
+          <div id="checklist"></div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">💾</span> Backup &amp; Demo Data</h2>
+          </div>
+          <p class="hint" style="margin-bottom:13px;line-height:1.6">Everything is stored in this browser. Export a backup before big edits, or load the sample data to see the planner in action.</p>
+          <div style="display:flex;gap:9px;flex-wrap:wrap">
+            <button class="btn small" id="sampleBtn">✨ Load sample data</button>
+            <button class="btn ghost small" id="exportBtn">⬇ Export JSON</button>
+            <button class="btn ghost small" id="importBtn">⬆ Import JSON</button>
+            <input type="file" id="importFile" accept=".json,application/json" style="display:none">
+            <button class="btn danger small" id="resetBtn">🗑 Reset all data</button>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- GIFTS -->
+    <div class="tabpage" id="page-gifts">
+      <div class="grid">
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">🎁</span> Add a Gift</h2>
+            <span class="hint">Tap a status pill to cycle: Idea → Bought → Wrapped → Shipped</span>
+          </div>
+          <div class="form-grid">
+            <div class="field"><label>Recipient</label><input type="text" id="gRecipient" placeholder="e.g. Mom" maxlength="60"></div>
+            <div class="field"><label>Gift idea</label><input type="text" id="gIdea" placeholder="e.g. Cashmere scarf" maxlength="120"></div>
+            <div class="field"><label>Budget ($)</label><input type="number" id="gBudget" min="0" step="0.01" placeholder="50"></div>
+            <div class="field"><label>Actual cost ($) — optional</label><input type="number" id="gActual" min="0" step="0.01" placeholder="0"></div>
+            <div class="field"><label>Status</label>
+              <select id="gStatus">
+                <option>Idea</option><option>Bought</option><option>Wrapped</option><option>Shipped</option>
+              </select>
+            </div>
+            <div class="field"><label>&nbsp;</label><button class="btn" id="addGiftBtn" style="width:100%">+ Add gift</button></div>
+          </div>
+          <div class="progress-wrap">
+            <div class="progress-meta"><span>Total actual vs gift budget</span><b id="giftProgText">—</b></div>
+            <div class="progress"><div id="giftProgBar"></div></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">🧾</span> Gift List</h2>
+            <div class="top-actions" style="gap:8px">
+              <span class="hint">Overall gift budget</span>
+              <input type="number" id="giftBudgetInput" min="0" step="1" style="width:110px;font-family:var(--font);font-size:14px;color:var(--ink);background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:10px;padding:8px 10px;outline:none" aria-label="Overall gift budget">
+              <select id="giftFilter" aria-label="Filter by status" style="font-family:var(--font);font-size:13.5px;color:var(--ink);background:#101d14;border:1px solid var(--line);border-radius:10px;padding:8px 10px;outline:none">
+                <option value="All">All statuses</option>
+                <option>Idea</option><option>Bought</option><option>Wrapped</option><option>Shipped</option>
+              </select>
+            </div>
+          </div>
+          <div id="giftList"></div>
+        </section>
+      </div>
+    </div>
+
+    <!-- BUDGET -->
+    <div class="tabpage" id="page-budget">
+      <div class="grid">
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">💰</span> Category Budgets</h2>
+            <span class="hint">Set a budget per category</span>
+          </div>
+          <div class="cat-budgets" id="catBudgets"></div>
+          <div id="catBars"></div>
+          <div class="total-line">
+            <div><div class="tl">Total spent</div><div class="tv" id="totSpent">$0.00</div></div>
+            <div><div class="tl">Total budget</div><div class="tv" id="totBudget">$0.00</div></div>
+            <div><div class="tl">Remaining</div><div class="tv" id="totRemain">$0.00</div></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">🧾</span> Log an Expense</h2>
+          </div>
+          <div class="form-grid">
+            <div class="field full"><label>Description</label><input type="text" id="eDesc" placeholder="e.g. Christmas tree" maxlength="120"></div>
+            <div class="field"><label>Amount ($)</label><input type="number" id="eAmount" min="0" step="0.01" placeholder="25"></div>
+            <div class="field"><label>Category</label><select id="eCat"></select></div>
+            <div class="field"><label>Date</label><input type="date" id="eDate"></div>
+            <div class="field"><label>&nbsp;</label><button class="btn" id="addExpenseBtn" style="width:100%">+ Add expense</button></div>
+          </div>
+          <div id="expenseList"></div>
+        </section>
+      </div>
+    </div>
+
+    <!-- MEALS -->
+    <div class="tabpage" id="page-meals">
+      <div class="grid">
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">🍽️</span> Christmas Dinner</h2>
+            <span class="hint">Add dishes, then ingredients — the shopping list builds itself</span>
+          </div>
+          <div class="form-grid">
+            <div class="field"><label>Dish name</label><input type="text" id="dName" placeholder="e.g. Roast Turkey" maxlength="80"></div>
+            <div class="field"><label>Course</label>
+              <select id="dCourse">
+                <option>Starter</option><option selected>Main</option><option>Side</option><option>Dessert</option><option>Drinks</option>
+              </select>
+            </div>
+            <div class="field"><label>Servings</label><input type="number" id="dServings" min="1" step="1" placeholder="8"></div>
+            <div class="field"><label>&nbsp;</label><button class="btn" id="addDishBtn" style="width:100%">+ Add dish</button></div>
+          </div>
+          <div id="dishList"></div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">🛒</span> Shopping List</h2>
+            <span class="hint" id="shopCount"></span>
+          </div>
+          <div id="shopList"></div>
+        </section>
+      </div>
+    </div>
+
+    <!-- EVENTS -->
+    <div class="tabpage" id="page-events">
+      <div class="grid">
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">📅</span> Add an Event</h2>
+            <span class="hint">Parties, travel, deadlines — sorted by date</span>
+          </div>
+          <div class="form-grid">
+            <div class="field full"><label>Event name</label><input type="text" id="evName" placeholder="e.g. Christmas Eve dinner" maxlength="120"></div>
+            <div class="field"><label>Date</label><input type="date" id="evDate" value="2026-12-25"></div>
+            <div class="field"><label>Time (optional)</label><input type="time" id="evTime"></div>
+            <div class="field full"><label>Notes (optional)</label><input type="text" id="evNotes" placeholder="e.g. At home — family coming over" maxlength="160"></div>
+            <div class="field full"><button class="btn" id="addEventBtn" style="width:100%">+ Add event</button></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">🎉</span> Upcoming &amp; Past Events</h2>
+            <span class="hint">Tap the circle to mark done</span>
+          </div>
+          <div id="eventList"></div>
+        </section>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="foot">
+    <div><span class="lock">🔒</span> Everything you type stays in <b>this browser</b> — no accounts, no cloud, no tracking.</div>
+    <div>Christmas Planner 2026 · by DigiEman · works offline</div>
+  </footer>
+
+</div>
+<script>
+(function(){
+'use strict';
+
+/* ================= helpers ================= */
+var KEY = 'digieman-christmas-planner-2026';
+var STATUS_ORDER = ['Idea','Bought','Wrapped','Shipped'];
+var CATEGORIES = ['Gifts','Food & Drinks','Decorations','Travel','Cards & Wrapping','Other'];
+var CHRISTMAS = '2026-12-25';
+
+function $(id){ return document.getElementById(id); }
+function pad(n){ return (n<10?'0':'')+n; }
+function todayStr(d){
+  d = d || new Date();
+  return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+}
+function esc(s){
+  return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function money(n){
+  n = parseFloat(n); if(isNaN(n)) n = 0;
+  return '$' + n.toLocaleString('en-US',{minimumFractionDigits:2, maximumFractionDigits:2});
+}
+function num(v){ var n = parseFloat(v); return isNaN(n) ? 0 : n; }
+function uid(prefix){
+  return (prefix||'x') + Date.now().toString(36) + Math.floor(Math.random()*46656).toString(36);
+}
+function fmtDate(str){
+  if(!str) return '';
+  var p = str.split('-');
+  var d = new Date(+p[0], +p[1]-1, +p[2]);
+  return d.toLocaleDateString(undefined,{weekday:'short', month:'short', day:'numeric', year:'numeric'});
+}
+function fmtTime(t){
+  if(!t) return '';
+  var p = t.split(':'), h = +p[0], m = p[1];
+  var ap = h >= 12 ? 'PM' : 'AM';
+  h = h % 12; if(h === 0) h = 12;
+  return h + ':' + m + ' ' + ap;
+}
+
+/* ================= state ================= */
+function defaultState(){
+  var cats = {};
+  CATEGORIES.forEach(function(c){ cats[c] = 0; });
+  cats['Gifts'] = 500; cats['Food & Drinks'] = 300; cats['Decorations'] = 150;
+  cats['Travel'] = 200; cats['Cards & Wrapping'] = 80; cats['Other'] = 100;
+  return {
+    version: 1,
+    giftBudget: 500,
+    gifts: [],
+    giftFilter: 'All',
+    categories: cats,
+    expenses: [],
+    dishes: [],
+    shoppingChecked: {},
+    events: []
+  };
+}
+function loadState(){
+  var d = defaultState();
+  try{
+    var raw = localStorage.getItem(KEY);
+    if(raw){
+      var s = JSON.parse(raw);
+      if(s && typeof s === 'object'){
+        if(typeof s.giftBudget === 'number') d.giftBudget = s.giftBudget;
+        if(Array.isArray(s.gifts)) d.gifts = s.gifts;
+        if(typeof s.giftFilter === 'string') d.giftFilter = s.giftFilter;
+        if(s.categories && typeof s.categories === 'object'){
+          CATEGORIES.forEach(function(c){ if(typeof s.categories[c] === 'number') d.categories[c] = s.categories[c]; });
+        }
+        if(Array.isArray(s.expenses)) d.expenses = s.expenses;
+        if(Array.isArray(s.dishes)) d.dishes = s.dishes;
+        if(s.shoppingChecked && typeof s.shoppingChecked === 'object') d.shoppingChecked = s.shoppingChecked;
+        if(Array.isArray(s.events)) d.events = s.events;
+      }
+    }
+  }catch(e){}
+  return d;
+}
+var state = loadState();
+var storageOK = (function(){
+  try{ localStorage.setItem('__xm_probe','1'); localStorage.removeItem('__xm_probe'); return true; }
+  catch(e){ return false; }
+})();
+function save(){
+  if(!storageOK) return;
+  try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
+}
+
+/* ================= countdown ================= */
+function daysToChristmas(){
+  var t = todayStr().split('-'), c = CHRISTMAS.split('-');
+  var a = new Date(+t[0], +t[1]-1, +t[2]);
+  var b = new Date(+c[0], +c[1]-1, +c[2]);
+  return Math.ceil((b - a) / 86400000);
+}
+function renderCountdown(){
+  var n = daysToChristmas();
+  var pill = $('countPill'), msg;
+  if(n > 1){ msg = '❄ ' + n + ' days to Christmas'; }
+  else if(n === 1){ msg = '❄ 1 day to Christmas'; }
+  else if(n === 0){ msg = '🎄 Merry Christmas! 🎄'; }
+  else { msg = '🎄 Merry Christmas! 🎄'; }
+  pill.textContent = msg;
+  $('statDays').innerHTML = n > 0 ? n + '' : '0';
+  $('todayLine').textContent = new Date().toLocaleDateString(undefined,{weekday:'long', month:'long', day:'numeric'});
+}
+
+/* ================= tabs ================= */
+function switchTab(name){
+  var btns = $('tabbar').querySelectorAll('.tab-btn');
+  for(var i=0;i<btns.length;i++) btns[i].classList.toggle('active', btns[i].getAttribute('data-tab') === name);
+  var pages = document.querySelectorAll('.tabpage');
+  for(var j=0;j<pages.length;j++) pages[j].classList.toggle('active', pages[j].id === 'page-' + name);
+}
+function bindTabs(){
+  $('tabbar').addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('.tab-btn') : null;
+    if(b) switchTab(b.getAttribute('data-tab'));
+  });
+}
+
+/* ================= dashboard ================= */
+function giftTotals(){
+  var budget = num(state.giftBudget), actual = 0, ready = 0;
+  state.gifts.forEach(function(g){
+    actual += num(g.actual);
+    if(g.status !== 'Idea') ready++;
+  });
+  return { budget: budget, actual: actual, ready: ready, total: state.gifts.length };
+}
+function nextEvent(){
+  var t = todayStr(), best = null;
+  state.events.forEach(function(ev){
+    if(ev.done) return;
+    if(ev.date >= t && (!best || ev.date < best.date || (ev.date === best.date && (ev.time||'') < (best.time||'')))) best = ev;
+  });
+  return best;
+}
+function renderDashboard(){
+  renderCountdown();
+  var gt = giftTotals();
+  $('statGiftSpent').textContent = money(gt.actual);
+  var pct = gt.budget > 0 ? Math.min(100, Math.round(gt.actual / gt.budget * 100)) : 0;
+  $('statGiftBar').style.width = pct + '%';
+  $('statGiftBar').classList.toggle('over', gt.actual > gt.budget);
+  $('statGiftSub').textContent = 'of ' + money(gt.budget) + ' budget';
+  $('statGifts').innerHTML = gt.ready + ' <small>/ ' + gt.total + '</small>';
+  var ev = nextEvent();
+  if(ev){
+    $('statEvent').textContent = ev.name.length > 22 ? ev.name.slice(0,22) + '…' : ev.name;
+    $('statEventSub').textContent = fmtDate(ev.date) + (ev.time ? ' · ' + fmtTime(ev.time) : '');
+  } else {
+    $('statEvent').textContent = '—';
+    $('statEventSub').textContent = 'No upcoming events';
+  }
+  var items = [
+    { ok: state.giftBudget > 0, txt: 'Set your overall gift budget' },
+    { ok: state.gifts.length > 0, txt: 'Add your first gift idea' },
+    { ok: gt.ready > 0, txt: 'Buy or wrap at least one gift' },
+    { ok: state.expenses.length > 0, txt: 'Log your first expense' },
+    { ok: state.dishes.length > 0, txt: 'Plan a Christmas dinner dish' },
+    { ok: state.events.length > 0, txt: 'Add an event to the calendar' }
+  ];
+  var done = items.filter(function(i){ return i.ok; }).length;
+  var html = '';
+  items.forEach(function(i){
+    html += '<div class="chk-item' + (i.ok ? ' done' : '') + '"><span class="box">✓</span><span>' + esc(i.txt) + '</span></div>';
+  });
+  html += '<div class="hint" style="margin-top:10px">' + done + ' of ' + items.length + ' steps done 🎄</div>';
+  $('checklist').innerHTML = html;
+}
+
+/* ================= gifts ================= */
+function nextStatus(s){
+  var i = STATUS_ORDER.indexOf(s);
+  return STATUS_ORDER[(i + 1) % STATUS_ORDER.length];
+}
+function statusPill(g){
+  var st = STATUS_ORDER.indexOf(g.status) >= 0 ? g.status : 'Idea';
+  return '<button class="status-pill status-' + st + '" data-act="cycle" title="Tap to advance status">' + st + '</button>';
+}
+function renderGifts(){
+  $('giftBudgetInput').value = state.giftBudget;
+  $('giftFilter').value = state.giftFilter || 'All';
+  var gt = giftTotals();
+  var pct = gt.budget > 0 ? Math.min(100, Math.round(gt.actual / gt.budget * 100)) : 0;
+  $('giftProgText').textContent = money(gt.actual) + ' of ' + money(gt.budget);
+  $('giftProgBar').style.width = pct + '%';
+  $('giftProgBar').classList.toggle('over', gt.actual > gt.budget);
+
+  var filter = state.giftFilter || 'All';
+  var list = state.gifts.filter(function(g){ return filter === 'All' || g.status === filter; });
+  var box = $('giftList');
+  if(!list.length){
+    box.innerHTML = '<div class="empty-hero"><div class="big">🎁</div><p><b style="color:var(--ink)">No gifts yet.</b><br>Add your first gift idea above — every present starts as an idea.</p></div>';
+    return;
+  }
+  /* group by recipient, keep original order */
+  var groups = [], seen = {};
+  list.forEach(function(g){
+    var r = (g.recipient || 'Unnamed').trim() || 'Unnamed';
+    if(!seen[r]){ seen[r] = { name: r, items: [] }; groups.push(seen[r]); }
+    seen[r].items.push(g);
+  });
+  var html = '';
+  groups.forEach(function(gr){
+    var bSum = 0, aSum = 0;
+    gr.items.forEach(function(g){ bSum += num(g.budget); aSum += num(g.actual); });
+    html += '<div class="recipient-head"><span class="rname">🎀 ' + esc(gr.name) + '</span>'
+      + '<span class="rsub">budget ' + money(bSum) + ' · spent ' + money(aSum) + '</span></div>';
+    gr.items.forEach(function(g){
+      html += '<div class="row-item gift-row" data-id="' + g.id + '">'
+        + '<span class="txt">' + esc(g.idea || '(no idea yet)') + '</span>'
+        + '<span class="money">budget <b>' + money(g.budget) + '</b> · actual <b>' + money(g.actual) + '</b></span>'
+        + statusPill(g)
+        + '<button class="icon-btn" data-act="edit" title="Edit gift">✎</button>'
+        + '<button class="del" data-act="del" title="Delete gift">×</button></div>';
+    });
+  });
+  box.innerHTML = html;
+}
+function addGift(){
+  var recipient = $('gRecipient').value.trim();
+  var idea = $('gIdea').value.trim();
+  if(!recipient && !idea){ $('gRecipient').focus(); return; }
+  var g = {
+    id: uid('g'),
+    recipient: recipient || 'Unnamed',
+    idea: idea,
+    budget: num($('gBudget').value),
+    actual: num($('gActual').value),
+    status: $('gStatus').value || 'Idea'
+  };
+  state.gifts.push(g);
+  save(); renderGifts(); renderDashboard();
+  $('gRecipient').value = ''; $('gIdea').value = ''; $('gBudget').value = ''; $('gActual').value = '';
+  $('gStatus').value = 'Idea'; $('gRecipient').focus();
+}
+function editGift(id){
+  var g = null;
+  for(var i=0;i<state.gifts.length;i++) if(state.gifts[i].id === id) g = state.gifts[i];
+  if(!g) return;
+  var r = prompt('Recipient:', g.recipient);
+  if(r === null) return;
+  var idea = prompt('Gift idea:', g.idea);
+  if(idea === null) return;
+  var b = prompt('Budget ($):', g.budget);
+  if(b === null) return;
+  var a = prompt('Actual cost ($) — leave 0 if not bought yet:', g.actual);
+  if(a === null) return;
+  g.recipient = (r || '').trim() || 'Unnamed';
+  g.idea = (idea || '').trim();
+  g.budget = Math.max(0, num(b));
+  g.actual = Math.max(0, num(a));
+  save(); renderGifts(); renderDashboard();
+}
+function bindGifts(){
+  $('addGiftBtn').addEventListener('click', addGift);
+  ['gRecipient','gIdea','gBudget','gActual'].forEach(function(id){
+    $(id).addEventListener('keydown', function(e){ if(e.key === 'Enter') addGift(); });
+  });
+  $('giftBudgetInput').addEventListener('change', function(){
+    state.giftBudget = Math.max(0, num($('giftBudgetInput').value));
+    save(); renderGifts(); renderDashboard();
+  });
+  $('giftFilter').addEventListener('change', function(){
+    state.giftFilter = $('giftFilter').value;
+    save(); renderGifts();
+  });
+  $('giftList').addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('button') : null; if(!b) return;
+    var row = b.closest ? b.closest('.gift-row') : null; if(!row) return;
+    var id = row.getAttribute('data-id');
+    var g = null;
+    for(var i=0;i<state.gifts.length;i++) if(state.gifts[i].id === id) g = state.gifts[i];
+    if(!g) return;
+    var act = b.getAttribute('data-act');
+    if(act === 'cycle'){ g.status = nextStatus(g.status); save(); renderGifts(); renderDashboard(); }
+    else if(act === 'edit'){ editGift(id); }
+    else if(act === 'del'){
+      if(confirm('Delete this gift?\n\n“' + (g.idea || g.recipient).slice(0,60) + '”')){
+        state.gifts = state.gifts.filter(function(x){ return x.id !== id; });
+        save(); renderGifts(); renderDashboard();
+      }
+    }
+  });
+}
+
+/* ================= budget ================= */
+function catSpent(){
+  var s = {};
+  CATEGORIES.forEach(function(c){ s[c] = 0; });
+  state.expenses.forEach(function(e){
+    var c = CATEGORIES.indexOf(e.category) >= 0 ? e.category : 'Other';
+    s[c] += num(e.amount);
+  });
+  return s;
+}
+function renderBudget(){
+  /* budget inputs */
+  var cb = $('catBudgets'), html = '';
+  CATEGORIES.forEach(function(c, i){
+    html += '<div class="field"><label>' + esc(c) + '</label>'
+      + '<input type="number" min="0" step="1" data-cat="' + i + '" value="' + state.categories[c] + '" aria-label="Budget for ' + esc(c) + '"></div>';
+  });
+  cb.innerHTML = html;
+  /* category select for expense form */
+  var sel = $('eCat'), sh = '';
+  CATEGORIES.forEach(function(c){ sh += '<option>' + esc(c) + '</option>'; });
+  sel.innerHTML = sh;
+  if(!$('eDate').value) $('eDate').value = todayStr();
+
+  /* bars */
+  var spent = catSpent(), bars = '', totS = 0, totB = 0;
+  CATEGORIES.forEach(function(c){
+    var b = num(state.categories[c]), s = spent[c];
+    totS += s; totB += b;
+    var pct = b > 0 ? Math.min(100, Math.round(s / b * 100)) : (s > 0 ? 100 : 0);
+    bars += '<div class="cat-row"><div class="cat-meta"><span class="cname">' + esc(c) + '</span>'
+      + '<span class="cnums"><b>' + money(s) + '</b> of ' + money(b) + '</span></div>'
+      + '<div class="progress"><div class="' + (s > b ? 'over' : '') + '" style="width:' + pct + '%"></div></div></div>';
+  });
+  $('catBars').innerHTML = bars;
+  $('totSpent').textContent = money(totS);
+  $('totBudget').textContent = money(totB);
+  var rem = totB - totS;
+  var remEl = $('totRemain');
+  remEl.textContent = (rem < 0 ? '−' : '') + money(Math.abs(rem));
+  remEl.className = 'tv ' + (rem >= 0 ? 'pos' : 'neg');
+
+  /* expense list, newest first */
+  var list = state.expenses.slice().sort(function(a, b){
+    return (b.date || '').localeCompare(a.date || '') || (b.id > a.id ? 1 : -1);
+  });
+  var box = $('expenseList');
+  if(!list.length){
+    box.innerHTML = '<div class="empty">No expenses logged yet — log your first above 💰</div>';
+    return;
+  }
+  var eh = '';
+  list.forEach(function(e){
+    eh += '<div class="row-item" data-id="' + e.id + '">'
+      + '<span class="txt">' + esc(e.desc || '(no description)') + '<div class="meta">' + esc(e.category) + ' · ' + esc(fmtDate(e.date)) + '</div></span>'
+      + '<b style="font-variant-numeric:tabular-nums">' + money(e.amount) + '</b>'
+      + '<button class="del" data-act="del" title="Delete expense">×</button></div>';
+  });
+  box.innerHTML = eh;
+}
+function addExpense(){
+  var desc = $('eDesc').value.trim();
+  var amount = num($('eAmount').value);
+  if(!desc && amount <= 0){ $('eDesc').focus(); return; }
+  state.expenses.push({
+    id: uid('e'),
+    desc: desc || '(no description)',
+    amount: amount,
+    category: $('eCat').value || 'Other',
+    date: $('eDate').value || todayStr()
+  });
+  save(); renderBudget(); renderDashboard();
+  $('eDesc').value = ''; $('eAmount').value = ''; $('eDate').value = todayStr(); $('eDesc').focus();
+}
+function bindBudget(){
+  $('catBudgets').addEventListener('change', function(e){
+    var inp = e.target.closest ? e.target.closest('input[data-cat]') : null;
+    if(!inp) return;
+    var c = CATEGORIES[+inp.getAttribute('data-cat')];
+    state.categories[c] = Math.max(0, num(inp.value));
+    save(); renderBudget(); renderDashboard();
+  });
+  $('addExpenseBtn').addEventListener('click', addExpense);
+  ['eDesc','eAmount'].forEach(function(id){
+    $(id).addEventListener('keydown', function(e){ if(e.key === 'Enter') addExpense(); });
+  });
+  $('expenseList').addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('button[data-act="del"]') : null; if(!b) return;
+    var row = b.closest ? b.closest('.row-item') : null; if(!row) return;
+    var id = row.getAttribute('data-id');
+    if(confirm('Delete this expense?')){
+      state.expenses = state.expenses.filter(function(x){ return x.id !== id; });
+      save(); renderBudget(); renderDashboard();
+    }
+  });
+}
+
+/* ================= meals ================= */
+function findDish(id){
+  for(var i=0;i<state.dishes.length;i++) if(state.dishes[i].id === id) return state.dishes[i];
+  return null;
+}
+function renderMeals(){
+  var box = $('dishList');
+  if(!state.dishes.length){
+    box.innerHTML = '<div class="empty-hero"><div class="big">🍽️</div><p><b style="color:var(--ink)">No dishes planned yet.</b><br>Add your first Christmas dinner dish above — the shopping list fills itself.</p></div>';
+  } else {
+    var html = '';
+    state.dishes.forEach(function(d){
+      html += '<div class="dish" data-id="' + d.id + '">'
+        + '<div class="dish-head"><div><span class="dname">' + esc(d.name) + '</span>'
+        + ' <span class="dmeta">· serves ' + (num(d.servings) || '—') + '</span></div>'
+        + '<div style="display:flex;gap:6px;align-items:center"><span class="course-tag">' + esc(d.course) + '</span>'
+        + '<button class="del" data-act="del-dish" title="Delete dish">×</button></div></div>';
+      if(d.ingredients && d.ingredients.length){
+        d.ingredients.forEach(function(ing){
+          html += '<div class="ing-row" data-ing="' + ing.id + '"><span class="iname">🥕 ' + esc(ing.name) + '</span>'
+            + '<span class="iqty">' + esc(ing.qty) + '</span>'
+            + '<button class="del" data-act="del-ing" title="Remove ingredient">×</button></div>';
+        });
+      } else {
+        html += '<div class="empty" style="padding:6px 4px">No ingredients yet — add below.</div>';
+      }
+      html += '<div class="ing-add"><input type="text" placeholder="Ingredient, e.g. Brussels sprouts" maxlength="80" data-ing-name>'
+        + '<input type="text" placeholder="Qty, e.g. 1 kg" maxlength="40" data-ing-qty style="max-width:130px">'
+        + '<button class="btn small" data-act="add-ing">+ Add</button></div></div>';
+    });
+    box.innerHTML = html;
+  }
+  /* shopping list: aggregate all ingredients */
+  var shop = $('shopList'), items = [];
+  state.dishes.forEach(function(d){
+    (d.ingredients || []).forEach(function(ing){
+      items.push({ ing: ing, from: d.name });
+    });
+  });
+  if(!items.length){
+    shop.innerHTML = '<div class="empty">Your shopping list appears here once dishes have ingredients 🛒</div>';
+    $('shopCount').textContent = '';
+    return;
+  }
+  var sh = '', checked = 0;
+  items.forEach(function(it){
+    var done = !!state.shoppingChecked[it.ing.id];
+    if(done) checked++;
+    sh += '<div class="shop-item' + (done ? ' done' : '') + '" data-ing="' + it.ing.id + '">'
+      + '<button class="check" data-act="shop-toggle" title="Mark as bought">✓</button>'
+      + '<span class="sname">' + esc(it.ing.name) + (it.ing.qty ? ' <span class="sfrom">· ' + esc(it.ing.qty) + '</span>' : '') + '</span>'
+      + '<span class="sfrom">' + esc(it.from) + '</span></div>';
+  });
+  shop.innerHTML = sh;
+  $('shopCount').textContent = checked + ' of ' + items.length + ' bought';
+}
+function addDish(){
+  var name = $('dName').value.trim();
+  if(!name){ $('dName').focus(); return; }
+  state.dishes.push({
+    id: uid('d'),
+    name: name,
+    course: $('dCourse').value || 'Main',
+    servings: Math.max(1, Math.round(num($('dServings').value)) || 8),
+    ingredients: []
+  });
+  save(); renderMeals(); renderDashboard();
+  $('dName').value = ''; $('dServings').value = ''; $('dName').focus();
+}
+function bindMeals(){
+  $('addDishBtn').addEventListener('click', addDish);
+  $('dName').addEventListener('keydown', function(e){ if(e.key === 'Enter') addDish(); });
+  $('dishList').addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('button') : null; if(!b) return;
+    var dishEl = b.closest ? b.closest('.dish') : null; if(!dishEl) return;
+    var d = findDish(dishEl.getAttribute('data-id')); if(!d) return;
+    var act = b.getAttribute('data-act');
+    if(act === 'del-dish'){
+      if(confirm('Delete this dish and its ingredients?\n\n“' + d.name.slice(0,60) + '”')){
+        d.ingredients.forEach(function(ing){ delete state.shoppingChecked[ing.id]; });
+        state.dishes = state.dishes.filter(function(x){ return x.id !== d.id; });
+        save(); renderMeals(); renderDashboard();
+      }
+    } else if(act === 'add-ing'){
+      var nameInp = dishEl.querySelector('[data-ing-name]');
+      var qtyInp = dishEl.querySelector('[data-ing-qty]');
+      var nm = nameInp.value.trim();
+      if(!nm){ nameInp.focus(); return; }
+      d.ingredients.push({ id: uid('i'), name: nm, qty: qtyInp.value.trim() });
+      save(); renderMeals(); renderDashboard();
+    } else if(act === 'del-ing'){
+      var ingRow = b.closest ? b.closest('.ing-row') : null; if(!ingRow) return;
+      var ingId = ingRow.getAttribute('data-ing');
+      d.ingredients = d.ingredients.filter(function(x){ return x.id !== ingId; });
+      delete state.shoppingChecked[ingId];
+      save(); renderMeals();
+    }
+  });
+  $('dishList').addEventListener('keydown', function(e){
+    if(e.key !== 'Enter') return;
+    var inp = e.target.closest ? e.target.closest('[data-ing-name],[data-ing-qty]') : null;
+    if(!inp) return;
+    var dishEl = inp.closest('.dish');
+    var addBtn = dishEl ? dishEl.querySelector('[data-act="add-ing"]') : null;
+    if(addBtn) addBtn.click();
+  });
+  $('shopList').addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('[data-act="shop-toggle"]') : null; if(!b) return;
+    var item = b.closest ? b.closest('.shop-item') : null; if(!item) return;
+    var id = item.getAttribute('data-ing');
+    if(state.shoppingChecked[id]) delete state.shoppingChecked[id];
+    else state.shoppingChecked[id] = true;
+    save(); renderMeals();
+  });
+}
+
+/* ================= events ================= */
+function renderEvents(){
+  var box = $('eventList');
+  if(!state.events.length){
+    box.innerHTML = '<div class="empty-hero"><div class="big">📅</div><p><b style="color:var(--ink)">No events yet.</b><br>Add Christmas Eve dinner, travel days, party invites — everything lands here in date order.</p></div>';
+    return;
+  }
+  var t = todayStr();
+  var list = state.events.slice().sort(function(a, b){
+    return (a.date || '').localeCompare(b.date || '') || (a.time || '').localeCompare(b.time || '');
+  });
+  var html = '';
+  list.forEach(function(ev){
+    var overdue = !ev.done && ev.date && ev.date < t;
+    html += '<div class="row-item event' + (ev.done ? ' done-ev' : '') + (overdue ? ' overdue' : '') + '" data-id="' + ev.id + '">'
+      + '<button class="check" data-act="toggle" title="Mark done">✓</button>'
+      + '<span class="txt">' + esc(ev.name || '(untitled)') + '<div class="meta">'
+      + '<span class="dt">' + esc(fmtDate(ev.date)) + '</span>' + (ev.time ? ' · ' + esc(fmtTime(ev.time)) : '')
+      + (ev.notes ? ' · ' + esc(ev.notes) : '') + '</div></span>'
+      + (overdue ? '<span class="overdue-tag">Overdue</span>' : '')
+      + '<button class="del" data-act="del" title="Delete event">×</button></div>';
+  });
+  box.innerHTML = html;
+}
+function addEvent(){
+  var name = $('evName').value.trim();
+  if(!name){ $('evName').focus(); return; }
+  state.events.push({
+    id: uid('v'),
+    name: name,
+    date: $('evDate').value || CHRISTMAS,
+    time: $('evTime').value,
+    notes: $('evNotes').value.trim(),
+    done: false
+  });
+  save(); renderEvents(); renderDashboard();
+  $('evName').value = ''; $('evTime').value = ''; $('evNotes').value = ''; $('evName').focus();
+}
+function bindEvents(){
+  $('addEventBtn').addEventListener('click', addEvent);
+  $('evName').addEventListener('keydown', function(e){ if(e.key === 'Enter') addEvent(); });
+  $('eventList').addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('button') : null; if(!b) return;
+    var row = b.closest ? b.closest('.event') : null; if(!row) return;
+    var id = row.getAttribute('data-id'), ev = null, i;
+    for(i=0;i<state.events.length;i++) if(state.events[i].id === id) ev = state.events[i];
+    if(!ev) return;
+    var act = b.getAttribute('data-act');
+    if(act === 'toggle'){ ev.done = !ev.done; save(); renderEvents(); renderDashboard(); }
+    else if(act === 'del'){
+      if(confirm('Delete this event?\n\n“' + ev.name.slice(0,60) + '”')){
+        state.events = state.events.filter(function(x){ return x.id !== id; });
+        save(); renderEvents(); renderDashboard();
+      }
+    }
+  });
+}
+
+/* ================= backup / sample / reset ================= */
+function sampleData(){
+  if(!confirm('Load sample data?\n\nThis adds 3 gifts, 2 expenses, 1 dinner dish and 2 events so you can see the planner in action. Your existing data stays too.')) return;
+  var g1 = uid('g'), g2 = uid('g'), g3 = uid('g');
+  state.gifts.push(
+    { id: g1, recipient: 'Mom', idea: 'Cashmere scarf', budget: 60, actual: 55, status: 'Bought' },
+    { id: g2, recipient: 'Dad', idea: 'Grill tool set', budget: 80, actual: 0, status: 'Idea' },
+    { id: g3, recipient: 'Sister', idea: 'Scented candle set', budget: 35, actual: 32, status: 'Wrapped' }
+  );
+  state.expenses.push(
+    { id: uid('e'), desc: 'Christmas tree', amount: 85, category: 'Decorations', date: '2026-11-28' },
+    { id: uid('e'), desc: 'Turkey + trimmings', amount: 120, category: 'Food & Drinks', date: '2026-12-20' }
+  );
+  var d1 = uid('d');
+  state.dishes.push({
+    id: d1, name: 'Roast Turkey Dinner', course: 'Main', servings: 8,
+    ingredients: [
+      { id: uid('i'), name: 'Whole turkey', qty: '~5 kg' },
+      { id: uid('i'), name: 'Potatoes', qty: '2 kg' },
+      { id: uid('i'), name: 'Brussels sprouts', qty: '1 kg' }
+    ]
+  });
+  state.events.push(
+    { id: uid('v'), name: 'Christmas Eve dinner', date: '2026-12-24', time: '19:00', notes: 'At home — family coming over', done: false },
+    { id: uid('v'), name: 'New Year party', date: '2026-12-31', time: '21:00', notes: '', done: false }
+  );
+  save(); renderAll();
+}
+function exportData(){
+  var blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'christmas-planner-2026-backup.json';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+function importData(file){
+  var reader = new FileReader();
+  reader.onload = function(){
+    try{
+      var s = JSON.parse(reader.result);
+      if(!s || typeof s !== 'object' || (!Array.isArray(s.gifts) && !Array.isArray(s.expenses) && !Array.isArray(s.events) && !Array.isArray(s.dishes))){
+        alert('That file does not look like a Christmas Planner backup.');
+        return;
+      }
+      if(!confirm('Replace ALL current data with this backup? This cannot be undone.')) return;
+      state = s;
+      save(); renderAll();
+      alert('Backup imported successfully ✓');
+    }catch(err){
+      alert('Could not read that file — it may be corrupted.');
+    }
+  };
+  reader.readAsText(file);
+}
+function resetData(){
+  if(confirm('Reset ALL data?\n\nThis clears gifts, expenses, dishes, events and budgets, and starts fresh. This cannot be undone.')){
+    state = defaultState();
+    save(); renderAll();
+  }
+}
+function bindData(){
+  $('sampleBtn').addEventListener('click', sampleData);
+  $('exportBtn').addEventListener('click', exportData);
+  $('importBtn').addEventListener('click', function(){ $('importFile').click(); });
+  $('importFile').addEventListener('change', function(){
+    if(this.files && this.files[0]) importData(this.files[0]);
+    this.value = '';
+  });
+  $('resetBtn').addEventListener('click', resetData);
+}
+
+/* ================= init ================= */
+function renderAll(){
+  renderDashboard();
+  renderGifts();
+  renderBudget();
+  renderMeals();
+  renderEvents();
+}
+bindTabs();
+bindGifts();
+bindBudget();
+bindMeals();
+bindEvents();
+bindData();
+if(!storageOK){ $('storageWarn').classList.add('show'); }
+renderAll();
+
+})();
+</script>
+</body>
+</html>
