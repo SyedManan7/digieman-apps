@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#241510">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Thanksgiving Planner 2026">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='42' fill='%23241510'/%3E%3Ctext x='90' y='125' font-size='96' text-anchor='middle'%3E%F0%9F%A6%83%3C/text%3E%3C/svg%3E">
+<title>Thanksgiving Planner 2026</title>
+<style>
+:root{
+  --bg0:#150d07;
+  --bg1:#241510;
+  --card:#2b1a10;
+  --card2:#332014;
+  --ink:#faf3e6;
+  --muted:#d8c3a5;
+  --faint:#a08a6d;
+  --line:rgba(255,255,255,.10);
+  --pumpkin:#e8833a;
+  --pumpkin-soft:rgba(232,131,58,.15);
+  --gold:#f0b429;
+  --gold-soft:rgba(240,180,41,.14);
+  --cran:#d6455b;
+  --cran-soft:rgba(214,69,91,.14);
+  --sage:#9cc184;
+  --sage-soft:rgba(156,193,132,.14);
+  --bark:#8a5a2b;
+  --radius:18px;
+  --shadow:0 12px 32px rgba(0,0,0,.40);
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font);
+  color:var(--ink);
+  background:
+    radial-gradient(1100px 500px at 85% -5%, rgba(240,180,41,.09), transparent 60%),
+    radial-gradient(900px 480px at -10% 10%, rgba(232,131,58,.10), transparent 60%),
+    radial-gradient(700px 600px at 50% 110%, rgba(138,90,43,.14), transparent 60%),
+    linear-gradient(180deg,var(--bg1),var(--bg0));
+  min-height:100vh;
+  padding:26px 22px 60px;
+}
+.wrap{max-width:1180px;margin:0 auto}
+
+/* ---------- sticky header (topbar + tabs) ---------- */
+.sticky-head{position:sticky;top:14px;z-index:20}
+.topbar{
+  display:flex;justify-content:space-between;align-items:center;gap:14px;
+  padding:14px 18px;
+  background:rgba(43,26,16,.86);border:1px solid var(--line);
+  border-radius:var(--radius) var(--radius) 0 0;box-shadow:var(--shadow);
+  backdrop-filter:blur(8px);
+}
+.brand{display:flex;align-items:center;gap:13px}
+.logo{
+  width:46px;height:46px;border-radius:14px;flex:0 0 46px;
+  background:conic-gradient(from 200deg,var(--gold),var(--pumpkin),var(--bark),var(--gold));
+  display:flex;align-items:center;justify-content:center;
+  font-size:25px;
+  box-shadow:0 4px 14px rgba(232,131,58,.38);
+}
+.brand h1{font-size:21px;letter-spacing:.2px}
+.brand h1 .accent{background:linear-gradient(90deg,var(--gold),var(--pumpkin));-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand p{font-size:13px;color:var(--muted);margin-top:2px}
+.top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.count-pill{
+  display:flex;align-items:center;gap:7px;
+  background:var(--pumpkin-soft);border:1px solid rgba(232,131,58,.40);
+  color:var(--pumpkin);font-weight:700;font-size:14px;
+  padding:9px 14px;border-radius:999px;white-space:nowrap;
+}
+.tabbar{
+  display:flex;gap:8px;padding:10px 14px;margin-bottom:22px;
+  background:rgba(43,26,16,.86);border:1px solid var(--line);border-top:none;
+  border-radius:0 0 var(--radius) var(--radius);box-shadow:var(--shadow);
+  backdrop-filter:blur(8px);
+  overflow-x:auto;
+}
+.tab-btn{
+  flex:1 0 auto;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;
+  padding:10px 14px;border-radius:12px;border:1px solid transparent;
+  background:transparent;color:var(--muted);white-space:nowrap;
+  transition:all .16s ease;
+}
+.tab-btn:hover{color:var(--ink);background:rgba(255,255,255,.05)}
+.tab-btn.active{background:var(--pumpkin-soft);border-color:rgba(232,131,58,.50);color:var(--pumpkin)}
+.btn{
+  font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;
+  border:none;border-radius:12px;padding:10px 16px;
+  background:linear-gradient(135deg,var(--gold),var(--pumpkin));color:#2b1404;
+  box-shadow:0 4px 14px rgba(232,131,58,.32);
+  transition:transform .12s ease, box-shadow .12s ease, filter .12s ease;
+}
+.btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(232,131,58,.40)}
+.btn:active{transform:scale(.96)}
+.btn.ghost{
+  background:transparent;color:var(--ink);
+  border:1px solid var(--line);box-shadow:none;
+}
+.btn.ghost:hover{border-color:rgba(232,131,58,.5);box-shadow:none}
+.btn.small{padding:7px 12px;font-size:13px;border-radius:10px}
+.btn.danger{background:transparent;color:var(--cran);border:1px solid rgba(214,69,91,.5);box-shadow:none}
+.btn.danger:hover{border-color:var(--cran);box-shadow:none}
+
+/* ---------- layout ---------- */
+.grid{columns:2;column-gap:20px}
+.card{
+  break-inside:avoid;margin-bottom:20px;
+  background:linear-gradient(180deg,var(--card2),var(--card));
+  border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:22px;
+}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px;flex-wrap:wrap}
+.card-head h2{font-size:16px;letter-spacing:.4px;display:flex;align-items:center;gap:9px}
+.card-head h2 .ico{
+  width:30px;height:30px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;
+  font-size:16px;background:rgba(255,255,255,.06);border:1px solid var(--line);
+}
+.hint{font-size:12.5px;color:var(--faint)}
+.tabpage{display:none}
+.tabpage.active{display:block;animation:rise .45s cubic-bezier(.22,.8,.32,1) both}
+
+/* ---------- forms ---------- */
+.add-row{display:flex;gap:9px;margin-bottom:14px;flex-wrap:wrap}
+.add-row input[type=text], .add-row input[type=number], .add-row input[type=date], .add-row input[type=time], .add-row select,
+.form-grid input[type=text], .form-grid input[type=number], .form-grid input[type=date], .form-grid input[type=time], .form-grid select{
+  font-family:var(--font);font-size:14.5px;color:var(--ink);
+  background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:12px;
+  padding:11px 14px;outline:none;
+}
+.add-row input[type=text]:focus, .add-row input[type=number]:focus, .add-row select:focus,
+.form-grid input:focus, .form-grid select:focus{border-color:rgba(232,131,58,.6)}
+.add-row select, .form-grid select{background:#1c1109}
+.add-row input[type=text]{flex:1}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.form-grid .full{grid-column:1 / -1}
+.field label{display:block;font-size:11.5px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+input[type=date]::-webkit-calendar-picker-indicator, input[type=time]::-webkit-calendar-picker-indicator{filter:invert(.7)}
+
+/* ---------- stat cards ---------- */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.stat{
+  background:rgba(0,0,0,.22);border:1px solid var(--line);border-radius:14px;padding:16px;
+}
+.stat .k{font-size:11.5px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
+.stat .v{font-size:26px;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums}
+.stat .v small{font-size:14px;font-weight:600;color:var(--muted)}
+.stat .sub{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.5}
+
+/* ---------- progress bars ---------- */
+.progress-wrap{margin-bottom:6px}
+.progress-meta{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:7px;gap:8px}
+.progress-meta b{color:var(--gold);font-variant-numeric:tabular-nums}
+.progress{height:10px;border-radius:99px;background:rgba(0,0,0,.35);overflow:hidden;border:1px solid var(--line)}
+.progress > div{
+  height:100%;width:0;border-radius:99px;
+  background:linear-gradient(90deg,var(--gold),var(--pumpkin));
+  transition:width .35s ease;
+}
+.progress > div.over{background:var(--cran)}
+
+/* ---------- lists ---------- */
+.row-item{
+  display:flex;align-items:center;gap:11px;
+  padding:10px 12px;border-radius:12px;margin-bottom:7px;
+  background:rgba(0,0,0,.22);border:1px solid transparent;
+  transition:border-color .15s ease;
+}
+.row-item:hover{border-color:var(--line)}
+.row-item .txt{flex:1;font-size:14.5px;line-height:1.4;min-width:0}
+.row-item .meta{font-size:12.5px;color:var(--faint)}
+.del{
+  background:none;border:none;color:var(--faint);font-size:18px;cursor:pointer;
+  padding:2px 6px;border-radius:8px;line-height:1;flex:0 0 auto;
+}
+.del:hover{color:var(--cran);background:var(--cran-soft)}
+.icon-btn{
+  background:none;border:none;color:var(--faint);cursor:pointer;font-size:14px;
+  padding:4px 7px;border-radius:8px;
+}
+.icon-btn:hover{color:var(--pumpkin);background:var(--pumpkin-soft)}
+.empty{font-size:13.5px;color:var(--faint);padding:12px 4px;font-style:italic}
+.empty-hero{
+  text-align:center;padding:26px 16px;border-radius:14px;margin-bottom:6px;
+  background:rgba(232,131,58,.06);border:1px dashed rgba(232,131,58,.35);
+}
+.empty-hero .big{font-size:30px;margin-bottom:8px}
+.empty-hero p{font-size:13.5px;color:var(--muted);line-height:1.6}
+
+/* ---------- rsvp pills ---------- */
+.status-pill{
+  font-family:var(--font);font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap;
+  padding:6px 12px;border-radius:999px;border:1px solid;
+}
+.status-Invited{background:var(--gold-soft);border-color:rgba(240,180,41,.5);color:var(--gold)}
+.status-Confirmed{background:var(--sage-soft);border-color:rgba(156,193,132,.5);color:var(--sage)}
+.status-Maybe{background:var(--pumpkin-soft);border-color:rgba(232,131,58,.5);color:var(--pumpkin)}
+.status-Declined{background:var(--cran-soft);border-color:rgba(214,69,91,.5);color:#f0969f}
+.guest-row .party{font-size:13px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.guest-row .party b{color:var(--ink)}
+.guest-row .dish-assigned{font-size:12.5px;color:var(--faint);font-style:italic}
+
+/* ---------- budget ---------- */
+.cat-row{margin-bottom:12px}
+.cat-row .cat-meta{display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:6px;gap:8px}
+.cat-row .cat-meta .cname{font-weight:700}
+.cat-row .cat-meta .cnums{color:var(--muted);font-variant-numeric:tabular-nums}
+.cat-row .cat-meta .cnums b{color:var(--ink)}
+.cat-budgets{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.cat-budgets .field input{width:100%}
+.total-line{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+  margin-top:12px;padding:13px 15px;border-radius:12px;
+  background:rgba(0,0,0,.28);border:1px solid var(--line);flex-wrap:wrap;
+}
+.total-line .tl{font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--faint)}
+.total-line .tv{font-size:21px;font-weight:800;font-variant-numeric:tabular-nums}
+.tv.pos{color:var(--sage)} .tv.neg{color:var(--cran)}
+
+/* ---------- dishes ---------- */
+.dish{
+  border:1px solid var(--line);border-radius:14px;padding:15px;margin-bottom:13px;
+  background:rgba(0,0,0,.20);
+}
+.dish-head{display:flex;align-items:center;justify-content:space-between;gap:9px;margin-bottom:4px}
+.dish-head .dname{font-weight:800;font-size:15px}
+.dish-head .dmeta{font-size:12.5px;color:var(--faint)}
+.course-tag{
+  font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;
+  background:var(--pumpkin-soft);border:1px solid rgba(232,131,58,.45);color:var(--pumpkin);
+  padding:4px 10px;border-radius:999px;white-space:nowrap;
+}
+.ing-row{display:flex;align-items:center;gap:9px;padding:7px 4px;border-bottom:1px dashed rgba(255,255,255,.06);font-size:13.5px}
+.ing-row:last-of-type{border-bottom:none}
+.ing-row .iname{flex:1}
+.ing-row .iqty{color:var(--faint);font-size:12.5px}
+.ing-add{display:flex;gap:8px;margin-top:10px}
+.ing-add input{flex:1;font-family:var(--font);font-size:13.5px;color:var(--ink);background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:10px;padding:9px 12px;outline:none}
+.ing-add input:focus{border-color:rgba(232,131,58,.6)}
+.shop-item{display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:11px;margin-bottom:6px;background:rgba(0,0,0,.22)}
+.shop-item .sname{flex:1;font-size:14px}
+.shop-item .sfrom{font-size:12px;color:var(--faint)}
+.shop-item.done .sname{color:var(--faint);text-decoration:line-through}
+.check{
+  width:23px;height:23px;flex:0 0 23px;border-radius:50%;cursor:pointer;
+  border:2px solid var(--faint);background:transparent;
+  display:flex;align-items:center;justify-content:center;
+  color:transparent;font-size:14px;font-weight:800;
+  transition:all .15s ease;
+}
+.check:hover{border-color:var(--sage)}
+.shop-item.done .check{background:var(--sage);border-color:var(--sage);color:#1c2415}
+
+/* ---------- leftovers ---------- */
+.leftover-idea{font-size:13px;color:var(--muted);background:rgba(0,0,0,.22);border:1px solid var(--line);border-radius:10px;padding:9px 12px;margin-bottom:7px;line-height:1.5}
+.leftover-idea b{color:var(--gold)}
+
+/* ---------- events / prep timeline ---------- */
+.event{position:relative}
+.event .dt{font-size:13px;font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums}
+.event.overdue{border-color:rgba(214,69,91,.55);background:rgba(214,69,91,.07)}
+.event.done-ev .txt{color:var(--faint);text-decoration:line-through}
+.event .enotes{font-size:12.5px;color:var(--faint);margin-top:3px}
+.overdue-tag{
+  font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;
+  color:var(--cran);background:var(--cran-soft);border:1px solid rgba(214,69,91,.5);
+  padding:3px 9px;border-radius:999px;white-space:nowrap;
+}
+
+/* ---------- checklist ---------- */
+.chk-item{display:flex;align-items:center;gap:11px;padding:9px 10px;font-size:14px}
+.chk-item .box{
+  width:23px;height:23px;flex:0 0 23px;border-radius:8px;
+  border:2px solid var(--faint);display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:800;color:transparent;
+}
+.chk-item.done .box{background:var(--sage);border-color:var(--sage);color:#1c2415}
+.chk-item.done{color:var(--faint)}
+
+/* ---------- footer ---------- */
+.foot{text-align:center;margin-top:26px;color:var(--faint);font-size:12.5px;line-height:1.7}
+.foot .lock{color:var(--sage)}
+.storage-warn{
+  display:none;max-width:1180px;margin:0 auto 16px;padding:12px 18px;border-radius:14px;
+  background:rgba(214,69,91,.12);border:1px solid rgba(214,69,91,.45);
+  color:#ffb3a7;font-size:13.5px;font-weight:600;text-align:center;
+}
+.storage-warn.show{display:block}
+
+/* ---------- motion & polish ---------- */
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.card{animation:rise .55s cubic-bezier(.22,.8,.32,1) both}
+.card:nth-of-type(2){animation-delay:.07s}
+.card:nth-of-type(3){animation-delay:.14s}
+.card:nth-of-type(4){animation-delay:.21s}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+
+/* ---------- responsive ---------- */
+@media (max-width:860px){
+  .grid{columns:1}
+  body{padding:16px 12px 50px}
+  .sticky-head{position:static}
+  .topbar{flex-direction:column;align-items:stretch;border-radius:var(--radius) var(--radius) 0 0}
+  .top-actions{justify-content:space-between}
+  .tabbar{overflow-x:auto}
+  .tab-btn{flex:1 0 auto}
+  .form-grid{grid-template-columns:1fr}
+  .cat-budgets{grid-template-columns:1fr}
+  .stat-grid{grid-template-columns:1fr 1fr}
+  .guest-row{flex-wrap:wrap}
+}
+
+/* ---------- print ---------- */
+@media print{
+  body{background:#fff;color:#111;padding:0}
+  .topbar{position:static;box-shadow:none;background:#fff;border:1px solid #ddd;backdrop-filter:none}
+  .card{box-shadow:none;break-inside:avoid;background:#fff;border:1px solid #ddd;margin-bottom:14px}
+  .grid{columns:1}
+  .top-actions,.tabbar,.add-row,.del,.icon-btn,.btn{display:none !important}
+  .brand h1 .accent{color:#b3541e;-webkit-text-fill-color:#b3541e;background:none}
+  .logo{box-shadow:none}
+  .foot{color:#666}
+}
+</style>
+</head>
+<body>
+<noscript><div style="max-width:640px;margin:40px auto;padding:22px;border-radius:14px;background:#332014;border:1px solid rgba(232,131,58,.4);color:#faf3e6;font-family:-apple-system,'Segoe UI',Roboto,sans-serif;text-align:center">⚠️ The Thanksgiving Planner 2026 needs JavaScript enabled to run. Please enable JavaScript in your browser settings and reload this page.</div></noscript>
+<div class="wrap">
+  <div class="storage-warn" id="storageWarn">⚠️ Your browser is blocking local storage, so your data can&rsquo;t be saved between visits. Enable cookies / site data for this file to keep your progress.</div>
+
+  <div class="sticky-head">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">🦃</div>
+        <div>
+          <h1>Thanksgiving <span class="accent">Planner 2026</span></h1>
+          <p>Your turkey-day command center</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <div class="count-pill" id="countPill">🍂 — days to Thanksgiving</div>
+      </div>
+    </header>
+    <nav class="tabbar" id="tabbar">
+      <button class="tab-btn active" data-tab="dashboard">🏠 Dashboard</button>
+      <button class="tab-btn" data-tab="guests">🦃 Guests</button>
+      <button class="tab-btn" data-tab="menu">🍽️ Menu</button>
+      <button class="tab-btn" data-tab="budget">💰 Budget</button>
+      <button class="tab-btn" data-tab="prep">📅 Prep Timeline</button>
+    </nav>
+  </div>
+
+  <main>
+
+    <!-- DASHBOARD -->
+    <div class="tabpage active" id="page-dashboard">
+      <div class="grid">
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">🏠</span> Thanksgiving at a Glance</h2>
+            <span class="hint" id="todayLine"></span>
+          </div>
+          <div class="stat-grid">
+            <div class="stat">
+              <div class="k">Days to Thanksgiving</div>
+              <div class="v" id="statDays">—</div>
+              <div class="sub">Nov 26, 2026 🦃</div>
+            </div>
+            <div class="stat">
+              <div class="k">Budget spent</div>
+              <div class="v" id="statSpent">—</div>
+              <div class="progress" style="margin-top:9px"><div id="statSpentBar"></div></div>
+              <div class="sub" id="statSpentSub">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Guests confirmed</div>
+              <div class="v" id="statGuests">—</div>
+              <div class="sub">people coming for dinner</div>
+            </div>
+            <div class="stat">
+              <div class="k">Next prep task</div>
+              <div class="v" id="statTask" style="font-size:19px">—</div>
+              <div class="sub" id="statTaskSub">—</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">✅</span> Hosting Checklist</h2>
+            <span class="hint">Auto-checks as you plan</span>
+          </div>
+          <div id="checklist"></div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">💾</span> Backup &amp; Demo Data</h2>
+          </div>
+          <p class="hint" style="margin-bottom:13px;line-height:1.6">Everything is stored in this browser. Export a backup before big edits, or load the sample data to see the planner in action.</p>
+          <div style="display:flex;gap:9px;flex-wrap:wrap">
+            <button class="btn small" id="sampleBtn">✨ Load sample data</button>
+            <button class="btn ghost small" id="exportBtn">⬇ Export JSON</button>
+            <button class="btn ghost small" id="importBtn">⬆ Import JSON</button>
+            <input type="file" id="importFile" accept=".json,application/json" style="display:none">
+            <button class="btn danger small" id="resetBtn">🗑 Reset all data</button>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- GUESTS -->
+    <div class="tabpage" id="page-guests">
+      <div class="grid">
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">🦃</span> Add a Guest</h2>
+            <span class="hint">Tap a status pill to cycle: Invited → Confirmed → Maybe → Declined</span>
+          </div>
+          <div class="form-grid">
+            <div class="field"><label>Name / family</label><input type="text" id="guName" placeholder="e.g. Aunt Linda" maxlength="60"></div>
+            <div class="field"><label>Bringing a dish? (potluck)</label><input type="text" id="guDish" placeholder="e.g. Pumpkin pie" maxlength="80"></div>
+            <div class="field"><label>Adults</label><input type="number" id="guAdults" min="0" step="1" placeholder="2"></div>
+            <div class="field"><label>Kids</label><input type="number" id="guKids" min="0" step="1" placeholder="0"></div>
+            <div class="field"><label>RSVP status</label>
+              <select id="guRsvp">
+                <option>Invited</option><option>Confirmed</option><option>Maybe</option><option>Declined</option>
+              </select>
+            </div>
+            <div class="field"><label>Notes</label><input type="text" id="guNotes" placeholder="e.g. vegetarian" maxlength="120"></div>
+            <div class="field full"><button class="btn" id="addGuestBtn" style="width:100%">+ Add guest</button></div>
+          </div>
+          <div class="progress-wrap">
+            <div class="progress-meta"><span>Confirmed headcount vs seats at the table</span><b id="seatProgText">—</b></div>
+            <div class="progress"><div id="seatProgBar"></div></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">🧾</span> Guest List</h2>
+            <div class="top-actions" style="gap:8px">
+              <span class="hint">Seats at the table</span>
+              <input type="number" id="seatsInput" min="0" step="1" style="width:110px;font-family:var(--font);font-size:14px;color:var(--ink);background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:10px;padding:8px 10px;outline:none" aria-label="Seats at the table">
+              <select id="guestFilter" aria-label="Filter by RSVP" style="font-family:var(--font);font-size:13.5px;color:var(--ink);background:#1c1109;border:1px solid var(--line);border-radius:10px;padding:8px 10px;outline:none">
+                <option value="All">All RSVPs</option>
+                <option>Invited</option><option>Confirmed</option><option>Maybe</option><option>Declined</option>
+              </select>
+            </div>
+          </div>
+          <div id="guestList"></div>
+        </section>
+      </div>
+    </div>
+
+    <!-- MENU -->
+    <div class="tabpage" id="page-menu">
+      <div class="grid">
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">🍽️</span> Thanksgiving Menu</h2>
+            <span class="hint">Add dishes, then ingredients — the grocery list builds itself</span>
+          </div>
+          <div class="form-grid">
+            <div class="field"><label>Dish name</label><input type="text" id="dName" placeholder="e.g. Roast Turkey" maxlength="80"></div>
+            <div class="field"><label>Course</label>
+              <select id="dCourse">
+                <option>Appetizer</option><option selected>Turkey &amp; Mains</option><option>Sides</option><option>Desserts</option><option>Drinks</option>
+              </select>
+            </div>
+            <div class="field"><label>Servings</label><input type="number" id="dServings" min="1" step="1" placeholder="12"></div>
+            <div class="field"><label>&nbsp;</label><button class="btn" id="addDishBtn" style="width:100%">+ Add dish</button></div>
+          </div>
+          <div id="dishList"></div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">🛒</span> Grocery List</h2>
+            <span class="hint" id="shopCount"></span>
+          </div>
+          <div id="shopList"></div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">🍲</span> Leftover Magic</h2>
+            <span class="hint">Day-after ideas so nothing goes to waste</span>
+          </div>
+          <div id="leftoverList"></div>
+          <div class="ing-add" style="margin-top:12px">
+            <input type="text" id="leftoverName" placeholder="Your own leftover idea, e.g. Turkey pot pie" maxlength="80">
+            <button class="btn small" id="addLeftoverBtn">+ Add</button>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- BUDGET -->
+    <div class="tabpage" id="page-budget">
+      <div class="grid">
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">💰</span> Category Budgets</h2>
+            <span class="hint">Set a budget per category</span>
+          </div>
+          <div class="cat-budgets" id="catBudgets"></div>
+          <div id="catBars"></div>
+          <div class="total-line">
+            <div><div class="tl">Total spent</div><div class="tv" id="totSpent">$0.00</div></div>
+            <div><div class="tl">Total budget</div><div class="tv" id="totBudget">$0.00</div></div>
+            <div><div class="tl">Remaining</div><div class="tv" id="totRemain">$0.00</div></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">🧾</span> Log an Expense</h2>
+          </div>
+          <div class="form-grid">
+            <div class="field full"><label>Description</label><input type="text" id="eDesc" placeholder="e.g. Turkey from the butcher" maxlength="120"></div>
+            <div class="field"><label>Amount ($)</label><input type="number" id="eAmount" min="0" step="0.01" placeholder="45"></div>
+            <div class="field"><label>Category</label><select id="eCat"></select></div>
+            <div class="field"><label>Date</label><input type="date" id="eDate"></div>
+            <div class="field"><label>&nbsp;</label><button class="btn" id="addExpenseBtn" style="width:100%">+ Add expense</button></div>
+          </div>
+          <div id="expenseList"></div>
+        </section>
+      </div>
+    </div>
+
+    <!-- PREP TIMELINE -->
+    <div class="tabpage" id="page-prep">
+      <div class="grid">
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">📅</span> Add a Prep Task</h2>
+            <span class="hint">Cooking steps, shopping runs, deadlines — sorted by date</span>
+          </div>
+          <div class="form-grid">
+            <div class="field full"><label>Task name</label><input type="text" id="evName" placeholder="e.g. Buy the turkey" maxlength="120"></div>
+            <div class="field"><label>Date</label><input type="date" id="evDate" value="2026-11-26"></div>
+            <div class="field"><label>Time (optional)</label><input type="time" id="evTime"></div>
+            <div class="field full"><label>Notes (optional)</label><input type="text" id="evNotes" placeholder="e.g. Order from the butcher by phone" maxlength="160"></div>
+            <div class="field full"><button class="btn" id="addEventBtn" style="width:100%">+ Add prep task</button></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">🦃</span> Prep Timeline</h2>
+            <span class="hint">Tap the circle to mark done</span>
+          </div>
+          <div id="eventList"></div>
+        </section>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="foot">
+    <div><span class="lock">🔒</span> Everything you type stays in <b>this browser</b> — no accounts, no cloud, no tracking.</div>
+    <div>Thanksgiving Planner 2026 · by DigiEman · works offline</div>
+  </footer>
+
+</div>
+<script>
+(function(){
+'use strict';
+
+/* ================= helpers ================= */
+var KEY = 'digieman-thanksgiving-planner-2026';
+var RSVP_ORDER = ['Invited','Confirmed','Maybe','Declined'];
+var CATEGORIES = ['Groceries','Decorations','Travel','Tableware','Entertainment','Other'];
+var THANKSGIVING = '2026-11-26';
+var DEFAULT_LEFTOVERS = [
+  { title: 'Thanksgiving sandwiches', desc: 'Turkey + stuffing + cranberry sauce on a roll — the classic.' },
+  { title: 'Turkey soup', desc: 'Simmer the carcass with carrots, celery and egg noodles.' },
+  { title: 'Turkey pot pie', desc: 'Leftover turkey + gravy + frozen veg under puff pastry.' },
+  { title: 'Mashed potato pancakes', desc: 'Mix mash with an egg and fry until golden.' },
+  { title: 'Cranberry sauce smoothies', desc: 'Blend cranberry sauce with yogurt and banana.' },
+  { title: 'Day-after breakfast hash', desc: 'Turkey, potatoes and stuffing in one skillet, fried egg on top.' }
+];
+
+function $(id){ return document.getElementById(id); }
+function pad(n){ return (n<10?'0':'')+n; }
+function todayStr(d){
+  d = d || new Date();
+  return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+}
+function esc(s){
+  return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function money(n){
+  n = parseFloat(n); if(isNaN(n)) n = 0;
+  return '$' + n.toLocaleString('en-US',{minimumFractionDigits:2, maximumFractionDigits:2});
+}
+function num(v){ var n = parseFloat(v); return isNaN(n) ? 0 : n; }
+function uid(prefix){
+  return (prefix||'x') + Date.now().toString(36) + Math.floor(Math.random()*46656).toString(36);
+}
+function fmtDate(str){
+  if(!str) return '';
+  var p = str.split('-');
+  var d = new Date(+p[0], +p[1]-1, +p[2]);
+  return d.toLocaleDateString(undefined,{weekday:'short', month:'short', day:'numeric', year:'numeric'});
+}
+function fmtTime(t){
+  if(!t) return '';
+  var p = t.split(':'), h = +p[0], m = p[1];
+  var ap = h >= 12 ? 'PM' : 'AM';
+  h = h % 12; if(h === 0) h = 12;
+  return h + ':' + m + ' ' + ap;
+}
+
+/* ================= state ================= */
+function defaultState(){
+  var cats = {};
+  CATEGORIES.forEach(function(c){ cats[c] = 0; });
+  cats['Groceries'] = 250; cats['Decorations'] = 80; cats['Travel'] = 150;
+  cats['Tableware'] = 60; cats['Entertainment'] = 50; cats['Other'] = 60;
+  var leftovers = DEFAULT_LEFTOVERS.map(function(l, i){
+    return { id: 'lo' + i, title: l.title, desc: l.desc, done: false, custom: false };
+  });
+  return {
+    version: 1,
+    seats: 12,
+    guests: [],
+    guestFilter: 'All',
+    categories: cats,
+    expenses: [],
+    dishes: [],
+    shoppingChecked: {},
+    leftovers: leftovers,
+    events: []
+  };
+}
+function loadState(){
+  var d = defaultState();
+  try{
+    var raw = localStorage.getItem(KEY);
+    if(raw){
+      var s = JSON.parse(raw);
+      if(s && typeof s === 'object'){
+        if(typeof s.seats === 'number') d.seats = s.seats;
+        if(Array.isArray(s.guests)) d.guests = s.guests;
+        if(typeof s.guestFilter === 'string') d.guestFilter = s.guestFilter;
+        if(s.categories && typeof s.categories === 'object'){
+          CATEGORIES.forEach(function(c){ if(typeof s.categories[c] === 'number') d.categories[c] = s.categories[c]; });
+        }
+        if(Array.isArray(s.expenses)) d.expenses = s.expenses;
+        if(Array.isArray(s.dishes)) d.dishes = s.dishes;
+        if(s.shoppingChecked && typeof s.shoppingChecked === 'object') d.shoppingChecked = s.shoppingChecked;
+        if(Array.isArray(s.leftovers)) d.leftovers = s.leftovers;
+        if(Array.isArray(s.events)) d.events = s.events;
+      }
+    }
+  }catch(e){}
+  return d;
+}
+var state = loadState();
+var storageOK = (function(){
+  try{ localStorage.setItem('__tg_probe','1'); localStorage.removeItem('__tg_probe'); return true; }
+  catch(e){ return false; }
+})();
+function save(){
+  if(!storageOK) return;
+  try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
+}
+
+/* ================= countdown ================= */
+function daysToThanksgiving(){
+  var t = todayStr().split('-'), c = THANKSGIVING.split('-');
+  var a = new Date(+t[0], +t[1]-1, +t[2]);
+  var b = new Date(+c[0], +c[1]-1, +c[2]);
+  return Math.ceil((b - a) / 86400000);
+}
+function renderCountdown(){
+  var n = daysToThanksgiving();
+  var pill = $('countPill'), msg;
+  if(n > 1){ msg = '🍂 ' + n + ' days to Thanksgiving'; }
+  else if(n === 1){ msg = '🍂 1 day to Thanksgiving'; }
+  else if(n === 0){ msg = '🦃 Happy Thanksgiving! 🦃'; }
+  else { msg = '🦃 Happy Thanksgiving! 🦃'; }
+  pill.textContent = msg;
+  $('statDays').innerHTML = n > 0 ? n + '' : '0';
+  $('todayLine').textContent = new Date().toLocaleDateString(undefined,{weekday:'long', month:'long', day:'numeric'});
+}
+
+/* ================= tabs ================= */
+function switchTab(name){
+  var btns = $('tabbar').querySelectorAll('.tab-btn');
+  for(var i=0;i<btns.length;i++) btns[i].classList.toggle('active', btns[i].getAttribute('data-tab') === name);
+  var pages = document.querySelectorAll('.tabpage');
+  for(var j=0;j<pages.length;j++) pages[j].classList.toggle('active', pages[j].id === 'page-' + name);
+}
+function bindTabs(){
+  $('tabbar').addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('.tab-btn') : null;
+    if(b) switchTab(b.getAttribute('data-tab'));
+  });
+}
+
+/* ================= dashboard ================= */
+function budgetTotals(){
+  var totB = 0, totS = 0;
+  CATEGORIES.forEach(function(c){ totB += num(state.categories[c]); });
+  state.expenses.forEach(function(e){ totS += num(e.amount); });
+  return { budget: totB, spent: totS };
+}
+function guestTotals(){
+  var confirmed = 0, invited = 0;
+  state.guests.forEach(function(g){
+    var head = num(g.adults) + num(g.kids);
+    if(g.rsvp === 'Confirmed') confirmed += head;
+    if(g.rsvp === 'Invited' || g.rsvp === 'Maybe') invited += head;
+  });
+  return { confirmed: confirmed, invited: invited, total: state.guests.length };
+}
+function nextTask(){
+  var t = todayStr(), best = null;
+  state.events.forEach(function(ev){
+    if(ev.done) return;
+    if(ev.date >= t && (!best || ev.date < best.date || (ev.date === best.date && (ev.time||'') < (best.time||'')))) best = ev;
+  });
+  return best;
+}
+function renderDashboard(){
+  renderCountdown();
+  var bt = budgetTotals();
+  $('statSpent').textContent = money(bt.spent);
+  var pct = bt.budget > 0 ? Math.min(100, Math.round(bt.spent / bt.budget * 100)) : 0;
+  $('statSpentBar').style.width = pct + '%';
+  $('statSpentBar').classList.toggle('over', bt.spent > bt.budget);
+  $('statSpentSub').textContent = 'of ' + money(bt.budget) + ' budget';
+  var gt = guestTotals();
+  $('statGuests').innerHTML = gt.confirmed + ' <small>people</small>';
+  var tk = nextTask();
+  if(tk){
+    $('statTask').textContent = tk.name.length > 22 ? tk.name.slice(0,22) + '…' : tk.name;
+    $('statTaskSub').textContent = fmtDate(tk.date) + (tk.time ? ' · ' + fmtTime(tk.time) : '');
+  } else {
+    $('statTask').textContent = '—';
+    $('statTaskSub').textContent = 'No upcoming prep tasks';
+  }
+  var items = [
+    { ok: state.seats > 0 && state.guests.length > 0, txt: 'Add your first guest' },
+    { ok: gt.confirmed > 0, txt: 'Get at least one RSVP confirmed' },
+    { ok: state.dishes.length > 0, txt: 'Plan a Thanksgiving dish' },
+    { ok: state.expenses.length > 0, txt: 'Log your first expense' },
+    { ok: state.events.length > 0, txt: 'Add a prep task to the timeline' },
+    { ok: state.leftovers.some(function(l){ return l.done; }), txt: 'Plan one leftover meal' }
+  ];
+  var done = items.filter(function(i){ return i.ok; }).length;
+  var html = '';
+  items.forEach(function(i){
+    html += '<div class="chk-item' + (i.ok ? ' done' : '') + '"><span class="box">✓</span><span>' + esc(i.txt) + '</span></div>';
+  });
+  html += '<div class="hint" style="margin-top:10px">' + done + ' of ' + items.length + ' steps done 🦃</div>';
+  $('checklist').innerHTML = html;
+}
+
+/* ================= guests ================= */
+function nextRsvp(s){
+  var i = RSVP_ORDER.indexOf(s);
+  return RSVP_ORDER[(i + 1) % RSVP_ORDER.length];
+}
+function rsvpPill(g){
+  var st = RSVP_ORDER.indexOf(g.rsvp) >= 0 ? g.rsvp : 'Invited';
+  return '<button class="status-pill status-' + st + '" data-act="cycle" title="Tap to change RSVP">' + st + '</button>';
+}
+function renderGuests(){
+  $('seatsInput').value = state.seats;
+  $('guestFilter').value = state.guestFilter || 'All';
+  var gt = guestTotals();
+  var seats = Math.max(0, num(state.seats));
+  var pct = seats > 0 ? Math.min(100, Math.round(gt.confirmed / seats * 100)) : 0;
+  $('seatProgText').textContent = gt.confirmed + ' of ' + seats + ' seats filled';
+  $('seatProgBar').style.width = pct + '%';
+  $('seatProgBar').classList.toggle('over', gt.confirmed > seats);
+
+  var filter = state.guestFilter || 'All';
+  var list = state.guests.filter(function(g){ return filter === 'All' || g.rsvp === filter; });
+  var box = $('guestList');
+  if(!list.length){
+    box.innerHTML = '<div class="empty-hero"><div class="big">🦃</div><p><b style="color:var(--ink)">No guests yet.</b><br>Add your first guest above — every great Thanksgiving starts with the guest list.</p></div>';
+    return;
+  }
+  var html = '';
+  list.forEach(function(g){
+    var head = num(g.adults) + num(g.kids);
+    html += '<div class="row-item guest-row" data-id="' + g.id + '">'
+      + '<span class="txt">' + esc(g.name || '(unnamed)')
+      + (g.dish ? '<div class="dish-assigned">🍽 bringing: ' + esc(g.dish) + '</div>' : '')
+      + (g.notes ? '<div class="meta">' + esc(g.notes) + '</div>' : '')
+      + '</span>'
+      + '<span class="party"><b>' + head + '</b> people</span>'
+      + rsvpPill(g)
+      + '<button class="icon-btn" data-act="edit" title="Edit guest">✎</button>'
+      + '<button class="del" data-act="del" title="Delete guest">×</button></div>';
+  });
+  box.innerHTML = html;
+}
+function addGuest(){
+  var name = $('guName').value.trim();
+  var adults = num($('guAdults').value);
+  var kids = num($('guKids').value);
+  if(!name && adults + kids <= 0){ $('guName').focus(); return; }
+  state.guests.push({
+    id: uid('g'),
+    name: name || '(unnamed)',
+    dish: $('guDish').value.trim(),
+    adults: Math.max(0, Math.round(adults)),
+    kids: Math.max(0, Math.round(kids)),
+    rsvp: $('guRsvp').value || 'Invited',
+    notes: $('guNotes').value.trim()
+  });
+  save(); renderGuests(); renderDashboard();
+  $('guName').value = ''; $('guDish').value = ''; $('guAdults').value = '';
+  $('guKids').value = ''; $('guRsvp').value = 'Invited'; $('guNotes').value = '';
+  $('guName').focus();
+}
+function editGuest(id){
+  var g = null;
+  for(var i=0;i<state.guests.length;i++) if(state.guests[i].id === id) g = state.guests[i];
+  if(!g) return;
+  var name = prompt('Name / family:', g.name);
+  if(name === null) return;
+  var dish = prompt('Dish they are bringing (potluck, optional):', g.dish);
+  if(dish === null) return;
+  var adults = prompt('Adults:', g.adults);
+  if(adults === null) return;
+  var kids = prompt('Kids:', g.kids);
+  if(kids === null) return;
+  var notes = prompt('Notes (optional):', g.notes);
+  if(notes === null) return;
+  g.name = (name || '').trim() || '(unnamed)';
+  g.dish = (dish || '').trim();
+  g.adults = Math.max(0, Math.round(num(adults)));
+  g.kids = Math.max(0, Math.round(num(kids)));
+  g.notes = (notes || '').trim();
+  save(); renderGuests(); renderDashboard();
+}
+function bindGuests(){
+  $('addGuestBtn').addEventListener('click', addGuest);
+  ['guName','guDish','guAdults','guKids','guNotes'].forEach(function(id){
+    $(id).addEventListener('keydown', function(e){ if(e.key === 'Enter') addGuest(); });
+  });
+  $('seatsInput').addEventListener('change', function(){
+    state.seats = Math.max(0, Math.round(num($('seatsInput').value)));
+    save(); renderGuests(); renderDashboard();
+  });
+  $('guestFilter').addEventListener('change', function(){
+    state.guestFilter = $('guestFilter').value;
+    save(); renderGuests();
+  });
+  $('guestList').addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('button') : null; if(!b) return;
+    var row = b.closest ? b.closest('.guest-row') : null; if(!row) return;
+    var id = row.getAttribute('data-id');
+    var g = null;
+    for(var i=0;i<state.guests.length;i++) if(state.guests[i].id === id) g = state.guests[i];
+    if(!g) return;
+    var act = b.getAttribute('data-act');
+    if(act === 'cycle'){ g.rsvp = nextRsvp(g.rsvp); save(); renderGuests(); renderDashboard(); }
+    else if(act === 'edit'){ editGuest(id); }
+    else if(act === 'del'){
+      if(confirm('Delete this guest?\n\n“' + (g.name || '').slice(0,60) + '”')){
+        state.guests = state.guests.filter(function(x){ return x.id !== id; });
+        save(); renderGuests(); renderDashboard();
+      }
+    }
+  });
+}
+
+/* ================= menu ================= */
+function findDish(id){
+  for(var i=0;i<state.dishes.length;i++) if(state.dishes[i].id === id) return state.dishes[i];
+  return null;
+}
+function renderMenu(){
+  var box = $('dishList');
+  if(!state.dishes.length){
+    box.innerHTML = '<div class="empty-hero"><div class="big">🍽️</div><p><b style="color:var(--ink)">No dishes planned yet.</b><br>Add your first dish above — the grocery list fills itself.</p></div>';
+  } else {
+    var html = '';
+    state.dishes.forEach(function(d){
+      html += '<div class="dish" data-id="' + d.id + '">'
+        + '<div class="dish-head"><div><span class="dname">' + esc(d.name) + '</span>'
+        + ' <span class="dmeta">· serves ' + (num(d.servings) || '—') + '</span></div>'
+        + '<div style="display:flex;gap:6px;align-items:center"><span class="course-tag">' + esc(d.course) + '</span>'
+        + '<button class="del" data-act="del-dish" title="Delete dish">×</button></div></div>';
+      if(d.ingredients && d.ingredients.length){
+        d.ingredients.forEach(function(ing){
+          html += '<div class="ing-row" data-ing="' + ing.id + '"><span class="iname">🥕 ' + esc(ing.name) + '</span>'
+            + '<span class="iqty">' + esc(ing.qty) + '</span>'
+            + '<button class="del" data-act="del-ing" title="Remove ingredient">×</button></div>';
+        });
+      } else {
+        html += '<div class="empty" style="padding:6px 4px">No ingredients yet — add below.</div>';
+      }
+      html += '<div class="ing-add"><input type="text" placeholder="Ingredient, e.g. Cranberries" maxlength="80" data-ing-name>'
+        + '<input type="text" placeholder="Qty, e.g. 2 bags" maxlength="40" data-ing-qty style="max-width:130px">'
+        + '<button class="btn small" data-act="add-ing">+ Add</button></div></div>';
+    });
+    box.innerHTML = html;
+  }
+  /* grocery list: aggregate all ingredients */
+  var shop = $('shopList'), items = [];
+  state.dishes.forEach(function(d){
+    (d.ingredients || []).forEach(function(ing){
+      items.push({ ing: ing, from: d.name });
+    });
+  });
+  if(!items.length){
+    shop.innerHTML = '<div class="empty">Your grocery list appears here once dishes have ingredients 🛒</div>';
+    $('shopCount').textContent = '';
+  } else {
+    var sh = '', checked = 0;
+    items.forEach(function(it){
+      var done = !!state.shoppingChecked[it.ing.id];
+      if(done) checked++;
+      sh += '<div class="shop-item' + (done ? ' done' : '') + '" data-ing="' + it.ing.id + '">'
+        + '<button class="check" data-act="shop-toggle" title="Mark as bought">✓</button>'
+        + '<span class="sname">' + esc(it.ing.name) + (it.ing.qty ? ' <span class="sfrom">· ' + esc(it.ing.qty) + '</span>' : '') + '</span>'
+        + '<span class="sfrom">' + esc(it.from) + '</span></div>';
+    });
+    shop.innerHTML = sh;
+    $('shopCount').textContent = checked + ' of ' + items.length + ' bought';
+  }
+  /* leftovers */
+  var lb = $('leftoverList');
+  if(!state.leftovers.length){
+    lb.innerHTML = '<div class="empty">No leftover ideas yet — add your own below 🍲</div>';
+  } else {
+    var lh = '';
+    state.leftovers.forEach(function(l){
+      lh += '<div class="leftover-idea' + '' + '" data-id="' + l.id + '" style="display:flex;align-items:flex-start;gap:10px;cursor:pointer" data-act="toggle">'
+        + '<span class="check" style="margin-top:1px;' + (l.done ? 'background:var(--sage);border-color:var(--sage);color:#1c2415' : '') + '">✓</span>'
+        + '<span style="flex:1;' + (l.done ? 'color:var(--faint);text-decoration:line-through' : '') + '"><b>' + esc(l.title) + '</b><br><span style="font-size:12.5px">' + esc(l.desc || '') + '</span></span>'
+        + '<button class="del" data-act="del-left" title="Remove idea" style="flex:0 0 auto">×</button></div>';
+    });
+    lb.innerHTML = lh;
+  }
+}
+function addDish(){
+  var name = $('dName').value.trim();
+  if(!name){ $('dName').focus(); return; }
+  state.dishes.push({
+    id: uid('d'),
+    name: name,
+    course: $('dCourse').value || 'Turkey & Mains',
+    servings: Math.max(1, Math.round(num($('dServings').value)) || 12),
+    ingredients: []
+  });
+  save(); renderMenu(); renderDashboard();
+  $('dName').value = ''; $('dServings').value = ''; $('dName').focus();
+}
+function addLeftover(){
+  var t = $('leftoverName').value.trim();
+  if(!t){ $('leftoverName').focus(); return; }
+  state.leftovers.push({ id: uid('lo'), title: t, desc: '', done: false, custom: true });
+  save(); renderMenu(); renderDashboard();
+  $('leftoverName').value = ''; $('leftoverName').focus();
+}
+function bindMenu(){
+  $('addDishBtn').addEventListener('click', addDish);
+  $('dName').addEventListener('keydown', function(e){ if(e.key === 'Enter') addDish(); });
+  $('addLeftoverBtn').addEventListener('click', addLeftover);
+  $('leftoverName').addEventListener('keydown', function(e){ if(e.key === 'Enter') addLeftover(); });
+  $('dishList').addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('button') : null; if(!b) return;
+    var dishEl = b.closest ? b.closest('.dish') : null; if(!dishEl) return;
+    var d = findDish(dishEl.getAttribute('data-id')); if(!d) return;
+    var act = b.getAttribute('data-act');
+    if(act === 'del-dish'){
+      if(confirm('Delete this dish and its ingredients?\n\n“' + d.name.slice(0,60) + '”')){
+        d.ingredients.forEach(function(ing){ delete state.shoppingChecked[ing.id]; });
+        state.dishes = state.dishes.filter(function(x){ return x.id !== d.id; });
+        save(); renderMenu(); renderDashboard();
+      }
+    } else if(act === 'add-ing'){
+      var nameInp = dishEl.querySelector('[data-ing-name]');
+      var qtyInp = dishEl.querySelector('[data-ing-qty]');
+      var nm = nameInp.value.trim();
+      if(!nm){ nameInp.focus(); return; }
+      d.ingredients.push({ id: uid('i'), name: nm, qty: qtyInp.value.trim() });
+      save(); renderMenu(); renderDashboard();
+    } else if(act === 'del-ing'){
+      var ingRow = b.closest ? b.closest('.ing-row') : null; if(!ingRow) return;
+      var ingId = ingRow.getAttribute('data-ing');
+      d.ingredients = d.ingredients.filter(function(x){ return x.id !== ingId; });
+      delete state.shoppingChecked[ingId];
+      save(); renderMenu();
+    }
+  });
+  $('dishList').addEventListener('keydown', function(e){
+    if(e.key !== 'Enter') return;
+    var inp = e.target.closest ? e.target.closest('[data-ing-name],[data-ing-qty]') : null;
+    if(!inp) return;
+    var dishEl = inp.closest('.dish');
+    var addBtn = dishEl ? dishEl.querySelector('[data-act="add-ing"]') : null;
+    if(addBtn) addBtn.click();
+  });
+  $('shopList').addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('[data-act="shop-toggle"]') : null; if(!b) return;
+    var item = b.closest ? b.closest('.shop-item') : null; if(!item) return;
+    var id = item.getAttribute('data-ing');
+    if(state.shoppingChecked[id]) delete state.shoppingChecked[id];
+    else state.shoppingChecked[id] = true;
+    save(); renderMenu();
+  });
+  $('leftoverList').addEventListener('click', function(e){
+    var card = e.target.closest ? e.target.closest('.leftover-idea') : null; if(!card) return;
+    var id = card.getAttribute('data-id');
+    var l = null;
+    for(var i=0;i<state.leftovers.length;i++) if(state.leftovers[i].id === id) l = state.leftovers[i];
+    if(!l) return;
+    var b = e.target.closest ? e.target.closest('button') : null;
+    if(b && b.getAttribute('data-act') === 'del-left'){
+      state.leftovers = state.leftovers.filter(function(x){ return x.id !== id; });
+      save(); renderMenu(); renderDashboard();
+      return;
+    }
+    l.done = !l.done;
+    save(); renderMenu(); renderDashboard();
+  });
+}
+
+/* ================= budget ================= */
+function catSpent(){
+  var s = {};
+  CATEGORIES.forEach(function(c){ s[c] = 0; });
+  state.expenses.forEach(function(e){
+    var c = CATEGORIES.indexOf(e.category) >= 0 ? e.category : 'Other';
+    s[c] += num(e.amount);
+  });
+  return s;
+}
+function renderBudget(){
+  var cb = $('catBudgets'), html = '';
+  CATEGORIES.forEach(function(c, i){
+    html += '<div class="field"><label>' + esc(c) + '</label>'
+      + '<input type="number" min="0" step="1" data-cat="' + i + '" value="' + state.categories[c] + '" aria-label="Budget for ' + esc(c) + '"></div>';
+  });
+  cb.innerHTML = html;
+  var sel = $('eCat'), sh = '';
+  CATEGORIES.forEach(function(c){ sh += '<option>' + esc(c) + '</option>'; });
+  sel.innerHTML = sh;
+  if(!$('eDate').value) $('eDate').value = todayStr();
+
+  var spent = catSpent(), bars = '', totS = 0, totB = 0;
+  CATEGORIES.forEach(function(c){
+    var b = num(state.categories[c]), s = spent[c];
+    totS += s; totB += b;
+    var pct = b > 0 ? Math.min(100, Math.round(s / b * 100)) : (s > 0 ? 100 : 0);
+    bars += '<div class="cat-row"><div class="cat-meta"><span class="cname">' + esc(c) + '</span>'
+      + '<span class="cnums"><b>' + money(s) + '</b> of ' + money(b) + '</span></div>'
+      + '<div class="progress"><div class="' + (s > b ? 'over' : '') + '" style="width:' + pct + '%"></div></div></div>';
+  });
+  $('catBars').innerHTML = bars;
+  $('totSpent').textContent = money(totS);
+  $('totBudget').textContent = money(totB);
+  var rem = totB - totS;
+  var remEl = $('totRemain');
+  remEl.textContent = (rem < 0 ? '−' : '') + money(Math.abs(rem));
+  remEl.className = 'tv ' + (rem >= 0 ? 'pos' : 'neg');
+
+  var list = state.expenses.slice().sort(function(a, b){
+    return (b.date || '').localeCompare(a.date || '') || (b.id > a.id ? 1 : -1);
+  });
+  var box = $('expenseList');
+  if(!list.length){
+    box.innerHTML = '<div class="empty">No expenses logged yet — log your first above 💰</div>';
+    return;
+  }
+  var eh = '';
+  list.forEach(function(e){
+    eh += '<div class="row-item" data-id="' + e.id + '">'
+      + '<span class="txt">' + esc(e.desc || '(no description)') + '<div class="meta">' + esc(e.category) + ' · ' + esc(fmtDate(e.date)) + '</div></span>'
+      + '<b style="font-variant-numeric:tabular-nums">' + money(e.amount) + '</b>'
+      + '<button class="del" data-act="del" title="Delete expense">×</button></div>';
+  });
+  box.innerHTML = eh;
+}
+function addExpense(){
+  var desc = $('eDesc').value.trim();
+  var amount = num($('eAmount').value);
+  if(!desc && amount <= 0){ $('eDesc').focus(); return; }
+  state.expenses.push({
+    id: uid('e'),
+    desc: desc || '(no description)',
+    amount: amount,
+    category: $('eCat').value || 'Other',
+    date: $('eDate').value || todayStr()
+  });
+  save(); renderBudget(); renderDashboard();
+  $('eDesc').value = ''; $('eAmount').value = ''; $('eDate').value = todayStr(); $('eDesc').focus();
+}
+function bindBudget(){
+  $('catBudgets').addEventListener('change', function(e){
+    var inp = e.target.closest ? e.target.closest('input[data-cat]') : null;
+    if(!inp) return;
+    var c = CATEGORIES[+inp.getAttribute('data-cat')];
+    state.categories[c] = Math.max(0, num(inp.value));
+    save(); renderBudget(); renderDashboard();
+  });
+  $('addExpenseBtn').addEventListener('click', addExpense);
+  ['eDesc','eAmount'].forEach(function(id){
+    $(id).addEventListener('keydown', function(e){ if(e.key === 'Enter') addExpense(); });
+  });
+  $('expenseList').addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('button[data-act="del"]') : null; if(!b) return;
+    var row = b.closest ? b.closest('.row-item') : null; if(!row) return;
+    var id = row.getAttribute('data-id');
+    if(confirm('Delete this expense?')){
+      state.expenses = state.expenses.filter(function(x){ return x.id !== id; });
+      save(); renderBudget(); renderDashboard();
+    }
+  });
+}
+
+/* ================= prep timeline ================= */
+function renderEvents(){
+  var box = $('eventList');
+  if(!state.events.length){
+    box.innerHTML = '<div class="empty-hero"><div class="big">📅</div><p><b style="color:var(--ink)">No prep tasks yet.</b><br>Add things like “Buy the turkey”, “Grocery run”, “Set the table” — everything lands here in date order.</p></div>';
+    return;
+  }
+  var t = todayStr();
+  var list = state.events.slice().sort(function(a, b){
+    return (a.date || '').localeCompare(b.date || '') || (a.time || '').localeCompare(b.time || '');
+  });
+  var html = '';
+  list.forEach(function(ev){
+    var overdue = !ev.done && ev.date && ev.date < t;
+    html += '<div class="row-item event' + (ev.done ? ' done-ev' : '') + (overdue ? ' overdue' : '') + '" data-id="' + ev.id + '">'
+      + '<button class="check" data-act="toggle" title="Mark done">✓</button>'
+      + '<span class="txt">' + esc(ev.name || '(untitled)') + '<div class="meta">'
+      + '<span class="dt">' + esc(fmtDate(ev.date)) + '</span>' + (ev.time ? ' · ' + esc(fmtTime(ev.time)) : '')
+      + (ev.notes ? ' · ' + esc(ev.notes) + '</div></span>' : '</div></span>')
+      + (overdue ? '<span class="overdue-tag">Overdue</span>' : '')
+      + '<button class="del" data-act="del" title="Delete prep task">×</button></div>';
+  });
+  box.innerHTML = html;
+}
+function addEvent(){
+  var name = $('evName').value.trim();
+  if(!name){ $('evName').focus(); return; }
+  state.events.push({
+    id: uid('v'),
+    name: name,
+    date: $('evDate').value || THANKSGIVING,
+    time: $('evTime').value,
+    notes: $('evNotes').value.trim(),
+    done: false
+  });
+  save(); renderEvents(); renderDashboard();
+  $('evName').value = ''; $('evTime').value = ''; $('evNotes').value = ''; $('evName').focus();
+}
+function bindEvents(){
+  $('addEventBtn').addEventListener('click', addEvent);
+  $('evName').addEventListener('keydown', function(e){ if(e.key === 'Enter') addEvent(); });
+  $('eventList').addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('button') : null; if(!b) return;
+    var row = b.closest ? b.closest('.event') : null; if(!row) return;
+    var id = row.getAttribute('data-id'), ev = null, i;
+    for(i=0;i<state.events.length;i++) if(state.events[i].id === id) ev = state.events[i];
+    if(!ev) return;
+    var act = b.getAttribute('data-act');
+    if(act === 'toggle'){ ev.done = !ev.done; save(); renderEvents(); renderDashboard(); }
+    else if(act === 'del'){
+      if(confirm('Delete this prep task?\n\n“' + ev.name.slice(0,60) + '”')){
+        state.events = state.events.filter(function(x){ return x.id !== id; });
+        save(); renderEvents(); renderDashboard();
+      }
+    }
+  });
+}
+
+/* ================= backup / sample / reset ================= */
+function sampleData(){
+  if(!confirm('Load sample data?\n\nThis adds 4 guests, 2 expenses, 2 dishes and 4 prep tasks so you can see the planner in action. Your existing data stays too.')) return;
+  state.guests.push(
+    { id: uid('g'), name: 'Aunt Linda', dish: 'Pumpkin pie', adults: 2, kids: 0, rsvp: 'Confirmed', notes: '' },
+    { id: uid('g'), name: 'Grandpa Joe', dish: '', adults: 1, kids: 0, rsvp: 'Confirmed', notes: 'needs soft foods' },
+    { id: uid('g'), name: 'The Millers', dish: 'Green bean casserole', adults: 2, kids: 3, rsvp: 'Maybe', notes: 'driving in from Chicago' },
+    { id: uid('g'), name: 'Cousin Sam', dish: '', adults: 1, kids: 0, rsvp: 'Invited', notes: '' }
+  );
+  state.expenses.push(
+    { id: uid('e'), desc: 'Turkey from the butcher', amount: 65, category: 'Groceries', date: '2026-11-18' },
+    { id: uid('e'), desc: 'Fall centerpiece + candles', amount: 42, category: 'Decorations', date: '2026-11-20' }
+  );
+  var d1 = uid('d'), d2 = uid('d');
+  state.dishes.push({
+    id: d1, name: 'Roast Turkey', course: 'Turkey & Mains', servings: 12,
+    ingredients: [
+      { id: uid('i'), name: 'Whole turkey', qty: '~7 kg' },
+      { id: uid('i'), name: 'Butter', qty: '250 g' },
+      { id: uid('i'), name: 'Fresh sage & thyme', qty: '2 bunches' }
+    ]
+  });
+  state.dishes.push({
+    id: d2, name: 'Mashed Potatoes', course: 'Sides', servings: 12,
+    ingredients: [
+      { id: uid('i'), name: 'Russet potatoes', qty: '3 kg' },
+      { id: uid('i'), name: 'Heavy cream', qty: '500 ml' }
+    ]
+  });
+  state.events.push(
+    { id: uid('v'), name: 'Buy the turkey', date: '2026-11-19', time: '', notes: 'Butcher closes early Thursday', done: false },
+    { id: uid('v'), name: 'Big grocery run', date: '2026-11-23', time: '10:00', notes: 'Print the grocery list from the Menu tab', done: false },
+    { id: uid('v'), name: 'Bake pies & set the table', date: '2026-11-25', time: '14:00', notes: '', done: false },
+    { id: uid('v'), name: 'Thanksgiving dinner', date: '2026-11-26', time: '17:00', notes: 'Everyone at the table by 5', done: false }
+  );
+  save(); renderAll();
+}
+function exportData(){
+  var blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'thanksgiving-planner-2026-backup.json';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+function importData(file){
+  var reader = new FileReader();
+  reader.onload = function(){
+    try{
+      var s = JSON.parse(reader.result);
+      if(!s || typeof s !== 'object' || (!Array.isArray(s.guests) && !Array.isArray(s.expenses) && !Array.isArray(s.events) && !Array.isArray(s.dishes))){
+        alert('That file does not look like a Thanksgiving Planner backup.');
+        return;
+      }
+      if(!confirm('Replace ALL current data with this backup? This cannot be undone.')) return;
+      state = s;
+      save(); renderAll();
+      alert('Backup imported successfully ✓');
+    }catch(err){
+      alert('Could not read that file — it may be corrupted.');
+    }
+  };
+  reader.readAsText(file);
+}
+function resetData(){
+  if(confirm('Reset ALL data?\n\nThis clears guests, expenses, dishes, events, leftovers and budgets, and starts fresh. This cannot be undone.')){
+    state = defaultState();
+    save(); renderAll();
+  }
+}
+function bindData(){
+  $('sampleBtn').addEventListener('click', sampleData);
+  $('exportBtn').addEventListener('click', exportData);
+  $('importBtn').addEventListener('click', function(){ $('importFile').click(); });
+  $('importFile').addEventListener('change', function(){
+    if(this.files && this.files[0]) importData(this.files[0]);
+    this.value = '';
+  });
+  $('resetBtn').addEventListener('click', resetData);
+}
+
+/* ================= init ================= */
+function renderAll(){
+  renderDashboard();
+  renderGuests();
+  renderMenu();
+  renderBudget();
+  renderEvents();
+}
+bindTabs();
+bindGuests();
+bindMenu();
+bindBudget();
+bindEvents();
+bindData();
+if(!storageOK){ $('storageWarn').classList.add('show'); }
+renderAll();
+
+})();
+</script>
+</body>
+</html>
