@@ -75,6 +75,15 @@ body{
   color:var(--pumpkin);font-weight:700;font-size:14px;
   padding:9px 14px;border-radius:999px;white-space:nowrap;
 }
+.shop-links{display:flex;gap:8px;flex-wrap:wrap}
+.shop-link{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:13px;font-weight:700;color:var(--gold);
+  background:var(--gold-soft);border:1px solid rgba(240,180,41,.38);
+  padding:8px 13px;border-radius:999px;text-decoration:none;white-space:nowrap;
+  transition:all .16s ease;
+}
+.shop-link:hover{background:rgba(240,180,41,.25);color:#fff}
 .tabbar{
   display:flex;gap:8px;padding:10px 14px;margin-bottom:22px;
   background:rgba(43,26,16,.86);border:1px solid var(--line);border-top:none;
@@ -347,6 +356,10 @@ input[type=date]::-webkit-calendar-picker-indicator, input[type=time]::-webkit-c
       </div>
       <div class="top-actions">
         <div class="count-pill" id="countPill">🍂 — days to Thanksgiving</div>
+        <div class="shop-links">
+          <a class="shop-link" href="https://digieman.etsy.com/" target="_blank" rel="noopener">🛒 Etsy Shop</a>
+          <a class="shop-link" href="https://digieman.gumroad.com/" target="_blank" rel="noopener">🛍️ Gumroad</a>
+        </div>
       </div>
     </header>
     <nav class="tabbar" id="tabbar">
