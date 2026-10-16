@@ -978,7 +978,7 @@ function renderCountdown(){
   var sb = $('scheduleBody'), sh = '';
   NIGHTS.forEach(function(nt){
     sh += '<tr><td><b>Night ' + nt.n + '</b></td>'
-      + '<td>' + nt.wd + ' ' + fmtDate(nt.date).replace(', 2026','') + '</td>'
+      + '<td>' + fmtDate(nt.date).replace(', 2026','') + '</td>'
       + '<td>' + nt.candles + ' + shamash</td>'
       + '<td>' + (nt.alert ? '<span class="flag">⚠️ ' + esc(nt.alert.split(':')[0]) + '</span>' : '<span class="hint">—</span>') + '</td></tr>';
   });
