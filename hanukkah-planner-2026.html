@@ -1,0 +1,1569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#081430">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Hanukkah Planner 2026">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='42' fill='%23081430'/%3E%3Ctext x='90' y='128' font-size='100' text-anchor='middle'%3E%F0%9F%95%8E%3C/text%3E%3C/svg%3E">
+<title>Hanukkah Planner 2026</title>
+<style>
+:root{
+  --bg0:#040a18;
+  --bg1:#081430;
+  --card:#0b1834;
+  --card2:#0e1f44;
+  --ink:#eef4ff;
+  --muted:#b9c9e8;
+  --faint:#7f93b8;
+  --line:rgba(255,255,255,.10);
+  --blue:#5aa2ff;
+  --blue-soft:rgba(90,162,255,.14);
+  --gold:#f5b83d;
+  --gold-soft:rgba(245,184,61,.14);
+  --silver:#c8d6f2;
+  --silver-soft:rgba(200,214,242,.10);
+  --cran:#e06b7d;
+  --cran-soft:rgba(224,107,125,.14);
+  --sage:#9cc184;
+  --sage-soft:rgba(156,193,132,.14);
+  --flame:#ffcf6b;
+  --radius:18px;
+  --shadow:0 12px 32px rgba(0,0,0,.45);
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font);
+  color:var(--ink);
+  background:
+    radial-gradient(1100px 500px at 85% -5%, rgba(245,184,61,.08), transparent 60%),
+    radial-gradient(900px 480px at -10% 10%, rgba(90,162,255,.14), transparent 60%),
+    radial-gradient(700px 600px at 50% 110%, rgba(20,40,90,.55), transparent 60%),
+    linear-gradient(180deg,var(--bg1),var(--bg0));
+  min-height:100vh;
+  padding:26px 22px 60px;
+}
+.wrap{max-width:1180px;margin:0 auto}
+
+/* ---------- sticky header (topbar + tabs) ---------- */
+.sticky-head{position:sticky;top:14px;z-index:20}
+.topbar{
+  display:flex;justify-content:space-between;align-items:center;gap:14px;
+  padding:14px 18px;
+  background:rgba(11,24,52,.88);border:1px solid var(--line);
+  border-radius:var(--radius) var(--radius) 0 0;box-shadow:var(--shadow);
+  backdrop-filter:blur(8px);
+}
+.brand{display:flex;align-items:center;gap:13px}
+.logo{
+  width:46px;height:46px;border-radius:14px;flex:0 0 46px;
+  background:conic-gradient(from 200deg,#122a63,var(--blue),#0a1a3d,#122a63);
+  display:flex;align-items:center;justify-content:center;
+  font-size:25px;
+  box-shadow:0 4px 14px rgba(90,162,255,.35);
+}
+.brand h1{font-size:21px;letter-spacing:.2px}
+.brand h1 .accent{background:linear-gradient(90deg,var(--gold),var(--flame));-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand p{font-size:13px;color:var(--muted);margin-top:2px}
+.top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.count-pill{
+  display:flex;align-items:center;gap:7px;
+  background:var(--gold-soft);border:1px solid rgba(245,184,61,.45);
+  color:var(--gold);font-weight:700;font-size:14px;
+  padding:9px 14px;border-radius:999px;white-space:nowrap;
+}
+.shop-links{display:flex;gap:8px;flex-wrap:wrap}
+.shop-link{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:13px;font-weight:700;color:var(--blue);
+  background:var(--blue-soft);border:1px solid rgba(90,162,255,.40);
+  padding:8px 13px;border-radius:999px;text-decoration:none;white-space:nowrap;
+  transition:all .16s ease;
+}
+.shop-link:hover{background:rgba(90,162,255,.28);color:#fff}
+.tabbar{
+  display:flex;gap:8px;padding:10px 14px;margin-bottom:22px;
+  background:rgba(11,24,52,.88);border:1px solid var(--line);border-top:none;
+  border-radius:0 0 var(--radius) var(--radius);box-shadow:var(--shadow);
+  backdrop-filter:blur(8px);
+  overflow-x:auto;
+}
+.tab-btn{
+  flex:1 0 auto;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;
+  padding:10px 14px;border-radius:12px;border:1px solid transparent;
+  background:transparent;color:var(--muted);white-space:nowrap;
+  transition:all .16s ease;
+}
+.tab-btn:hover{color:var(--ink);background:rgba(255,255,255,.05)}
+.tab-btn.active{background:var(--blue-soft);border-color:rgba(90,162,255,.55);color:var(--blue)}
+.btn{
+  font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;
+  border:none;border-radius:12px;padding:10px 16px;
+  background:linear-gradient(135deg,var(--gold),var(--blue));color:#0a1226;
+  box-shadow:0 4px 14px rgba(90,162,255,.30);
+  transition:transform .12s ease, box-shadow .12s ease, filter .12s ease;
+}
+.btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(90,162,255,.40)}
+.btn:active{transform:scale(.96)}
+.btn.ghost{
+  background:transparent;color:var(--ink);
+  border:1px solid var(--line);box-shadow:none;
+}
+.btn.ghost:hover{border-color:rgba(90,162,255,.5);box-shadow:none}
+.btn.small{padding:7px 12px;font-size:13px;border-radius:10px}
+.btn.danger{background:transparent;color:var(--cran);border:1px solid rgba(224,107,125,.5);box-shadow:none}
+.btn.danger:hover{border-color:var(--cran);box-shadow:none}
+
+/* ---------- layout ---------- */
+.grid{columns:2;column-gap:20px}
+.card{
+  break-inside:avoid;margin-bottom:20px;
+  background:linear-gradient(180deg,var(--card2),var(--card));
+  border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:22px;
+}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px;flex-wrap:wrap}
+.card-head h2{font-size:16px;letter-spacing:.4px;display:flex;align-items:center;gap:9px}
+.card-head h2 .ico{
+  width:30px;height:30px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;
+  font-size:16px;background:rgba(255,255,255,.06);border:1px solid var(--line);
+}
+.hint{font-size:12.5px;color:var(--faint)}
+.tabpage{display:none}
+.tabpage.active{display:block;animation:rise .45s cubic-bezier(.22,.8,.32,1) both}
+
+/* ---------- forms ---------- */
+.add-row{display:flex;gap:9px;margin-bottom:14px;flex-wrap:wrap}
+.add-row input[type=text], .add-row input[type=number], .add-row input[type=date], .add-row input[type=time], .add-row select,
+.form-grid input[type=text], .form-grid input[type=number], .form-grid input[type=date], .form-grid input[type=time], .form-grid select{
+  font-family:var(--font);font-size:14.5px;color:var(--ink);
+  background:rgba(0,0,0,.30);border:1px solid var(--line);border-radius:12px;
+  padding:11px 14px;outline:none;
+}
+.add-row input[type=text]:focus, .add-row input[type=number]:focus, .add-row select:focus,
+.form-grid input:focus, .form-grid select:focus{border-color:rgba(90,162,255,.6)}
+.add-row select, .form-grid select{background:#0a1430}
+.add-row input[type=text]{flex:1}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.form-grid .full{grid-column:1 / -1}
+.field label{display:block;font-size:11.5px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+input[type=date]::-webkit-calendar-picker-indicator, input[type=time]::-webkit-calendar-picker-indicator{filter:invert(.7)}
+
+/* ---------- stat cards ---------- */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.stat{
+  background:rgba(0,0,0,.22);border:1px solid var(--line);border-radius:14px;padding:16px;
+}
+.stat .k{font-size:11.5px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
+.stat .v{font-size:26px;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums}
+.stat .v small{font-size:14px;font-weight:600;color:var(--muted)}
+.stat .sub{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.5}
+
+/* ---------- progress bars ---------- */
+.progress-wrap{margin-bottom:6px}
+.progress-meta{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:7px;gap:8px}
+.progress-meta b{color:var(--gold);font-variant-numeric:tabular-nums}
+.progress{height:10px;border-radius:99px;background:rgba(0,0,0,.35);overflow:hidden;border:1px solid var(--line)}
+.progress > div{
+  height:100%;width:0;border-radius:99px;
+  background:linear-gradient(90deg,var(--gold),var(--blue));
+  transition:width .35s ease;
+}
+.progress > div.over{background:var(--cran)}
+
+/* ---------- lists ---------- */
+.row-item{
+  display:flex;align-items:center;gap:11px;
+  padding:10px 12px;border-radius:12px;margin-bottom:7px;
+  background:rgba(0,0,0,.22);border:1px solid transparent;
+  transition:border-color .15s ease;
+}
+.row-item:hover{border-color:var(--line)}
+.row-item .txt{flex:1;font-size:14.5px;line-height:1.4;min-width:0}
+.row-item .meta{font-size:12.5px;color:var(--faint)}
+.del{
+  background:none;border:none;color:var(--faint);font-size:18px;cursor:pointer;
+  padding:2px 6px;border-radius:8px;line-height:1;flex:0 0 auto;
+}
+.del:hover{color:var(--cran);background:var(--cran-soft)}
+.icon-btn{
+  background:none;border:none;color:var(--faint);cursor:pointer;font-size:14px;
+  padding:4px 7px;border-radius:8px;
+}
+.icon-btn:hover{color:var(--blue);background:var(--blue-soft)}
+.empty{font-size:13.5px;color:var(--faint);padding:12px 4px;font-style:italic}
+.empty-hero{
+  text-align:center;padding:26px 16px;border-radius:14px;margin-bottom:6px;
+  background:rgba(90,162,255,.06);border:1px dashed rgba(90,162,255,.35);
+}
+.empty-hero .big{font-size:30px;margin-bottom:8px}
+.empty-hero p{font-size:13.5px;color:var(--muted);line-height:1.6}
+
+/* ---------- rsvp pills ---------- */
+.status-pill{
+  font-family:var(--font);font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap;
+  padding:6px 12px;border-radius:999px;border:1px solid;
+}
+.status-Invited{background:var(--gold-soft);border-color:rgba(245,184,61,.5);color:var(--gold)}
+.status-Confirmed{background:var(--sage-soft);border-color:rgba(156,193,132,.5);color:var(--sage)}
+.status-Maybe{background:var(--blue-soft);border-color:rgba(90,162,255,.5);color:var(--blue)}
+.status-Declined{background:var(--cran-soft);border-color:rgba(224,107,125,.5);color:#f0969f}
+.guest-row .party{font-size:13px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.guest-row .party b{color:var(--ink)}
+.guest-row .dish-assigned{font-size:12.5px;color:var(--faint);font-style:italic}
+
+/* ---------- gift pills ---------- */
+.g-pill{
+  font-family:var(--font);font-size:12.5px;font-weight:800;cursor:pointer;
+  padding:7px 13px;border-radius:999px;border:1px solid var(--line);
+  background:transparent;color:var(--faint);
+  transition:all .15s ease;
+}
+.g-pill.on{background:var(--blue-soft);border-color:rgba(90,162,255,.55);color:var(--blue)}
+.g-pill.on.gold{background:var(--gold-soft);border-color:rgba(245,184,61,.55);color:var(--gold)}
+.g-pill.on.green{background:var(--sage-soft);border-color:rgba(156,193,132,.55);color:var(--sage)}
+
+/* ---------- nights ---------- */
+.night{
+  border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:13px;
+  background:rgba(0,0,0,.20);
+}
+.night-head{display:flex;align-items:center;justify-content:space-between;gap:9px;margin-bottom:6px;flex-wrap:wrap}
+.night-head .nname{font-weight:800;font-size:15px}
+.night-head .nmeta{font-size:12.5px;color:var(--faint)}
+.candle-tag{
+  font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;
+  background:var(--gold-soft);border:1px solid rgba(245,184,61,.45);color:var(--gold);
+  padding:4px 10px;border-radius:999px;white-space:nowrap;
+}
+.bless-tag{
+  font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;
+  background:var(--blue-soft);border:1px solid rgba(90,162,255,.45);color:var(--blue);
+  padding:4px 10px;border-radius:999px;white-space:nowrap;
+}
+.alert-box{
+  font-size:13px;line-height:1.55;color:#ffd98a;
+  background:rgba(245,184,61,.10);border:1px solid rgba(245,184,61,.45);
+  border-radius:12px;padding:10px 13px;margin:10px 0;
+}
+.tip-box{
+  font-size:12.5px;line-height:1.55;color:var(--muted);
+  background:rgba(90,162,255,.07);border:1px dashed rgba(90,162,255,.35);
+  border-radius:12px;padding:9px 13px;margin:10px 0;
+}
+.night-checks{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+
+/* ---------- schedule table ---------- */
+.sched{width:100%;border-collapse:collapse;font-size:13px}
+.sched th{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--faint);text-align:left;padding:8px 8px;border-bottom:1px solid var(--line)}
+.sched td{padding:8px;border-bottom:1px dashed rgba(255,255,255,.06);vertical-align:top}
+.sched tr:last-child td{border-bottom:none}
+.sched .flag{color:var(--gold);font-weight:700}
+
+/* ---------- blessings ---------- */
+.blessing{margin-bottom:13px;background:rgba(0,0,0,.20);border:1px solid var(--line);border-radius:12px;padding:13px 15px}
+.blessing .bname{font-weight:800;font-size:14px;color:var(--gold);margin-bottom:6px}
+.blessing .btrans{font-style:italic;font-size:13.5px;color:var(--ink);line-height:1.6}
+.blessing .bmean{font-size:12.5px;color:var(--muted);margin-top:5px;line-height:1.5}
+
+/* ---------- dishes / menu ---------- */
+.dish{
+  border:1px solid var(--line);border-radius:14px;padding:15px;margin-bottom:13px;
+  background:rgba(0,0,0,.20);
+}
+.dish-head{display:flex;align-items:center;justify-content:space-between;gap:9px;margin-bottom:4px}
+.dish-head .dname{font-weight:800;font-size:15px}
+.dish-head .dmeta{font-size:12.5px;color:var(--faint)}
+.course-tag{
+  font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;
+  background:var(--blue-soft);border:1px solid rgba(90,162,255,.45);color:var(--blue);
+  padding:4px 10px;border-radius:999px;white-space:nowrap;
+}
+.ing-row{display:flex;align-items:center;gap:9px;padding:7px 4px;border-bottom:1px dashed rgba(255,255,255,.06);font-size:13.5px}
+.ing-row:last-of-type{border-bottom:none}
+.ing-row .iname{flex:1}
+.ing-row .iqty{color:var(--faint);font-size:12.5px}
+.ing-add{display:flex;gap:8px;margin-top:10px}
+.ing-add input{flex:1;font-family:var(--font);font-size:13.5px;color:var(--ink);background:rgba(0,0,0,.30);border:1px solid var(--line);border-radius:10px;padding:9px 12px;outline:none}
+.ing-add input:focus{border-color:rgba(90,162,255,.6)}
+.shop-item{display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:11px;margin-bottom:6px;background:rgba(0,0,0,.22)}
+.shop-item .sname{flex:1;font-size:14px}
+.shop-item .sfrom{font-size:12px;color:var(--faint)}
+.shop-item.done .sname{color:var(--faint);text-decoration:line-through}
+.check{
+  width:23px;height:23px;flex:0 0 23px;border-radius:50%;cursor:pointer;
+  border:2px solid var(--faint);background:transparent;
+  display:flex;align-items:center;justify-content:center;
+  color:transparent;font-size:14px;font-weight:800;
+  transition:all .15s ease;
+}
+.check:hover{border-color:var(--sage)}
+.shop-item.done .check{background:var(--sage);border-color:var(--sage);color:#1c2415}
+
+/* ---------- events / prep timeline ---------- */
+.event{position:relative}
+.event .dt{font-size:13px;font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums}
+.event.overdue{border-color:rgba(224,107,125,.55);background:rgba(224,107,125,.07)}
+.event.done-ev .txt{color:var(--faint);text-decoration:line-through}
+.event .enotes{font-size:12.5px;color:var(--faint);margin-top:3px}
+.overdue-tag{
+  font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;
+  color:var(--cran);background:var(--cran-soft);border:1px solid rgba(224,107,125,.5);
+  padding:3px 9px;border-radius:999px;white-space:nowrap;
+}
+
+/* ---------- checklist ---------- */
+.chk-item{display:flex;align-items:center;gap:11px;padding:9px 10px;font-size:14px;cursor:pointer}
+.chk-item .box{
+  width:23px;height:23px;flex:0 0 23px;border-radius:8px;
+  border:2px solid var(--faint);display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:800;color:transparent;
+}
+.chk-item.done .box{background:var(--sage);border-color:var(--sage);color:#1c2415}
+.chk-item.done{color:var(--faint)}
+
+/* ---------- dreidel ---------- */
+.rule-row{display:flex;gap:12px;align-items:flex-start;padding:10px 4px;border-bottom:1px dashed rgba(255,255,255,.06);font-size:14px}
+.rule-row:last-child{border-bottom:none}
+.rule-letter{
+  width:36px;height:36px;flex:0 0 36px;border-radius:10px;
+  background:var(--gold-soft);border:1px solid rgba(245,184,61,.5);color:var(--gold);
+  display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+}
+.rule-row .rmean{line-height:1.55}
+.rule-row .rmean b{color:var(--ink)}
+.player{
+  display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:12px;margin-bottom:8px;
+  background:rgba(0,0,0,.22);border:1px solid transparent;
+}
+.player:hover{border-color:var(--line)}
+.player .pname{flex:1;font-weight:700;font-size:14.5px;min-width:0}
+.player .tokens{font-size:19px;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums;min-width:44px;text-align:center}
+.tok-btn{
+  font-family:var(--font);font-size:16px;font-weight:800;cursor:pointer;
+  width:34px;height:34px;border-radius:10px;border:1px solid var(--line);
+  background:rgba(255,255,255,.04);color:var(--ink);
+}
+.tok-btn:hover{border-color:rgba(90,162,255,.6);color:var(--blue)}
+.tok-btn:active{transform:scale(.92)}
+.pot-box{
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  background:rgba(245,184,61,.07);border:1px dashed rgba(245,184,61,.4);
+  border-radius:14px;padding:14px;margin-bottom:14px;
+}
+.pot-box .pot-v{font-size:28px;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums}
+.pot-box .pot-k{font-size:11.5px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:var(--faint)}
+
+/* ---------- total lines ---------- */
+.total-line{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+  margin-top:12px;padding:13px 15px;border-radius:12px;
+  background:rgba(0,0,0,.28);border:1px solid var(--line);flex-wrap:wrap;
+}
+.total-line .tl{font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--faint)}
+.total-line .tv{font-size:21px;font-weight:800;font-variant-numeric:tabular-nums}
+.tv.pos{color:var(--sage)} .tv.neg{color:var(--cran)}
+
+/* ---------- footer ---------- */
+.foot{text-align:center;margin-top:26px;color:var(--faint);font-size:12.5px;line-height:1.7}
+.foot .lock{color:var(--sage)}
+.storage-warn{
+  display:none;max-width:1180px;margin:0 auto 16px;padding:12px 18px;border-radius:14px;
+  background:rgba(224,107,125,.12);border:1px solid rgba(224,107,125,.45);
+  color:#ffb3a7;font-size:13.5px;font-weight:600;text-align:center;
+}
+.storage-warn.show{display:block}
+
+/* ---------- motion & polish ---------- */
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.card{animation:rise .55s cubic-bezier(.22,.8,.32,1) both}
+.card:nth-of-type(2){animation-delay:.07s}
+.card:nth-of-type(3){animation-delay:.14s}
+.card:nth-of-type(4){animation-delay:.21s}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+
+/* ---------- responsive ---------- */
+@media (max-width:860px){
+  .grid{columns:1}
+  body{padding:16px 12px 50px}
+  .sticky-head{position:static}
+  .topbar{flex-direction:column;align-items:stretch;border-radius:var(--radius) var(--radius) 0 0}
+  .top-actions{justify-content:space-between}
+  .tabbar{overflow-x:auto}
+  .tab-btn{flex:1 0 auto}
+  .form-grid{grid-template-columns:1fr}
+  .stat-grid{grid-template-columns:1fr 1fr}
+  .guest-row{flex-wrap:wrap}
+}
+
+/* ---------- print ---------- */
+@media print{
+  body{background:#fff;color:#111;padding:0}
+  .topbar{position:static;box-shadow:none;background:#fff;border:1px solid #ddd;backdrop-filter:none}
+  .card{box-shadow:none;break-inside:avoid;background:#fff;border:1px solid #ddd;margin-bottom:14px}
+  .grid{columns:1}
+  .top-actions,.tabbar,.add-row,.del,.icon-btn,.btn{display:none !important}
+  .brand h1 .accent{color:#b8860b;-webkit-text-fill-color:#b8860b;background:none}
+  .logo{box-shadow:none}
+  .foot{color:#666}
+}
+</style>
+</head>
+<body>
+<noscript><div style="max-width:640px;margin:40px auto;padding:22px;border-radius:14px;background:#0e1f44;border:1px solid rgba(90,162,255,.4);color:#eef4ff;font-family:-apple-system,'Segoe UI',Roboto,sans-serif;text-align:center">⚠️ The Hanukkah Planner 2026 needs JavaScript enabled to run. Please enable JavaScript in your browser settings and reload this page.</div></noscript>
+<div class="wrap">
+  <div class="storage-warn" id="storageWarn">⚠️ Your browser is blocking local storage, so your data can&rsquo;t be saved between visits. Enable cookies / site data for this file to keep your progress.</div>
+
+  <div class="sticky-head">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">🕎</div>
+        <div>
+          <h1>Hanukkah <span class="accent">Planner 2026</span></h1>
+          <p>8 nights of light, planned</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <div class="count-pill" id="countPill">🕎 — days to the first candle</div>
+        <div class="shop-links">
+          <a class="shop-link" href="https://digieman.etsy.com/" target="_blank" rel="noopener">🛒 Etsy Shop</a>
+          <a class="shop-link" href="https://digieman.gumroad.com/" target="_blank" rel="noopener">🛍️ Gumroad</a>
+        </div>
+      </div>
+    </header>
+    <nav class="tabbar" id="tabbar">
+      <button class="tab-btn active" data-tab="countdown">🕎 Countdown</button>
+      <button class="tab-btn" data-tab="nights">🕯️ Menorah Nights</button>
+      <button class="tab-btn" data-tab="gifts">🎁 Gift Planner</button>
+      <button class="tab-btn" data-tab="menu">🍳 Menu &amp; Grocery</button>
+      <button class="tab-btn" data-tab="party">🎉 Party</button>
+      <button class="tab-btn" data-tab="dreidel">🌀 Dreidel Game</button>
+    </nav>
+  </div>
+
+  <main>
+
+    <!-- COUNTDOWN -->
+    <div class="tabpage active" id="page-countdown">
+      <div class="grid">
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">🕎</span> Hanukkah 2026 at a Glance</h2>
+            <span class="hint" id="todayLine"></span>
+          </div>
+          <div class="stat-grid">
+            <div class="stat">
+              <div class="k">Days to first candle</div>
+              <div class="v" id="statDays">—</div>
+              <div class="sub">Fri, Dec 4, 2026 — light <b>before sunset</b> 🕯️</div>
+            </div>
+            <div class="stat">
+              <div class="k">Nights lit</div>
+              <div class="v" id="statNights">—</div>
+              <div class="progress" style="margin-top:9px"><div id="statNightsBar"></div></div>
+              <div class="sub">of 8 nights of Hanukkah</div>
+            </div>
+            <div class="stat">
+              <div class="k">Gifts given</div>
+              <div class="v" id="statGifts">—</div>
+              <div class="sub" id="statGiftSub">of 8 nights</div>
+            </div>
+            <div class="stat">
+              <div class="k">Party guests confirmed</div>
+              <div class="v" id="statGuests">—</div>
+              <div class="sub">coming to celebrate ✨</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">📅</span> 8-Night Schedule</h2>
+            <span class="hint">Verified 2026 dates — sunset Dec 4 → nightfall Dec 12</span>
+          </div>
+          <table class="sched">
+            <thead><tr><th>Night</th><th>Evening</th><th>Candles</th><th>Note</th></tr></thead>
+            <tbody id="scheduleBody"></tbody>
+          </table>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">✅</span> Festival Readiness</h2>
+            <span class="hint">Auto-checks as you plan</span>
+          </div>
+          <div id="checklist"></div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">💾</span> Backup &amp; Demo Data</h2>
+          </div>
+          <p class="hint" style="margin-bottom:13px;line-height:1.6">Everything is stored in this browser. Export a backup before big edits, or load the sample data to see the planner in action.</p>
+          <div style="display:flex;gap:9px;flex-wrap:wrap">
+            <button class="btn small" id="sampleBtn">✨ Load sample data</button>
+            <button class="btn ghost small" id="exportBtn">⬇ Export JSON</button>
+            <button class="btn ghost small" id="importBtn">⬆ Import JSON</button>
+            <input type="file" id="importFile" accept=".json,application/json" style="display:none">
+            <button class="btn danger small" id="resetBtn">🗑 Reset all data</button>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- MENORAH NIGHTS -->
+    <div class="tabpage" id="page-nights">
+      <div class="grid">
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">🕯️</span> Night-by-Night Menorah Checklist</h2>
+            <span class="hint" id="nightsHint"></span>
+          </div>
+          <div id="nightsList"></div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">📖</span> Blessing Reference</h2>
+            <span class="hint">Recite before lighting — 2 every night, 3 on Night 1</span>
+          </div>
+          <div class="blessing">
+            <div class="bname">1 · The lighting blessing <span class="hint">— every night</span></div>
+            <div class="btrans">&ldquo;Baruch atah Adonai, Eloheinu melech ha&rsquo;olam, asher kid&rsquo;shanu b&rsquo;mitzvotav, v&rsquo;tzivanu l&rsquo;hadlik ner shel Hanukkah.&rdquo;</div>
+            <div class="bmean">…who commanded us to kindle the Hanukkah light.</div>
+          </div>
+          <div class="blessing">
+            <div class="bname">2 · The miracles blessing <span class="hint">— every night</span></div>
+            <div class="btrans">&ldquo;Baruch atah Adonai … she&rsquo;asah nissim la&rsquo;avoteinu, bayamim haheim, bazman hazeh.&rdquo;</div>
+            <div class="bmean">…who performed miracles for our ancestors, in those days, at this time.</div>
+          </div>
+          <div class="blessing">
+            <div class="bname">3 · Shehecheyanu <span class="hint">— first night only</span></div>
+            <div class="btrans">&ldquo;Baruch atah Adonai … shehecheyanu, v&rsquo;kiy&rsquo;manu, v&rsquo;higi&rsquo;anu lazman hazeh.&rdquo;</div>
+            <div class="bmean">…who has kept us alive and brought us to this season.</div>
+          </div>
+          <div class="tip-box">After lighting, many families recite <b>Hanerot Halalu</b> and sing <b>Ma&rsquo;oz Tzur</b> — mark them under each night with the toggles.</div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">💡</span> Lighting Essentials</h2>
+          </div>
+          <div class="tip-box" style="margin-top:0">The <b>shamash</b> (helper candle) sits apart — a little higher or lower — and lights the others. New candles go on the <b>left</b> each night (right-to-left); lighting goes <b>left-to-right</b>, newest candle first.</div>
+          <div class="tip-box">Light at <b>sundown</b>; flames must burn at least <b>30 minutes after nightfall</b>.</div>
+          <div class="tip-box">Display the menorah in a <b>street-facing window</b> or by the front door to publicise the miracle — and never leave burning candles unattended.</div>
+        </section>
+      </div>
+    </div>
+
+    <!-- GIFT PLANNER -->
+    <div class="tabpage" id="page-gifts">
+      <div class="grid">
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">🎁</span> 8-Night Gift Plan</h2>
+            <span class="hint">Hanukkah gelt &amp; small gifts, one per night</span>
+          </div>
+          <div class="progress-wrap">
+            <div class="progress-meta"><span>Gifts given across the 8 nights</span><b id="giftProgText">—</b></div>
+            <div class="progress"><div id="giftProgBar"></div></div>
+          </div>
+          <div class="total-line">
+            <div><div class="tl">Budget total</div><div class="tv" id="giftTotBudget">$0.00</div></div>
+            <div><div class="tl">Spent total</div><div class="tv" id="giftTotSpent">$0.00</div></div>
+            <div><div class="tl">Remaining</div><div class="tv" id="giftTotRemain">$0.00</div></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">🕎</span> One Gift Per Night</h2>
+            <span class="hint">Edit any field — totals update automatically</span>
+          </div>
+          <div id="giftList"></div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">💡</span> Gift Ideas</h2>
+            <span class="hint">Need inspiration?</span>
+          </div>
+          <div class="tip-box" style="margin-top:0"><b>Tradition:</b> Hanukkah <i>gelt</i> — small money gifts for children, given to reward learning and charity.</div>
+          <div class="tip-box">Modern favourites: picture books, board games, art supplies, puzzles, cosy socks, a &ldquo;big&rdquo; LEGO set on Night 7, and a tzedakah (charity) gift on the last night.</div>
+          <div class="tip-box">Wrap a little each evening and build the excitement — the candles are lit first, then the gifts come out.</div>
+        </section>
+      </div>
+    </div>
+
+    <!-- MENU & GROCERY -->
+    <div class="tabpage" id="page-menu">
+      <div class="grid">
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">🍳</span> Festival Menu</h2>
+            <span class="hint">Oil-fried foods celebrate the oil miracle — ingredients auto-build the grocery list</span>
+          </div>
+          <div class="form-grid">
+            <div class="field"><label>Dish name</label><input type="text" id="dName" placeholder="e.g. Classic Latkes" maxlength="80"></div>
+            <div class="field"><label>Night</label>
+              <select id="dNight">
+                <option>Night 1 · Dec 4</option>
+                <option>Night 2 · Dec 5</option>
+                <option>Night 3 · Dec 6</option>
+                <option>Night 4 · Dec 7</option>
+                <option>Night 5 · Dec 8</option>
+                <option>Night 6 · Dec 9</option>
+                <option>Night 7 · Dec 10</option>
+                <option>Night 8 · Dec 11</option>
+                <option selected>Party night</option>
+              </select>
+            </div>
+            <div class="field"><label>Meal</label>
+              <select id="dMeal">
+                <option>Fry-up</option><option>Dessert</option><option>Main</option><option>Side</option><option>Snack</option><option>Drinks</option>
+              </select>
+            </div>
+            <div class="field"><label>Servings</label><input type="number" id="dServings" min="1" step="1" placeholder="8"></div>
+            <div class="field full"><button class="btn" id="addDishBtn" style="width:100%">+ Add dish</button></div>
+          </div>
+          <div id="dishList"></div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">🛒</span> Grocery List</h2>
+            <span class="hint" id="shopCount"></span>
+          </div>
+          <div class="add-row" style="margin-bottom:12px">
+            <input type="text" id="looseItem" placeholder="Add your own item, e.g. Olive oil" maxlength="80">
+            <button class="btn small" id="addLooseBtn">+ Add</button>
+          </div>
+          <div id="shopList"></div>
+        </section>
+      </div>
+    </div>
+
+    <!-- PARTY -->
+    <div class="tabpage" id="page-party">
+      <div class="grid">
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">🎉</span> Add a Guest</h2>
+            <span class="hint">Tap a status pill to cycle: Invited → Confirmed → Maybe → Declined</span>
+          </div>
+          <div class="form-grid">
+            <div class="field"><label>Name / family</label><input type="text" id="guName" placeholder="e.g. The Cohens" maxlength="60"></div>
+            <div class="field"><label>Kids</label><input type="number" id="guKids" min="0" step="1" placeholder="2"></div>
+            <div class="field"><label>RSVP status</label>
+              <select id="guRsvp">
+                <option>Invited</option><option>Confirmed</option><option>Maybe</option><option>Declined</option>
+              </select>
+            </div>
+            <div class="field"><label>Notes</label><input type="text" id="guNotes" placeholder="e.g. bringing sufganiyot" maxlength="120"></div>
+            <div class="field full"><button class="btn" id="addGuestBtn" style="width:100%">+ Add guest</button></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">🧾</span> Guest List</h2>
+            <span class="hint" id="guestCount"></span>
+          </div>
+          <div id="guestList"></div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">📋</span> Party Timeline</h2>
+            <span class="hint">Tap the circle to mark done</span>
+          </div>
+          <div class="form-grid" style="margin-bottom:14px">
+            <div class="field full"><label>Task</label><input type="text" id="ptName" placeholder="e.g. Set up the dreidel tournament table" maxlength="120"></div>
+            <div class="field"><label>Date</label><input type="date" id="ptDate" value="2026-12-11"></div>
+            <div class="field"><label>Time (optional)</label><input type="time" id="ptTime"></div>
+            <div class="field full"><button class="btn" id="addPartyTaskBtn" style="width:100%">+ Add party task</button></div>
+          </div>
+          <div id="partyTaskList"></div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">✨</span> Decorations</h2>
+            <span class="hint">Blue &amp; silver everything</span>
+          </div>
+          <div id="decorList"></div>
+          <div class="ing-add" style="margin-top:12px">
+            <input type="text" id="decorName" placeholder="Your own decoration, e.g. Silver table runner" maxlength="80">
+            <button class="btn small" id="addDecorBtn">+ Add</button>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- DREIDEL -->
+    <div class="tabpage" id="page-dreidel">
+      <div class="grid">
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">🌀</span> Dreidel Quick Rules</h2>
+            <span class="hint">Everyone starts with equal tokens (gelt or chocolates)</span>
+          </div>
+          <div class="rule-row">
+            <div class="rule-letter">נ</div>
+            <div class="rmean"><b>Nun</b> — do nothing. The pot stays, play passes on.</div>
+          </div>
+          <div class="rule-row">
+            <div class="rule-letter">ג</div>
+            <div class="rmean"><b>Gimel</b> — take <b>all</b> the tokens in the pot. Everyone then adds one more to start a new pot.</div>
+          </div>
+          <div class="rule-row">
+            <div class="rule-letter">ה</div>
+            <div class="rmean"><b>Hey</b> — take <b>half</b> the pot (round up if odd).</div>
+          </div>
+          <div class="rule-row">
+            <div class="rule-letter">ש</div>
+            <div class="rmean"><b>Shin</b> — put <b>one</b> token into the pot. (In Israel the fourth side is <b>Peh</b>.)</div>
+          </div>
+          <div class="tip-box">Start each player with <b>10 tokens</b>. When the pot runs low, everyone antes one more. Play until one player has them all! 🏆</div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">🏆</span> Family Score Tracker</h2>
+            <span class="hint">− / + adjust tokens · &ldquo;Ante&rdquo; sends one to the pot · &ldquo;Wins&rdquo; takes the pot</span>
+          </div>
+          <div class="pot-box">
+            <button class="tok-btn" id="potMinus" title="Remove one from the pot">−</button>
+            <div style="text-align:center"><div class="pot-k">🫙 Pot</div><div class="pot-v" id="potVal">0</div></div>
+            <button class="tok-btn" id="potPlus" title="Add one to the pot">+</button>
+          </div>
+          <div class="add-row">
+            <input type="text" id="plName" placeholder="Player name, e.g. Maya" maxlength="40">
+            <button class="btn small" id="addPlayerBtn">+ Add player</button>
+          </div>
+          <div id="playerList"></div>
+        </section>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="foot">
+    <div><span class="lock">🔒</span> Everything you type stays in <b>this browser</b> — no accounts, no cloud, no tracking.</div>
+    <div>Hanukkah Planner 2026 · by DigiEman · works offline</div>
+  </footer>
+
+</div>
+<script>
+(function(){
+'use strict';
+
+/* ================= helpers ================= */
+var KEY = 'hanukkah-planner-2026-v1';
+var RSVP_ORDER = ['Invited','Confirmed','Maybe','Declined'];
+var FIRST_CANDLE = '2026-12-04';
+var LAST_NIGHT = '2026-12-11';
+var HOLIDAY_END = '2026-12-12';
+var NIGHTS = [
+  { n:1, date:'2026-12-04', wd:'Fri', candles:1, blessings:3, alert:'FRIDAY RULE: light BEFORE sunset — before the Shabbat candles. Use longer candles or more oil: flames must burn 30+ min after dark.' },
+  { n:2, date:'2026-12-05', wd:'Sat', candles:2, blessings:2, alert:'SATURDAY-NIGHT RULE: light only AFTER Shabbat ends + Havdalah.' },
+  { n:3, date:'2026-12-06', wd:'Sun', candles:3, blessings:2, alert:'' },
+  { n:4, date:'2026-12-07', wd:'Mon', candles:4, blessings:2, alert:'' },
+  { n:5, date:'2026-12-08', wd:'Tue', candles:5, blessings:2, alert:'' },
+  { n:6, date:'2026-12-09', wd:'Wed', candles:6, blessings:2, alert:'' },
+  { n:7, date:'2026-12-10', wd:'Thu', candles:7, blessings:2, alert:'' },
+  { n:8, date:'2026-12-11', wd:'Fri', candles:8, blessings:2, alert:'FRIDAY RULE again: light BEFORE sunset — before the Shabbat candles. Use longer candles or more oil.' }
+];
+var NIGHT_LABELS = ['Night 1 · Dec 4','Night 2 · Dec 5','Night 3 · Dec 6','Night 4 · Dec 7','Night 5 · Dec 8','Night 6 · Dec 9','Night 7 · Dec 10','Night 8 · Dec 11','Party night'];
+var DEFAULT_DECOR = [
+  'Blue & silver streamers and balloons',
+  'Menorah as the table centrepiece',
+  'Menorah display in a street-facing window',
+  'Dreidel garland',
+  'Star of David string lights',
+  'Blue tablecloth + silver napkins',
+  'Ma\u2019oz Tzur music playlist ready'
+];
+var DEFAULT_PARTY_TASKS = [
+  { id:'pt0', name:'Send party invitations', date:'2026-11-27', time:'', notes:'', done:false },
+  { id:'pt1', name:'Decorate: blue & silver theme', date:'2026-12-10', time:'15:00', notes:'', done:false },
+  { id:'pt2', name:'Candle-lighting ceremony slot', date:'2026-12-11', time:'19:00', notes:'Light the Night 8 candles with everyone, then Ma\u2019oz Tzur', done:false },
+  { id:'pt3', name:'Fry latkes fresh', date:'2026-12-11', time:'18:00', notes:'Grate potatoes last-minute so they stay crisp', done:false },
+  { id:'pt4', name:'Dreidel tournament', date:'2026-12-11', time:'20:00', notes:'Use the Dreidel Game tab to track scores', done:false }
+];
+
+function $(id){ return document.getElementById(id); }
+function pad(n){ return (n<10?'0':'')+n; }
+function todayStr(d){
+  d = d || new Date();
+  return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+}
+function esc(s){
+  return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function money(n){
+  n = parseFloat(n); if(isNaN(n)) n = 0;
+  return '$' + n.toLocaleString('en-US',{minimumFractionDigits:2, maximumFractionDigits:2});
+}
+function num(v){ var n = parseFloat(v); return isNaN(n) ? 0 : n; }
+function uid(prefix){
+  return (prefix||'x') + Date.now().toString(36) + Math.floor(Math.random()*46656).toString(36);
+}
+function fmtDate(str){
+  if(!str) return '';
+  var p = str.split('-');
+  var d = new Date(+p[0], +p[1]-1, +p[2]);
+  return d.toLocaleDateString(undefined,{weekday:'short', month:'short', day:'numeric', year:'numeric'});
+}
+function fmtTime(t){
+  if(!t) return '';
+  var p = t.split(':'), h = +p[0], m = p[1];
+  var ap = h >= 12 ? 'PM' : 'AM';
+  h = h % 12; if(h === 0) h = 12;
+  return h + ':' + m + ' ' + ap;
+}
+
+/* ================= state ================= */
+function defaultGifts(){
+  var ideas = [
+    { recipient:'Kids', idea:'Chocolate gelt + a small picture book', budget:10, spent:0 },
+    { recipient:'Kids', idea:'Art supplies set', budget:12, spent:0 },
+    { recipient:'Family', idea:'Board game for game night', budget:15, spent:0 },
+    { recipient:'Kids', idea:'Jigsaw puzzle', budget:15, spent:0 },
+    { recipient:'Spouse', idea:'Cosy socks + candle set', budget:12, spent:0 },
+    { recipient:'Kids', idea:'Dreidel + extra gelt', budget:15, spent:0 },
+    { recipient:'Kids', idea:'The BIG gift — LEGO set', budget:25, spent:0 },
+    { recipient:'Family', idea:'Tzedakah (charity) gift envelope', budget:10, spent:0 }
+  ];
+  return ideas.map(function(g, i){
+    return { id:'gf'+i, night:i+1, recipient:g.recipient, idea:g.idea, budget:g.budget, spent:g.spent, bought:false, wrapped:false, given:false };
+  });
+}
+function defaultDishes(){
+  function ing(list){ return list.map(function(x){ return { id:uid('i'), name:x[0], qty:x[1] }; }); }
+  return [
+    { id:uid('d'), name:'Classic Latkes', night:'Night 1 · Dec 4', meal:'Fry-up', servings:8,
+      ingredients:ing([['Potatoes','2 kg'],['Onion','1 large'],['Eggs','3'],['Matzo meal / flour','80 g'],['Frying oil','1 L'],['Sour cream','1 tub'],['Applesauce','1 jar']]) },
+    { id:uid('d'), name:'Sufganiyot (Jelly Donuts)', night:'Night 3 · Dec 6', meal:'Dessert', servings:12,
+      ingredients:ing([['Plain flour','500 g'],['Dry yeast','7 g'],['Sugar','100 g'],['Strawberry jam','1 jar'],['Frying oil','1 L'],['Powdered sugar','for dusting']]) },
+    { id:uid('d'), name:'Cheese Blintzes + Noodle Kugel', night:'Night 5 · Dec 8', meal:'Main', servings:8,
+      ingredients:ing([['Cream cheese','400 g'],['Ricotta','250 g'],['Egg noodles','300 g'],['Sour cream','250 ml'],['Raisins','100 g'],['Eggs','4']]) },
+    { id:uid('d'), name:'Party Platter Night', night:'Party night', meal:'Snack', servings:10,
+      ingredients:ing([['Hummus','2 tubs'],['Pita bread','2 packs'],['Carrots','1 bag'],['Cucumber','3'],['Cheese cubes','300 g'],['Blue tortilla chips','2 bags']]) }
+  ];
+}
+function defaultState(){
+  var nights = {};
+  NIGHTS.forEach(function(nt){ nights[nt.n] = { lit:false, blessings:false, halalu:false, maoz:false }; });
+  return {
+    version: 1,
+    nights: nights,
+    gifts: defaultGifts(),
+    dishes: defaultDishes(),
+    looseGroceries: [],
+    shoppingChecked: {},
+    guests: [],
+    partyTasks: DEFAULT_PARTY_TASKS.map(function(t){ return { id:uid('pt'), name:t.name, date:t.date, time:t.time, notes:t.notes, done:false }; }),
+    decor: DEFAULT_DECOR.map(function(name){ return { id:uid('dc'), name:name, done:false }; }),
+    players: [],
+    pot: 0
+  };
+}
+function loadState(){
+  var d = defaultState();
+  try{
+    var raw = localStorage.getItem(KEY);
+    if(raw){
+      var s = JSON.parse(raw);
+      if(s && typeof s === 'object'){
+        if(s.nights && typeof s.nights === 'object'){
+          NIGHTS.forEach(function(nt){
+            var sn = s.nights[nt.n] || s.nights[String(nt.n)];
+            if(sn && typeof sn === 'object'){
+              d.nights[nt.n] = { lit:!!sn.lit, blessings:!!sn.blessings, halalu:!!sn.halalu, maoz:!!sn.maoz };
+            }
+          });
+        }
+        if(Array.isArray(s.gifts) && s.gifts.length === 8) d.gifts = s.gifts;
+        if(Array.isArray(s.dishes)) d.dishes = s.dishes;
+        if(Array.isArray(s.looseGroceries)) d.looseGroceries = s.looseGroceries;
+        if(s.shoppingChecked && typeof s.shoppingChecked === 'object') d.shoppingChecked = s.shoppingChecked;
+        if(Array.isArray(s.guests)) d.guests = s.guests;
+        if(Array.isArray(s.partyTasks)) d.partyTasks = s.partyTasks;
+        if(Array.isArray(s.decor)) d.decor = s.decor;
+        if(Array.isArray(s.players)) d.players = s.players;
+        if(typeof s.pot === 'number') d.pot = s.pot;
+      }
+    }
+  }catch(e){}
+  return d;
+}
+var state = loadState();
+var storageOK = (function(){
+  try{ localStorage.setItem('__hk_probe','1'); localStorage.removeItem('__hk_probe'); return true; }
+  catch(e){ return false; }
+})();
+function save(){
+  if(!storageOK) return;
+  try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
+}
+
+/* ================= countdown ================= */
+function daysToFirstCandle(){
+  var t = todayStr().split('-'), c = FIRST_CANDLE.split('-');
+  var a = new Date(+t[0], +t[1]-1, +t[2]);
+  var b = new Date(+c[0], +c[1]-1, +c[2]);
+  return Math.ceil((b - a) / 86400000);
+}
+function currentNight(){
+  var t = todayStr();
+  for(var i=0;i<NIGHTS.length;i++){
+    if(NIGHTS[i].date === t) return NIGHTS[i].n;
+  }
+  return (t > LAST_NIGHT && t <= HOLIDAY_END) ? 8 : 0;
+}
+function nightsLit(){
+  var c = 0;
+  NIGHTS.forEach(function(nt){ if(state.nights[nt.n] && state.nights[nt.n].lit) c++; });
+  return c;
+}
+function giftTotals(){
+  var b = 0, s = 0, given = 0;
+  state.gifts.forEach(function(g){
+    b += num(g.budget); s += num(g.spent);
+    if(g.given) given++;
+  });
+  return { budget:b, spent:s, given:given };
+}
+function guestTotals(){
+  var confirmed = 0, total = 0;
+  state.guests.forEach(function(g){
+    var kids = num(g.kids);
+    total += 1 + kids;
+    if(g.rsvp === 'Confirmed') confirmed += 1 + kids;
+  });
+  return { confirmed:confirmed, total:total, rows:state.guests.length };
+}
+function renderCountdown(){
+  var n = daysToFirstCandle();
+  var pill = $('countPill'), msg;
+  var cn = currentNight();
+  if(n > 1){ msg = '🕎 ' + n + ' days to the first candle'; }
+  else if(n === 1){ msg = '🕎 1 day to the first candle'; }
+  else if(n === 0){ msg = '🕯️ Light the first candle tonight!'; }
+  else if(cn > 0){ msg = '🕎 Happy Hanukkah! Night ' + cn; }
+  else { msg = '🕎 Hanukkah 2026 complete ✨'; }
+  pill.textContent = msg;
+  $('statDays').innerHTML = n > 0 ? n + '' : '0';
+  $('todayLine').textContent = new Date().toLocaleDateString(undefined,{weekday:'long', month:'long', day:'numeric'});
+
+  var lit = nightsLit();
+  $('statNights').innerHTML = lit + ' <small>of 8</small>';
+  $('statNightsBar').style.width = (lit / 8 * 100) + '%';
+
+  var gt = giftTotals();
+  $('statGifts').innerHTML = gt.given + ' <small>of 8</small>';
+  $('statGiftSub').textContent = money(gt.spent) + ' spent of ' + money(gt.budget) + ' budget';
+
+  var gu = guestTotals();
+  $('statGuests').innerHTML = gu.confirmed + ' <small>people</small>';
+
+  var sb = $('scheduleBody'), sh = '';
+  NIGHTS.forEach(function(nt){
+    sh += '<tr><td><b>Night ' + nt.n + '</b></td>'
+      + '<td>' + nt.wd + ' ' + fmtDate(nt.date).replace(', 2026','') + '</td>'
+      + '<td>' + nt.candles + ' + shamash</td>'
+      + '<td>' + (nt.alert ? '<span class="flag">⚠️ ' + esc(nt.alert.split(':')[0]) + '</span>' : '<span class="hint">—</span>') + '</td></tr>';
+  });
+  sb.innerHTML = sh;
+
+  var items = [
+    { ok: state.dishes.length > 0, txt: 'Plan a festival dish' },
+    { ok: gt.given >= 8, txt: 'Give all 8 nightly gifts' },
+    { ok: state.gifts.every(function(g){ return (g.idea||'').trim(); }), txt: 'Assign a gift idea to every night' },
+    { ok: state.guests.length > 0, txt: 'Invite your first party guest' },
+    { ok: state.players.length > 0, txt: 'Add players to the dreidel game' },
+    { ok: state.partyTasks.some(function(t){ return t.done; }), txt: 'Finish one party task' }
+  ];
+  var done = items.filter(function(i){ return i.ok; }).length;
+  var html = '';
+  items.forEach(function(i){
+    html += '<div class="chk-item' + (i.ok ? ' done' : '') + '"><span class="box">✓</span><span>' + esc(i.txt) + '</span></div>';
+  });
+  html += '<div class="hint" style="margin-top:10px">' + done + ' of ' + items.length + ' steps done 🕎</div>';
+  $('checklist').innerHTML = html;
+}
+
+/* ================= tabs ================= */
+function switchTab(name){
+  var btns = $('tabbar').querySelectorAll('.tab-btn');
+  for(var i=0;i<btns.length;i++) btns[i].classList.toggle('active', btns[i].getAttribute('data-tab') === name);
+  var pages = document.querySelectorAll('.tabpage');
+  for(var j=0;j<pages.length;j++) pages[j].classList.toggle('active', pages[j].id === 'page-' + name);
+}
+function bindTabs(){
+  $('tabbar').addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('.tab-btn') : null;
+    if(b) switchTab(b.getAttribute('data-tab'));
+  });
+}
+
+/* ================= nights ================= */
+function placementTip(n){
+  return 'Night ' + n + ' tip: place the new candle in slot ' + n + ' counting from the <b>right</b> (the leftmost candle so far). Light <b>left-to-right</b> — the newest candle is lit first, then the shamash lights the rest.';
+}
+function renderNights(){
+  var box = $('nightsList');
+  var lit = nightsLit();
+  $('nightsHint').textContent = lit + ' of 8 nights lit 🕯️';
+  var html = '';
+  NIGHTS.forEach(function(nt){
+    var st = state.nights[nt.n] || { lit:false, blessings:false, halalu:false, maoz:false };
+    var blessTxt = nt.blessings === 3 ? '3 blessings <span class="hint">(incl. Shehecheyanu)</span>' : '2 blessings';
+    html += '<div class="night" data-night="' + nt.n + '">'
+      + '<div class="night-head"><div><span class="nname">Night ' + nt.n + ' · ' + esc(fmtDate(nt.date).replace(', 2026','')) + '</span>'
+      + ' <span class="nmeta"></span></div>'
+      + '<div style="display:flex;gap:6px;flex-wrap:wrap"><span class="candle-tag">🕯️ ' + nt.candles + ' + shamash</span>'
+      + '<span class="bless-tag">' + blessTxt + '</span></div></div>'
+      + (nt.alert ? '<div class="alert-box">⚠️ ' + esc(nt.alert) + '</div>' : '')
+      + '<div class="tip-box">' + placementTip(nt.n) + '</div>'
+      + '<div class="night-checks">'
+      + '<button class="g-pill' + (st.lit ? ' on gold' : '') + '" data-k="lit">🕯️ Candles lit</button>'
+      + '<button class="g-pill' + (st.blessings ? ' on' : '') + '" data-k="blessings">🙏 Blessings recited</button>'
+      + '<button class="g-pill' + (st.halalu ? ' on green' : '') + '" data-k="halalu">🎵 Hanerot Halalu</button>'
+      + '<button class="g-pill' + (st.maoz ? ' on green' : '') + '" data-k="maoz">🎶 Ma\u2019oz Tzur</button>'
+      + '</div></div>';
+  });
+  box.innerHTML = html;
+}
+function bindNights(){
+  $('nightsList').addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('.g-pill') : null; if(!b) return;
+    var card = b.closest ? b.closest('.night') : null; if(!card) return;
+    var n = +card.getAttribute('data-night');
+    var k = b.getAttribute('data-k');
+    if(!state.nights[n]) state.nights[n] = { lit:false, blessings:false, halalu:false, maoz:false };
+    state.nights[n][k] = !state.nights[n][k];
+    save(); renderNights(); renderCountdown();
+  });
+}
+
+/* ================= gifts ================= */
+function giftNightLabel(n){
+  var nt = NIGHTS[n-1];
+  return 'Night ' + n + ' · ' + fmtDate(nt.date).replace(', 2026','');
+}
+function renderGiftTotals(){
+  var gt = giftTotals();
+  $('giftTotBudget').textContent = money(gt.budget);
+  $('giftTotSpent').textContent = money(gt.spent);
+  var rem = gt.budget - gt.spent;
+  var remEl = $('giftTotRemain');
+  remEl.textContent = (rem < 0 ? '−' : '') + money(Math.abs(rem));
+  remEl.className = 'tv ' + (rem >= 0 ? 'pos' : 'neg');
+  $('giftProgText').textContent = gt.given + ' of 8 gifts given';
+  $('giftProgBar').style.width = (gt.given / 8 * 100) + '%';
+}
+function renderGifts(){
+  var box = $('giftList'), html = '';
+  state.gifts.forEach(function(g){
+    html += '<div class="dish" data-gid="' + g.id + '">'
+      + '<div class="dish-head"><div><span class="dname">' + esc(giftNightLabel(g.night)) + '</span></div>'
+      + '<div class="hint">' + money(num(g.spent)) + ' / ' + money(num(g.budget)) + '</div></div>'
+      + '<div class="form-grid">'
+      + '<div class="field"><label>Recipient</label><input type="text" data-f="recipient" value="' + esc(g.recipient) + '" maxlength="60"></div>'
+      + '<div class="field"><label>Gift idea</label><input type="text" data-f="idea" value="' + esc(g.idea) + '" maxlength="120"></div>'
+      + '<div class="field"><label>Budget ($)</label><input type="number" data-f="budget" min="0" step="0.01" value="' + num(g.budget) + '"></div>'
+      + '<div class="field"><label>Actually spent ($)</label><input type="number" data-f="spent" min="0" step="0.01" value="' + num(g.spent) + '"></div>'
+      + '</div>'
+      + '<div class="night-checks" style="margin-top:0">'
+      + '<button class="g-pill' + (g.bought ? ' on' : '') + '" data-k="bought">🛍️ Bought</button>'
+      + '<button class="g-pill' + (g.wrapped ? ' on' : '') + '" data-k="wrapped">🎀 Wrapped</button>'
+      + '<button class="g-pill' + (g.given ? ' on gold' : '') + '" data-k="given">🎁 Given</button>'
+      + '</div></div>';
+  });
+  box.innerHTML = html;
+  renderGiftTotals();
+}
+function bindGifts(){
+  $('giftList').addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('.g-pill') : null; if(!b) return;
+    var card = b.closest ? b.closest('.dish') : null; if(!card) return;
+    var gid = card.getAttribute('data-gid'), g = null;
+    for(var i=0;i<state.gifts.length;i++) if(state.gifts[i].id === gid) g = state.gifts[i];
+    if(!g) return;
+    var k = b.getAttribute('data-k');
+    g[k] = !g[k];
+    save(); renderGifts(); renderCountdown();
+  });
+  $('giftList').addEventListener('change', function(e){
+    var inp = e.target.closest ? e.target.closest('input[data-f]') : null; if(!inp) return;
+    var card = inp.closest ? inp.closest('.dish') : null; if(!card) return;
+    var gid = card.getAttribute('data-gid'), g = null;
+    for(var i=0;i<state.gifts.length;i++) if(state.gifts[i].id === gid) g = state.gifts[i];
+    if(!g) return;
+    var f = inp.getAttribute('data-f');
+    if(f === 'budget' || f === 'spent') g[f] = Math.max(0, num(inp.value));
+    else g[f] = inp.value;
+    save(); renderGiftTotals(); renderCountdown();
+  });
+}
+
+/* ================= menu ================= */
+function findDish(id){
+  for(var i=0;i<state.dishes.length;i++) if(state.dishes[i].id === id) return state.dishes[i];
+  return null;
+}
+function renderMenu(){
+  var box = $('dishList');
+  if(!state.dishes.length){
+    box.innerHTML = '<div class="empty-hero"><div class="big">🍳</div><p><b style="color:var(--ink)">No dishes planned yet.</b><br>Add your first dish above — the grocery list fills itself.</p></div>';
+  } else {
+    var html = '';
+    state.dishes.forEach(function(d){
+      html += '<div class="dish" data-id="' + d.id + '">'
+        + '<div class="dish-head"><div><span class="dname">' + esc(d.name) + '</span>'
+        + ' <span class="dmeta">· serves ' + (num(d.servings) || '—') + '</span></div>'
+        + '<div style="display:flex;gap:6px;align-items:center"><span class="course-tag">' + esc(d.night || 'Party night') + '</span>'
+        + '<button class="del" data-act="del-dish" title="Delete dish">×</button></div></div>'
+        + '<div class="hint" style="margin-bottom:6px">' + esc(d.meal || '') + '</div>';
+      if(d.ingredients && d.ingredients.length){
+        d.ingredients.forEach(function(ing){
+          html += '<div class="ing-row" data-ing="' + ing.id + '"><span class="iname">🫒 ' + esc(ing.name) + '</span>'
+            + '<span class="iqty">' + esc(ing.qty) + '</span>'
+            + '<button class="del" data-act="del-ing" title="Remove ingredient">×</button></div>';
+        });
+      } else {
+        html += '<div class="empty" style="padding:6px 4px">No ingredients yet — add below.</div>';
+      }
+      html += '<div class="ing-add"><input type="text" placeholder="Ingredient, e.g. Potatoes" maxlength="80" data-ing-name>'
+        + '<input type="text" placeholder="Qty, e.g. 2 kg" maxlength="40" data-ing-qty style="max-width:130px">'
+        + '<button class="btn small" data-act="add-ing">+ Add</button></div></div>';
+    });
+    box.innerHTML = html;
+  }
+  /* grocery list: aggregate dish ingredients + loose items */
+  var shop = $('shopList'), items = [];
+  state.dishes.forEach(function(d){
+    (d.ingredients || []).forEach(function(ing){
+      items.push({ id: ing.id, name: ing.name, qty: ing.qty, from: d.name });
+    });
+  });
+  (state.looseGroceries || []).forEach(function(l){
+    items.push({ id: l.id, name: l.name, qty: '', from: 'extra' });
+  });
+  if(!items.length){
+    shop.innerHTML = '<div class="empty">Your grocery list appears here once dishes have ingredients 🛒</div>';
+    $('shopCount').textContent = '';
+  } else {
+    var sh = '', checked = 0;
+    items.forEach(function(it){
+      var done = !!state.shoppingChecked[it.id];
+      if(done) checked++;
+      sh += '<div class="shop-item' + (done ? ' done' : '') + '" data-ing="' + it.id + '">'
+        + '<button class="check" data-act="shop-toggle" title="Mark as bought">✓</button>'
+        + '<span class="sname">' + esc(it.name) + (it.qty ? ' <span class="sfrom">· ' + esc(it.qty) + '</span>' : '') + '</span>'
+        + '<span class="sfrom">' + esc(it.from) + '</span>'
+        + (it.from === 'extra' ? '<button class="del" data-act="shop-del" title="Remove item">×</button>' : '')
+        + '</div>';
+    });
+    shop.innerHTML = sh;
+    $('shopCount').textContent = checked + ' of ' + items.length + ' bought';
+  }
+}
+function addDish(){
+  var name = $('dName').value.trim();
+  if(!name){ $('dName').focus(); return; }
+  state.dishes.push({
+    id: uid('d'),
+    name: name,
+    night: $('dNight').value || 'Party night',
+    meal: $('dMeal').value || 'Main',
+    servings: Math.max(1, Math.round(num($('dServings').value)) || 8),
+    ingredients: []
+  });
+  save(); renderMenu(); renderCountdown();
+  $('dName').value = ''; $('dServings').value = ''; $('dName').focus();
+}
+function addLoose(){
+  var t = $('looseItem').value.trim();
+  if(!t){ $('looseItem').focus(); return; }
+  state.looseGroceries.push({ id: uid('l'), name: t });
+  save(); renderMenu();
+  $('looseItem').value = ''; $('looseItem').focus();
+}
+function bindMenu(){
+  $('addDishBtn').addEventListener('click', addDish);
+  $('dName').addEventListener('keydown', function(e){ if(e.key === 'Enter') addDish(); });
+  $('addLooseBtn').addEventListener('click', addLoose);
+  $('looseItem').addEventListener('keydown', function(e){ if(e.key === 'Enter') addLoose(); });
+  $('dishList').addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('button') : null; if(!b) return;
+    var dishEl = b.closest ? b.closest('.dish') : null; if(!dishEl) return;
+    var d = findDish(dishEl.getAttribute('data-id')); if(!d) return;
+    var act = b.getAttribute('data-act');
+    if(act === 'del-dish'){
+      if(confirm('Delete this dish and its ingredients?\n\n“' + d.name.slice(0,60) + '”')){
+        d.ingredients.forEach(function(ing){ delete state.shoppingChecked[ing.id]; });
+        state.dishes = state.dishes.filter(function(x){ return x.id !== d.id; });
+        save(); renderMenu(); renderCountdown();
+      }
+    } else if(act === 'add-ing'){
+      var nameInp = dishEl.querySelector('[data-ing-name]');
+      var qtyInp = dishEl.querySelector('[data-ing-qty]');
+      var nm = nameInp.value.trim();
+      if(!nm){ nameInp.focus(); return; }
+      d.ingredients.push({ id: uid('i'), name: nm, qty: qtyInp.value.trim() });
+      save(); renderMenu(); renderCountdown();
+    } else if(act === 'del-ing'){
+      var ingRow = b.closest ? b.closest('.ing-row') : null; if(!ingRow) return;
+      var ingId = ingRow.getAttribute('data-ing');
+      d.ingredients = d.ingredients.filter(function(x){ return x.id !== ingId; });
+      delete state.shoppingChecked[ingId];
+      save(); renderMenu();
+    }
+  });
+  $('dishList').addEventListener('keydown', function(e){
+    if(e.key !== 'Enter') return;
+    var inp = e.target.closest ? e.target.closest('[data-ing-name],[data-ing-qty]') : null;
+    if(!inp) return;
+    var dishEl = inp.closest('.dish');
+    var addBtn = dishEl ? dishEl.querySelector('[data-act="add-ing"]') : null;
+    if(addBtn) addBtn.click();
+  });
+  $('shopList').addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('button') : null; if(!b) return;
+    var item = b.closest ? b.closest('.shop-item') : null; if(!item) return;
+    var id = item.getAttribute('data-ing');
+    var act = b.getAttribute('data-act');
+    if(act === 'shop-toggle'){
+      if(state.shoppingChecked[id]) delete state.shoppingChecked[id];
+      else state.shoppingChecked[id] = true;
+      save(); renderMenu();
+    } else if(act === 'shop-del'){
+      state.looseGroceries = state.looseGroceries.filter(function(x){ return x.id !== id; });
+      delete state.shoppingChecked[id];
+      save(); renderMenu();
+    }
+  });
+}
+
+/* ================= party: guests ================= */
+function nextRsvp(s){
+  var i = RSVP_ORDER.indexOf(s);
+  return RSVP_ORDER[(i + 1) % RSVP_ORDER.length];
+}
+function rsvpPill(g){
+  var st = RSVP_ORDER.indexOf(g.rsvp) >= 0 ? g.rsvp : 'Invited';
+  return '<button class="status-pill status-' + st + '" data-act="cycle" title="Tap to change RSVP">' + st + '</button>';
+}
+function renderPartyGuests(){
+  var gt = guestTotals();
+  $('guestCount').textContent = gt.rows + ' parties · ' + gt.total + ' people total';
+  var box = $('guestList');
+  if(!state.guests.length){
+    box.innerHTML = '<div class="empty-hero"><div class="big">🎉</div><p><b style="color:var(--ink)">No guests yet.</b><br>Add your first guest above — every great Hanukkah party starts with the guest list.</p></div>';
+    return;
+  }
+  var html = '';
+  state.guests.forEach(function(g){
+    html += '<div class="row-item guest-row" data-id="' + g.id + '">'
+      + '<span class="txt">' + esc(g.name || '(unnamed)')
+      + (g.notes ? '<div class="dish-assigned">📝 ' + esc(g.notes) + '</div>' : '')
+      + '</span>'
+      + '<span class="party"><b>' + num(g.kids) + '</b> kids</span>'
+      + rsvpPill(g)
+      + '<button class="del" data-act="del" title="Delete guest">×</button></div>';
+  });
+  box.innerHTML = html;
+}
+function addPartyGuest(){
+  var name = $('guName').value.trim();
+  if(!name){ $('guName').focus(); return; }
+  state.guests.push({
+    id: uid('g'),
+    name: name,
+    kids: Math.max(0, Math.round(num($('guKids').value))),
+    rsvp: $('guRsvp').value || 'Invited',
+    notes: $('guNotes').value.trim()
+  });
+  save(); renderPartyGuests(); renderCountdown();
+  $('guName').value = ''; $('guKids').value = ''; $('guRsvp').value = 'Invited'; $('guNotes').value = '';
+  $('guName').focus();
+}
+function bindPartyGuests(){
+  $('addGuestBtn').addEventListener('click', addPartyGuest);
+  ['guName','guKids','guNotes'].forEach(function(id){
+    $(id).addEventListener('keydown', function(e){ if(e.key === 'Enter') addPartyGuest(); });
+  });
+  $('guestList').addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('button') : null; if(!b) return;
+    var row = b.closest ? b.closest('.guest-row') : null; if(!row) return;
+    var id = row.getAttribute('data-id');
+    var g = null;
+    for(var i=0;i<state.guests.length;i++) if(state.guests[i].id === id) g = state.guests[i];
+    if(!g) return;
+    var act = b.getAttribute('data-act');
+    if(act === 'cycle'){ g.rsvp = nextRsvp(g.rsvp); save(); renderPartyGuests(); renderCountdown(); }
+    else if(act === 'del'){
+      if(confirm('Delete this guest?\n\n“' + (g.name || '').slice(0,60) + '”')){
+        state.guests = state.guests.filter(function(x){ return x.id !== id; });
+        save(); renderPartyGuests(); renderCountdown();
+      }
+    }
+  });
+}
+
+/* ================= party: timeline + decor ================= */
+function renderPartyTasks(){
+  var box = $('partyTaskList');
+  if(!state.partyTasks.length){
+    box.innerHTML = '<div class="empty">No party tasks yet — add one above 🎉</div>';
+    return;
+  }
+  var t = todayStr();
+  var list = state.partyTasks.slice().sort(function(a, b){
+    return (a.date || '').localeCompare(b.date || '') || (a.time || '').localeCompare(b.time || '');
+  });
+  var html = '';
+  list.forEach(function(ev){
+    var overdue = !ev.done && ev.date && ev.date < t;
+    html += '<div class="row-item event' + (ev.done ? ' done-ev' : '') + (overdue ? ' overdue' : '') + '" data-id="' + ev.id + '">'
+      + '<button class="check" data-act="toggle" title="Mark done">✓</button>'
+      + '<span class="txt">' + esc(ev.name || '(untitled)') + '<div class="meta">'
+      + '<span class="dt">' + esc(fmtDate(ev.date)) + '</span>' + (ev.time ? ' · ' + esc(fmtTime(ev.time)) : '')
+      + (ev.notes ? ' · ' + esc(ev.notes) + '</div></span>' : '</div></span>')
+      + (overdue ? '<span class="overdue-tag">Overdue</span>' : '')
+      + '<button class="del" data-act="del" title="Delete party task">×</button></div>';
+  });
+  box.innerHTML = html;
+}
+function addPartyTask(){
+  var name = $('ptName').value.trim();
+  if(!name){ $('ptName').focus(); return; }
+  state.partyTasks.push({
+    id: uid('pt'),
+    name: name,
+    date: $('ptDate').value || LAST_NIGHT,
+    time: $('ptTime').value,
+    notes: '',
+    done: false
+  });
+  save(); renderPartyTasks(); renderCountdown();
+  $('ptName').value = ''; $('ptTime').value = ''; $('ptName').focus();
+}
+function renderDecor(){
+  var box = $('decorList');
+  if(!state.decor.length){
+    box.innerHTML = '<div class="empty">No decorations yet — add your own below ✨</div>';
+    return;
+  }
+  var html = '';
+  state.decor.forEach(function(d){
+    html += '<div class="chk-item' + (d.done ? ' done' : '') + '" data-id="' + d.id + '">'
+      + '<span class="box">✓</span><span style="flex:1">' + esc(d.name) + '</span>'
+      + '<button class="del" data-act="del-decor" title="Remove decoration">×</button></div>';
+  });
+  box.innerHTML = html;
+}
+function addDecor(){
+  var t = $('decorName').value.trim();
+  if(!t){ $('decorName').focus(); return; }
+  state.decor.push({ id: uid('dc'), name: t, done: false });
+  save(); renderDecor();
+  $('decorName').value = ''; $('decorName').focus();
+}
+function bindParty(){
+  bindPartyGuests();
+  $('addPartyTaskBtn').addEventListener('click', addPartyTask);
+  $('ptName').addEventListener('keydown', function(e){ if(e.key === 'Enter') addPartyTask(); });
+  $('partyTaskList').addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('button') : null; if(!b) return;
+    var row = b.closest ? b.closest('.event') : null; if(!row) return;
+    var id = row.getAttribute('data-id'), ev = null, i;
+    for(i=0;i<state.partyTasks.length;i++) if(state.partyTasks[i].id === id) ev = state.partyTasks[i];
+    if(!ev) return;
+    var act = b.getAttribute('data-act');
+    if(act === 'toggle'){ ev.done = !ev.done; save(); renderPartyTasks(); renderCountdown(); }
+    else if(act === 'del'){
+      if(confirm('Delete this party task?\n\n“' + ev.name.slice(0,60) + '”')){
+        state.partyTasks = state.partyTasks.filter(function(x){ return x.id !== id; });
+        save(); renderPartyTasks(); renderCountdown();
+      }
+    }
+  });
+  $('addDecorBtn').addEventListener('click', addDecor);
+  $('decorName').addEventListener('keydown', function(e){ if(e.key === 'Enter') addDecor(); });
+  $('decorList').addEventListener('click', function(e){
+    var item = e.target.closest ? e.target.closest('.chk-item') : null; if(!item) return;
+    var id = item.getAttribute('data-id'), d = null, i;
+    for(i=0;i<state.decor.length;i++) if(state.decor[i].id === id) d = state.decor[i];
+    if(!d) return;
+    var b = e.target.closest ? e.target.closest('button') : null;
+    if(b && b.getAttribute('data-act') === 'del-decor'){
+      state.decor = state.decor.filter(function(x){ return x.id !== id; });
+      save(); renderDecor();
+      return;
+    }
+    d.done = !d.done;
+    save(); renderDecor();
+  });
+}
+
+/* ================= dreidel ================= */
+function findPlayer(id){
+  for(var i=0;i<state.players.length;i++) if(state.players[i].id === id) return state.players[i];
+  return null;
+}
+function renderDreidel(){
+  $('potVal').textContent = Math.max(0, Math.round(num(state.pot)));
+  var box = $('playerList');
+  if(!state.players.length){
+    box.innerHTML = '<div class="empty-hero"><div class="big">🌀</div><p><b style="color:var(--ink)">No players yet.</b><br>Add everyone around the table — each starts with 10 tokens.</p></div>';
+    return;
+  }
+  var html = '';
+  state.players.forEach(function(p){
+    html += '<div class="player" data-id="' + p.id + '">'
+      + '<span class="pname">🕎 ' + esc(p.name) + '</span>'
+      + '<button class="tok-btn" data-act="dec" title="Lose a token">−</button>'
+      + '<span class="tokens">' + Math.max(0, Math.round(num(p.tokens))) + '</span>'
+      + '<button class="tok-btn" data-act="inc" title="Gain a token">+</button>'
+      + '<button class="btn ghost small" data-act="ante" title="Put one token into the pot">Ante 1</button>'
+      + '<button class="btn small" data-act="wins" title="Take the whole pot">Wins pot</button>'
+      + '<button class="del" data-act="del" title="Remove player">×</button></div>';
+  });
+  box.innerHTML = html;
+}
+function addPlayer(){
+  var name = $('plName').value.trim();
+  if(!name){ $('plName').focus(); return; }
+  state.players.push({ id: uid('p'), name: name, tokens: 10 });
+  save(); renderDreidel(); renderCountdown();
+  $('plName').value = ''; $('plName').focus();
+}
+function bindDreidel(){
+  $('addPlayerBtn').addEventListener('click', addPlayer);
+  $('plName').addEventListener('keydown', function(e){ if(e.key === 'Enter') addPlayer(); });
+  $('potPlus').addEventListener('click', function(){ state.pot = Math.max(0, Math.round(num(state.pot)) + 1); save(); renderDreidel(); });
+  $('potMinus').addEventListener('click', function(){ state.pot = Math.max(0, Math.round(num(state.pot)) - 1); save(); renderDreidel(); });
+  $('playerList').addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('button') : null; if(!b) return;
+    var row = b.closest ? b.closest('.player') : null; if(!row) return;
+    var p = findPlayer(row.getAttribute('data-id')); if(!p) return;
+    var act = b.getAttribute('data-act');
+    if(act === 'inc'){ p.tokens = Math.round(num(p.tokens)) + 1; }
+    else if(act === 'dec'){ p.tokens = Math.max(0, Math.round(num(p.tokens)) - 1); }
+    else if(act === 'ante'){
+      if(Math.round(num(p.tokens)) > 0){ p.tokens = Math.round(num(p.tokens)) - 1; state.pot = Math.max(0, Math.round(num(state.pot))) + 1; }
+    }
+    else if(act === 'wins'){ p.tokens = Math.round(num(p.tokens)) + Math.max(0, Math.round(num(state.pot))); state.pot = 0; }
+    else if(act === 'del'){
+      if(confirm('Remove this player?\n\n“' + p.name.slice(0,40) + '”')){
+        state.players = state.players.filter(function(x){ return x.id !== p.id; });
+      } else { return; }
+    }
+    save(); renderDreidel();
+  });
+}
+
+/* ================= backup / sample / reset ================= */
+function sampleData(){
+  if(!confirm('Load sample data?\n\nThis adds 3 party guests, 2 party tasks, 3 dreidel players and a few gifts, so you can see the planner in action. Your existing data stays too.')) return;
+  state.guests.push(
+    { id: uid('g'), name: 'The Cohens', kids: 2, rsvp: 'Confirmed', notes: 'bringing sufganiyot' },
+    { id: uid('g'), name: 'Grandma Ruth', kids: 0, rsvp: 'Confirmed', notes: '' },
+    { id: uid('g'), name: 'The Levys', kids: 3, rsvp: 'Maybe', notes: '' }
+  );
+  state.partyTasks.push(
+    { id: uid('pt'), name: 'Buy 8+1 candles and extra oil', date: '2026-12-02', time: '', notes: 'longer candles for the Friday nights', done: false },
+    { id: uid('pt'), name: 'Wrap Night 1–3 gifts', date: '2026-12-03', time: '18:00', notes: '', done: false }
+  );
+  state.players.push(
+    { id: uid('p'), name: 'Maya', tokens: 10 },
+    { id: uid('p'), name: 'Noah', tokens: 10 },
+    { id: uid('p'), name: 'Dad', tokens: 10 }
+  );
+  state.pot = 3;
+  var g1 = state.gifts[0], g2 = state.gifts[1];
+  if(g1){ g1.spent = 9.50; g1.bought = true; g1.wrapped = true; }
+  if(g2){ g2.bought = true; }
+  save(); renderAll();
+}
+function exportData(){
+  var blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'hanukkah-planner-2026-backup.json';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+function importData(file){
+  var reader = new FileReader();
+  reader.onload = function(){
+    try{
+      var s = JSON.parse(reader.result);
+      if(!s || typeof s !== 'object' || (!Array.isArray(s.gifts) && !Array.isArray(s.dishes) && !Array.isArray(s.players) && !Array.isArray(s.partyTasks))){
+        alert('That file does not look like a Hanukkah Planner backup.');
+        return;
+      }
+      if(!confirm('Replace ALL current data with this backup? This cannot be undone.')) return;
+      state = s;
+      save(); renderAll();
+      alert('Backup imported successfully ✓');
+    }catch(err){
+      alert('Could not read that file — it may be corrupted.');
+    }
+  };
+  reader.readAsText(file);
+}
+function resetData(){
+  if(confirm('Reset ALL data?\n\nThis clears nights, gifts, dishes, guests, party tasks, decorations, players and the pot, and starts fresh. This cannot be undone.')){
+    state = defaultState();
+    save(); renderAll();
+  }
+}
+function bindData(){
+  $('sampleBtn').addEventListener('click', sampleData);
+  $('exportBtn').addEventListener('click', exportData);
+  $('importBtn').addEventListener('click', function(){ $('importFile').click(); });
+  $('importFile').addEventListener('change', function(){
+    if(this.files && this.files[0]) importData(this.files[0]);
+    this.value = '';
+  });
+  $('resetBtn').addEventListener('click', resetData);
+}
+
+/* ================= init ================= */
+function renderAll(){
+  renderCountdown();
+  renderNights();
+  renderGifts();
+  renderMenu();
+  renderPartyGuests();
+  renderPartyTasks();
+  renderDecor();
+  renderDreidel();
+}
+bindTabs();
+bindNights();
+bindGifts();
+bindMenu();
+bindParty();
+bindDreidel();
+bindData();
+if(!storageOK){ $('storageWarn').classList.add('show'); }
+renderAll();
+
+})();
+</script>
+</body>
+</html>
