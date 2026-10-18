@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a0f24">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="New Year Reset 2027">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='42' fill='%230a0f24'/%3E%3Ctext x='90' y='128' font-size='100' text-anchor='middle'%3E%F0%9F%8E%86%3C/text%3E%3C/svg%3E">
+<title>New Year Reset Planner 2027</title>
+<style>
+:root{
+  --bg0:#060a1a;
+  --bg1:#0a0f24;
+  --card:#0d1533;
+  --card2:#111c40;
+  --ink:#f4f1ff;
+  --muted:#b9b8d8;
+  --faint:#7c7b9e;
+  --line:rgba(255,255,255,.10);
+  --gold:#f5c76a;
+  --gold-soft:rgba(245,199,106,.14);
+  --rose:#ff7b9c;
+  --rose-soft:rgba(255,123,156,.14);
+  --teal:#5eead4;
+  --teal-soft:rgba(94,234,212,.13);
+  --violet:#a78bfa;
+  --violet-soft:rgba(167,139,250,.14);
+  --lime:#bef264;
+  --lime-soft:rgba(190,242,100,.13);
+  --cran:#ff6b81;
+  --cran-soft:rgba(255,107,129,.14);
+  --radius:18px;
+  --shadow:0 12px 32px rgba(0,0,0,.45);
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font);
+  color:var(--ink);
+  background:
+    radial-gradient(1100px 500px at 85% -5%, rgba(245,199,106,.09), transparent 60%),
+    radial-gradient(900px 480px at -10% 10%, rgba(167,139,250,.12), transparent 60%),
+    radial-gradient(700px 600px at 50% 110%, rgba(94,234,212,.07), transparent 60%),
+    linear-gradient(180deg,var(--bg1),var(--bg0));
+  min-height:100vh;
+  padding:26px 22px 60px;
+}
+.wrap{max-width:1180px;margin:0 auto}
+
+/* ---------- sticky header (topbar + tabs) ---------- */
+.sticky-head{position:sticky;top:14px;z-index:20}
+.topbar{
+  display:flex;justify-content:space-between;align-items:center;gap:14px;
+  padding:14px 18px;
+  background:rgba(13,21,51,.88);border:1px solid var(--line);
+  border-radius:var(--radius) var(--radius) 0 0;box-shadow:var(--shadow);
+  backdrop-filter:blur(8px);
+}
+.brand{display:flex;align-items:center;gap:13px}
+.logo{
+  width:46px;height:46px;border-radius:14px;flex:0 0 46px;
+  background:conic-gradient(from 200deg,var(--gold),var(--rose),var(--violet),var(--gold));
+  display:flex;align-items:center;justify-content:center;
+  font-size:25px;
+  box-shadow:0 4px 14px rgba(245,199,106,.35);
+}
+.brand h1{font-size:21px;letter-spacing:.2px}
+.brand h1 .accent{background:linear-gradient(90deg,var(--gold),var(--rose));-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand p{font-size:13px;color:var(--muted);margin-top:2px}
+.top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.count-pill{
+  display:flex;align-items:center;gap:7px;
+  background:var(--gold-soft);border:1px solid rgba(245,199,106,.45);
+  color:var(--gold);font-weight:700;font-size:14px;
+  padding:9px 14px;border-radius:999px;white-space:nowrap;
+}
+.shop-links{display:flex;gap:8px;flex-wrap:wrap}
+.shop-link{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:13px;font-weight:700;color:var(--gold);
+  background:var(--gold-soft);border:1px solid rgba(245,199,106,.40);
+  padding:8px 13px;border-radius:999px;text-decoration:none;white-space:nowrap;
+  transition:all .16s ease;
+}
+.shop-link:hover{background:rgba(245,199,106,.28);color:#fff}
+.tabbar{
+  display:flex;gap:8px;padding:10px 14px;margin-bottom:22px;
+  background:rgba(13,21,51,.88);border:1px solid var(--line);border-top:none;
+  border-radius:0 0 var(--radius) var(--radius);box-shadow:var(--shadow);
+  backdrop-filter:blur(8px);
+  overflow-x:auto;
+}
+.tab-btn{
+  flex:1 0 auto;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;
+  padding:10px 14px;border-radius:12px;border:1px solid transparent;
+  background:transparent;color:var(--muted);white-space:nowrap;
+  transition:all .16s ease;
+}
+.tab-btn:hover{color:var(--ink);background:rgba(255,255,255,.05)}
+.tab-btn.active{background:var(--gold-soft);border-color:rgba(245,199,106,.55);color:var(--gold)}
+
+/* ---------- buttons / inputs ---------- */
+.btn{
+  font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;
+  border:none;border-radius:12px;padding:10px 16px;
+  background:linear-gradient(135deg,var(--gold),var(--rose));color:#1a1030;
+  box-shadow:0 4px 14px rgba(245,199,106,.30);
+  transition:transform .12s ease, box-shadow .12s ease, filter .12s ease;
+}
+.btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(245,199,106,.40)}
+.btn:active{transform:scale(.96)}
+.btn.ghost{
+  background:transparent;color:var(--ink);
+  border:1px solid var(--line);box-shadow:none;
+}
+.btn.ghost:hover{border-color:rgba(245,199,106,.5);box-shadow:none}
+.btn.small{padding:7px 12px;font-size:13px;border-radius:10px}
+.btn.danger{background:transparent;color:var(--cran);border:1px solid rgba(255,107,129,.5);box-shadow:none}
+.btn.danger:hover{border-color:var(--cran);box-shadow:none}
+input[type=text],input[type=number],select,textarea{
+  font-family:var(--font);font-size:14px;color:var(--ink);
+  background:rgba(255,255,255,.05);border:1px solid var(--line);
+  border-radius:12px;padding:10px 13px;width:100%;
+  outline:none;transition:border-color .15s ease;
+}
+input:focus,select:focus,textarea:focus{border-color:rgba(245,199,106,.6)}
+select option{background:#0d1533}
+textarea{resize:vertical;min-height:74px;line-height:1.5}
+::placeholder{color:var(--faint)}
+label.lbl{display:block;font-size:12.5px;font-weight:700;color:var(--muted);margin:0 0 7px;letter-spacing:.3px;text-transform:uppercase}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>*{flex:1 1 150px}
+
+/* ---------- cards / layout ---------- */
+.tabpage{display:none}
+.tabpage.active{display:block;animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+.card{
+  background:linear-gradient(180deg,var(--card2),var(--card));
+  border:1px solid var(--line);border-radius:var(--radius);
+  padding:20px;box-shadow:var(--shadow);
+}
+.card-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}
+.card h2{font-size:17px;display:flex;align-items:center;gap:9px}
+.card h2 .ico{font-size:21px}
+.hint{font-size:12.5px;color:var(--faint)}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+.stat{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:14px;padding:14px}
+.stat .k{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.stat .v{font-size:27px;font-weight:800;margin:5px 0 3px;color:var(--gold)}
+.stat .sub{font-size:12.5px;color:var(--faint);line-height:1.45}
+.progress{height:10px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}
+.progress>div{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--gold),var(--rose));transition:width .4s ease}
+
+/* ---------- lists ---------- */
+.list{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.item{
+  display:flex;align-items:flex-start;gap:11px;
+  background:rgba(255,255,255,.035);border:1px solid var(--line);
+  border-radius:14px;padding:12px 14px;
+}
+.item.done{opacity:.62}
+.item.done .item-text{text-decoration:line-through}
+.item-check{
+  flex:0 0 24px;width:24px;height:24px;margin-top:1px;cursor:pointer;
+  border-radius:8px;border:2px solid var(--faint);background:transparent;
+  display:flex;align-items:center;justify-content:center;font-size:15px;color:transparent;
+  transition:all .15s ease;
+}
+.item-check.on{background:linear-gradient(135deg,var(--lime),var(--teal));border-color:transparent;color:#0a1420}
+.item-body{flex:1;min-width:0}
+.item-text{font-size:14.5px;font-weight:600;line-height:1.45;word-break:break-word}
+.item-meta{font-size:12px;color:var(--faint);margin-top:4px}
+.chip{
+  display:inline-block;font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:999px;
+  margin-top:6px;
+}
+.item-del{
+  flex:0 0 auto;background:none;border:none;cursor:pointer;font-size:16px;color:var(--faint);
+  padding:4px;border-radius:8px;
+}
+.item-del:hover{color:var(--cran)}
+.empty{
+  text-align:center;color:var(--faint);font-size:14px;padding:26px 12px;
+  border:1px dashed var(--line);border-radius:14px;margin-top:14px;line-height:1.6;
+}
+.chip-health{background:var(--lime-soft);color:var(--lime)}
+.chip-money{background:var(--gold-soft);color:var(--gold)}
+.chip-career{background:var(--violet-soft);color:var(--violet)}
+.chip-love{background:var(--rose-soft);color:var(--rose)}
+.chip-learn{background:var(--teal-soft);color:var(--teal)}
+.chip-fun{background:rgba(255,255,255,.07);color:var(--muted)}
+
+/* ---------- habits ---------- */
+.habit-today{display:flex;align-items:center;gap:12px}
+.habit-streak{font-size:12.5px;font-weight:700;color:var(--rose)}
+.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:10px}
+.week-day{
+  text-align:center;font-size:11px;color:var(--faint);padding:7px 2px;border-radius:9px;
+  background:rgba(255,255,255,.04);border:1px solid transparent;line-height:1.5;
+}
+.week-day.on{background:var(--rose-soft);border-color:rgba(255,123,156,.5);color:var(--rose)}
+.week-day.today{outline:1px solid rgba(245,199,106,.6)}
+.week-day b{display:block;font-size:12px}
+
+/* ---------- vision board ---------- */
+.board{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:14px}
+.vcard{
+  border-radius:16px;padding:16px 12px;text-align:center;position:relative;
+  border:1px solid var(--line);min-height:130px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+}
+.vcard .ve{font-size:40px;line-height:1}
+.vcard .vt{font-size:14px;font-weight:700;line-height:1.4}
+.vcard .vdel{
+  position:absolute;top:6px;right:6px;background:rgba(0,0,0,.35);border:none;cursor:pointer;
+  color:#fff;font-size:13px;width:24px;height:24px;border-radius:50%;line-height:1;
+}
+.emoji-pick{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 4px}
+.emoji-pick button{
+  font-size:22px;background:rgba(255,255,255,.05);border:1px solid var(--line);
+  border-radius:10px;padding:6px 9px;cursor:pointer;
+}
+.emoji-pick button.sel{border-color:var(--gold);background:var(--gold-soft)}
+
+/* ---------- reflections ---------- */
+.month-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-top:14px}
+.month-card{background:rgba(255,255,255,.035);border:1px solid var(--line);border-radius:14px;padding:15px}
+.month-card.current{border-color:rgba(245,199,106,.55);box-shadow:0 0 0 1px rgba(245,199,106,.35)}
+.month-card h3{font-size:15px;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center}
+.month-card .prompt{font-size:12.5px;color:var(--muted);font-style:italic;margin-bottom:9px;line-height:1.5}
+.month-card textarea{margin-top:2px}
+
+/* ---------- toast / noprint ---------- */
+#toast{
+  position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);
+  background:#141c3a;border:1px solid rgba(245,199,106,.5);color:var(--ink);
+  padding:12px 20px;border-radius:999px;font-size:14px;font-weight:600;
+  opacity:0;pointer-events:none;transition:all .25s ease;z-index:50;white-space:nowrap;
+  box-shadow:var(--shadow);
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.noprint-banner{
+  margin-bottom:18px;padding:14px 18px;border-radius:var(--radius);
+  background:var(--teal-soft);border:1px solid rgba(94,234,212,.4);
+  color:var(--teal);font-weight:700;font-size:14.5px;text-align:center;line-height:1.5;
+}
+@media print{
+  .sticky-head,.tabbar,.noprint-banner,#toast,.btn,.item-del,.vdel{display:none!important}
+  body{background:#fff;color:#111;padding:0}
+  .card{box-shadow:none}
+}
+@media (max-width:640px){
+  body{padding:14px 10px 46px}
+  .brand h1{font-size:18px}
+  .topbar{flex-direction:column;align-items:stretch}
+  .top-actions{justify-content:space-between}
+  .grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="sticky-head">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">🎆</div>
+        <div>
+          <h1>New Year <span class="accent">Reset 2027</span></h1>
+          <p>Your fresh start, organised</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <div class="count-pill" id="countPill">🎆 — days to 2027</div>
+        <div class="shop-links">
+          <a class="shop-link" href="https://digieman.etsy.com/" target="_blank" rel="noopener">🛒 Etsy Shop</a>
+          <a class="shop-link" href="https://digieman.gumroad.com/" target="_blank" rel="noopener">🛍️ Gumroad</a>
+        </div>
+      </div>
+    </header>
+    <nav class="tabbar" id="tabbar">
+      <button class="tab-btn active" data-tab="countdown">🎆 Countdown</button>
+      <button class="tab-btn" data-tab="goals">🎯 Goals 2027</button>
+      <button class="tab-btn" data-tab="habits">🔥 Habits</button>
+      <button class="tab-btn" data-tab="vision">🖼️ Vision Board</button>
+      <button class="tab-btn" data-tab="money">💰 Savings</button>
+      <button class="tab-btn" data-tab="reflect">📅 Reflections</button>
+    </nav>
+  </div>
+
+  <main>
+    <div class="noprint-banner">✅ NO PRINTING NEEDED — this planner works right in your browser. Everything you type is saved automatically on this device.</div>
+
+    <!-- COUNTDOWN -->
+    <div class="tabpage active" id="page-countdown">
+      <div class="grid">
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">🎆</span> 2027 at a Glance</h2>
+            <span class="hint" id="todayLine"></span>
+          </div>
+          <div class="stat-grid">
+            <div class="stat">
+              <div class="k">Days to Jan 1</div>
+              <div class="v" id="statDays">—</div>
+              <div class="sub">Friday, Jan 1, 2027 — your fresh start 🎇</div>
+            </div>
+            <div class="stat">
+              <div class="k">Goals completed</div>
+              <div class="v" id="statGoals">—</div>
+              <div class="progress" style="margin-top:9px"><div id="statGoalsBar" style="width:0%"></div></div>
+              <div class="sub" id="statGoalSub">of 2027 goals</div>
+            </div>
+            <div class="stat">
+              <div class="k">Habits done today</div>
+              <div class="v" id="statHabits">—</div>
+              <div class="sub">daily streaks grow here 🔥</div>
+            </div>
+            <div class="stat">
+              <div class="k">Savings progress</div>
+              <div class="v" id="statSave">—</div>
+              <div class="progress" style="margin-top:9px"><div id="statSaveBar" style="width:0%"></div></div>
+              <div class="sub" id="statSaveSub">of your 2027 target</div>
+            </div>
+          </div>
+        </section>
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">⏳</span> Live Countdown</h2>
+          </div>
+          <div class="stat-grid" id="countGrid">
+            <div class="stat"><div class="k">Days</div><div class="v" id="cdD">—</div></div>
+            <div class="stat"><div class="k">Hours</div><div class="v" id="cdH">—</div></div>
+            <div class="stat"><div class="k">Minutes</div><div class="v" id="cdM">—</div></div>
+            <div class="stat"><div class="k">Seconds</div><div class="v" id="cdS">—</div></div>
+          </div>
+          <p class="hint" style="margin-top:12px;line-height:1.6">Start planning now — the people who set their goals in December are the ones still going in March. ✨</p>
+        </section>
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">🧭</span> Your Reset Checklist</h2>
+          </div>
+          <div class="list" id="resetList"></div>
+        </section>
+      </div>
+    </div>
+
+    <!-- GOALS -->
+    <div class="tabpage" id="page-goals">
+      <div class="grid">
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">🎯</span> My 2027 Goals</h2>
+            <span class="hint" id="goalCount"></span>
+          </div>
+          <label class="lbl" for="goalText">New goal</label>
+          <input type="text" id="goalText" placeholder="e.g. Save $5,000 for travel" maxlength="120">
+          <div class="row" style="margin-top:10px">
+            <div>
+              <label class="lbl" for="goalCat">Category</label>
+              <select id="goalCat">
+                <option value="health">💪 Health</option>
+                <option value="money">💰 Money</option>
+                <option value="career">💼 Career</option>
+                <option value="love">❤️ Relationships</option>
+                <option value="learn">📚 Learning</option>
+                <option value="fun">🎉 Fun</option>
+              </select>
+            </div>
+            <div style="display:flex;align-items:flex-end">
+              <button class="btn" id="goalAdd" style="width:100%">＋ Add goal</button>
+            </div>
+          </div>
+          <div class="list" id="goalList"></div>
+        </section>
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">💡</span> Goal ideas to steal</h2>
+          </div>
+          <div class="list">
+            <div class="item"><div class="item-body"><div class="item-text">Walk 8,000 steps a day</div><div class="item-meta">Tap “＋ Use” to add it to your list</div></div><button class="btn small ghost" data-idea="Walk 8,000 steps a day" data-cat="health">＋ Use</button></div>
+            <div class="item"><div class="item-body"><div class="item-text">Build a 3-month emergency fund</div><div class="item-meta">Tap “＋ Use” to add it to your list</div></div><button class="btn small ghost" data-idea="Build a 3-month emergency fund" data-cat="money">＋ Use</button></div>
+            <div class="item"><div class="item-body"><div class="item-text">Learn one new skill for work</div><div class="item-meta">Tap “＋ Use” to add it to your list</div></div><button class="btn small ghost" data-idea="Learn one new skill for work" data-cat="career">＋ Use</button></div>
+            <div class="item"><div class="item-body"><div class="item-text">Call family every Sunday</div><div class="item-meta">Tap “＋ Use” to add it to your list</div></div><button class="btn small ghost" data-idea="Call family every Sunday" data-cat="love">＋ Use</button></div>
+            <div class="item"><div class="item-body"><div class="item-text">Read 12 books this year</div><div class="item-meta">Tap “＋ Use” to add it to your list</div></div><button class="btn small ghost" data-idea="Read 12 books this year" data-cat="learn">＋ Use</button></div>
+            <div class="item"><div class="item-body"><div class="item-text">Take one real holiday</div><div class="item-meta">Tap “＋ Use” to add it to your list</div></div><button class="btn small ghost" data-idea="Take one real holiday" data-cat="fun">＋ Use</button></div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- HABITS -->
+    <div class="tabpage" id="page-habits">
+      <div class="grid">
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">🔥</span> Daily Habits</h2>
+            <span class="hint" id="habitTodayLine"></span>
+          </div>
+          <div class="row">
+            <div><input type="text" id="habitText" placeholder="e.g. Drink 2L water" maxlength="80"></div>
+            <div style="flex:0 0 auto;display:flex;align-items:stretch"><button class="btn" id="habitAdd">＋ Add</button></div>
+          </div>
+          <div class="list" id="habitList"></div>
+        </section>
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">📊</span> This Week</h2>
+            <span class="hint">last 7 days</span>
+          </div>
+          <div id="weekWrap"></div>
+          <p class="hint" style="margin-top:12px;line-height:1.6">A streak counts consecutive days you checked a habit. Miss a day and the streak restarts — that's the game. 🎮</p>
+        </section>
+      </div>
+    </div>
+
+    <!-- VISION -->
+    <div class="tabpage" id="page-vision">
+      <div class="grid">
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">🖼️</span> 2027 Vision Board</h2>
+            <span class="hint">what does your year look like?</span>
+          </div>
+          <label class="lbl">Pick an icon</label>
+          <div class="emoji-pick" id="emojiPick"></div>
+          <label class="lbl" for="visionText" style="margin-top:10px">Your word or affirmation</label>
+          <input type="text" id="visionText" placeholder="e.g. Debt-free by December" maxlength="60">
+          <div style="margin-top:10px"><button class="btn" id="visionAdd">＋ Pin to board</button></div>
+          <div class="board" id="visionBoard"></div>
+        </section>
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">✨</span> Manifestation prompts</h2>
+          </div>
+          <div class="list">
+            <div class="item"><div class="item-body"><div class="item-text">“By December 2027, I am…”</div><div class="item-meta">Finish the sentence on your board</div></div></div>
+            <div class="item"><div class="item-body"><div class="item-text">One word for your 2027</div><div class="item-meta">e.g. Freedom · Calm · Growth · Brave</div></div></div>
+            <div class="item"><div class="item-body"><div class="item-text">What will you say NO to?</div><div class="item-meta">Pin it — boundaries are goals too</div></div></div>
+            <div class="item"><div class="item-body"><div class="item-text">Your proudest moment, imagined</div><div class="item-meta">Describe it in present tense</div></div></div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- MONEY -->
+    <div class="tabpage" id="page-money">
+      <div class="grid">
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">💰</span> 2027 Savings Goal</h2>
+          </div>
+          <div class="row">
+            <div>
+              <label class="lbl" for="saveTarget">Year target ($)</label>
+              <input type="number" id="saveTarget" min="0" step="1" placeholder="5000">
+            </div>
+            <div>
+              <label class="lbl" for="saveAdd">Add savings ($)</label>
+              <input type="number" id="saveAdd" min="0" step="1" placeholder="100">
+            </div>
+          </div>
+          <div style="margin-top:10px"><button class="btn" id="saveBtn">＋ Log savings</button></div>
+          <div style="margin-top:16px">
+            <div class="card-head" style="margin-bottom:8px"><span class="hint" id="saveLine">Set a target to begin</span><span class="hint" id="savePct"></span></div>
+            <div class="progress" style="height:14px"><div id="saveBar" style="width:0%"></div></div>
+          </div>
+          <div class="list" id="saveLog"></div>
+        </section>
+        <section class="card">
+          <div class="card-head">
+            <h2><span class="ico">🧾</span> Monthly money check</h2>
+            <span class="hint">quick reset, once a month</span>
+          </div>
+          <div class="list">
+            <div class="item"><div class="item-body"><div class="item-text">Did my spending match my goals this month?</div></div></div>
+            <div class="item"><div class="item-body"><div class="item-text">One subscription to cancel</div><div class="item-meta">Small leaks sink savings</div></div></div>
+            <div class="item"><div class="item-body"><div class="item-text">Move savings on payday — first, not last</div><div class="item-meta">Pay yourself before the bills</div></div></div>
+            <div class="item"><div class="item-body"><div class="item-text">One money win to celebrate</div><div class="item-meta">Write it in Reflections →</div></div></div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- REFLECTIONS -->
+    <div class="tabpage" id="page-reflect">
+      <section class="card">
+        <div class="card-head">
+          <h2><span class="ico">📅</span> Monthly Reflections 2027</h2>
+          <span class="hint">2 minutes a month keeps the year on track</span>
+        </div>
+        <div class="month-grid" id="monthGrid"></div>
+      </section>
+    </div>
+  </main>
+</div>
+<div id="toast"></div>
+<script>
+(function(){
+"use strict";
+var KEY='nyrp2027_v1';
+var NEWYEAR=new Date(2027,0,1,0,0,0);
+
+function uid(){return 'x'+Math.random().toString(36).slice(2,9);}
+function todayStr(d){d=d||new Date();return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);}
+function addDays(base,n){var d=new Date(base);d.setDate(d.getDate()+n);return d;}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+
+function defaultState(){return {goals:[],habits:[],vision:[],target:0,saved:0,log:[],reflect:{}};}
+function load(){
+  try{
+    var raw=localStorage.getItem(KEY);
+    if(raw){var s=JSON.parse(raw);var d=defaultState();for(var k in d){if(s[k]!==undefined)d[k]=s[k];}return d;}
+  }catch(e){}
+  return defaultState();
+}
+var state=load();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+
+var toastT=null;
+function toast(msg){
+  var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('show');},2200);
+}
+
+/* ---------- tabs ---------- */
+function switchTab(name){
+  var pages=document.querySelectorAll('.tabpage');
+  for(var i=0;i<pages.length;i++)pages[i].classList.toggle('active',pages[i].id==='page-'+name);
+  var btns=document.querySelectorAll('.tab-btn');
+  for(var j=0;j<btns.length;j++)btns[j].classList.toggle('active',btns[j].getAttribute('data-tab')===name);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.getElementById('tabbar').addEventListener('click',function(e){
+  var b=e.target.closest('.tab-btn');if(b)switchTab(b.getAttribute('data-tab'));
+});
+
+/* ---------- countdown ---------- */
+function tick(){
+  var now=new Date(),diff=NEWYEAR-now;
+  var pill=document.getElementById('countPill');
+  if(diff<=0){
+    document.getElementById('cdD').textContent='0';document.getElementById('cdH').textContent='0';
+    document.getElementById('cdM').textContent='0';document.getElementById('cdS').textContent='0';
+    document.getElementById('statDays').textContent='0';
+    pill.textContent='🎆 Happy 2027 — go get it!';
+    return;
+  }
+  var d=Math.floor(diff/86400000),h=Math.floor(diff%86400000/3600000),
+      m=Math.floor(diff%3600000/60000),s=Math.floor(diff%60000/1000);
+  document.getElementById('cdD').textContent=d;document.getElementById('cdH').textContent=h;
+  document.getElementById('cdM').textContent=m;document.getElementById('cdS').textContent=s;
+  document.getElementById('statDays').textContent=d;
+  pill.textContent='🎆 '+d+' day'+(d===1?'':'s')+' to 2027';
+}
+setInterval(tick,1000);
+
+/* ---------- dashboard stats ---------- */
+function refreshStats(){
+  var gd=state.goals.filter(function(g){return g.done;}).length;
+  document.getElementById('statGoals').textContent=gd+'/'+state.goals.length;
+  document.getElementById('statGoalsBar').style.width=(state.goals.length?Math.round(gd/state.goals.length*100):0)+'%';
+  document.getElementById('statGoalSub').textContent='of '+state.goals.length+' 2027 goals';
+  var t=todayStr(),hd=state.habits.filter(function(h){return h.days.indexOf(t)>=0;}).length;
+  document.getElementById('statHabits').textContent=hd+'/'+state.habits.length;
+  var pct=state.target>0?Math.min(100,Math.round(state.saved/state.target*100)):0;
+  document.getElementById('statSave').textContent=pct+'%';
+  document.getElementById('statSaveBar').style.width=pct+'%';
+  document.getElementById('statSaveSub').textContent='of your $'+Number(state.target||0).toLocaleString()+' target';
+  renderChecklist();
+}
+function renderChecklist(){
+  var items=[
+    {label:'Set at least 3 goals for 2027',done:state.goals.length>=3,tab:'goals'},
+    {label:'Add your first daily habit',done:state.habits.length>0,tab:'habits'},
+    {label:'Pin 3 cards on your vision board',done:state.vision.length>=3,tab:'vision'},
+    {label:'Set a 2027 savings target',done:state.target>0,tab:'money'},
+    {label:'Write your January intention',done:!!(state.reflect[0]&&state.reflect[0].trim()),tab:'reflect'}
+  ];
+  var el=document.getElementById('resetList');el.innerHTML='';
+  items.forEach(function(it){
+    var div=document.createElement('div');div.className='item'+(it.done?' done':'');
+    div.innerHTML='<button class="item-check'+(it.done?' on':'')+'" aria-label="toggle">✓</button>'+
+      '<div class="item-body"><div class="item-text">'+esc(it.label)+'</div></div>';
+    div.querySelector('.item-check').addEventListener('click',function(){switchTab(it.tab);});
+    el.appendChild(div);
+  });
+}
+
+/* ---------- goals ---------- */
+var CATS={health:'💪 Health',money:'💰 Money',career:'💼 Career',love:'❤️ Relationships',learn:'📚 Learning',fun:'🎉 Fun'};
+function renderGoals(){
+  var el=document.getElementById('goalList');el.innerHTML='';
+  document.getElementById('goalCount').textContent=state.goals.length?state.goals.filter(function(g){return g.done;}).length+' of '+state.goals.length+' done':'';
+  if(!state.goals.length){el.innerHTML='<div class="empty">No goals yet — add your first one above. 🎯</div>';return;}
+  state.goals.forEach(function(g){
+    var div=document.createElement('div');div.className='item'+(g.done?' done':'');
+    div.innerHTML='<button class="item-check'+(g.done?' on':'')+'" aria-label="toggle">✓</button>'+
+      '<div class="item-body"><div class="item-text">'+esc(g.text)+'</div>'+
+      '<span class="chip chip-'+g.cat+'">'+(CATS[g.cat]||g.cat)+'</span></div>'+
+      '<button class="item-del" aria-label="delete">✕</button>';
+    div.querySelector('.item-check').addEventListener('click',function(){g.done=!g.done;save();renderGoals();refreshStats();if(g.done)toast('Goal done — 2027 you says thanks 🎉');});
+    div.querySelector('.item-del').addEventListener('click',function(){state.goals=state.goals.filter(function(x){return x.id!==g.id;});save();renderGoals();refreshStats();});
+    el.appendChild(div);
+  });
+}
+function addGoal(text,cat){
+  text=(text||'').trim();if(!text){toast('Type a goal first ✍️');return;}
+  state.goals.push({id:uid(),text:text.slice(0,120),cat:cat||'fun',done:false});
+  save();renderGoals();refreshStats();toast('Goal added 🎯');
+}
+document.getElementById('goalAdd').addEventListener('click',function(){
+  addGoal(document.getElementById('goalText').value,document.getElementById('goalCat').value);
+  document.getElementById('goalText').value='';
+});
+document.getElementById('goalText').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('goalAdd').click();});
+document.querySelectorAll('[data-idea]').forEach(function(b){
+  b.addEventListener('click',function(){addGoal(b.getAttribute('data-idea'),b.getAttribute('data-cat'));});
+});
+
+/* ---------- habits ---------- */
+function streak(h){
+  var n=0,d=new Date();
+  if(h.days.indexOf(todayStr(d))<0)d=addDays(d,-1);
+  while(h.days.indexOf(todayStr(d))>=0){n++;d=addDays(d,-1);}
+  return n;
+}
+function renderHabits(){
+  var el=document.getElementById('habitList');el.innerHTML='';
+  var t=todayStr();
+  document.getElementById('habitTodayLine').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});
+  if(!state.habits.length){el.innerHTML='<div class="empty">No habits yet — small daily wins compound. 🌱</div>';}
+  state.habits.forEach(function(h){
+    var done=h.days.indexOf(t)>=0,st=streak(h);
+    var div=document.createElement('div');div.className='item';
+    div.innerHTML='<button class="item-check'+(done?' on':'')+'" aria-label="toggle">✓</button>'+
+      '<div class="item-body habit-today"><div class="item-text" style="flex:1">'+esc(h.text)+'</div>'+
+      '<span class="habit-streak">🔥 '+st+' day'+(st===1?'':'s')+'</span></div>'+
+      '<button class="item-del" aria-label="delete">✕</button>';
+    div.querySelector('.item-check').addEventListener('click',function(){
+      var i=h.days.indexOf(t);
+      if(i>=0)h.days.splice(i,1);else h.days.push(t);
+      save();renderHabits();renderWeek();refreshStats();
+      if(i<0)toast('Habit done today 🔥');
+    });
+    div.querySelector('.item-del').addEventListener('click',function(){state.habits=state.habits.filter(function(x){return x.id!==h.id;});save();renderHabits();renderWeek();refreshStats();});
+    el.appendChild(div);
+  });
+}
+function renderWeek(){
+  var w=document.getElementById('weekWrap');w.innerHTML='';
+  if(!state.habits.length){w.innerHTML='<div class="empty">Add a habit to see your week here.</div>';return;}
+  var names=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  state.habits.forEach(function(h){
+    var title=document.createElement('div');title.className='hint';title.style.margin='12px 0 6px';title.textContent=h.text;
+    w.appendChild(title);
+    var grid=document.createElement('div');grid.className='week-grid';
+    for(var i=6;i>=0;i--){
+      var d=addDays(new Date(),-i),ds=todayStr(d);
+      var cell=document.createElement('div');
+      cell.className='week-day'+(h.days.indexOf(ds)>=0?' on':'')+(i===0?' today':'');
+      cell.innerHTML='<b>'+names[d.getDay()]+'</b>'+(d.getMonth()+1)+'/'+d.getDate();
+      grid.appendChild(cell);
+    }
+    w.appendChild(grid);
+  });
+}
+document.getElementById('habitAdd').addEventListener('click',function(){
+  var v=document.getElementById('habitText').value.trim();
+  if(!v){toast('Name your habit first ✍️');return;}
+  state.habits.push({id:uid(),text:v.slice(0,80),days:[]});
+  document.getElementById('habitText').value='';
+  save();renderHabits();renderWeek();refreshStats();toast('Habit added 🔥');
+});
+document.getElementById('habitText').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('habitAdd').click();});
+
+/* ---------- vision board ---------- */
+var EMOJIS=['🏡','🚗','✈️','💰','💪','📚','❤️','🎓','🏖️','🌟','🧘','🎨','👶','💍','🏆','🌱','🎸','📈'];
+var selEmoji=EMOJIS[0];
+var VCOLORS=['var(--gold-soft)','var(--rose-soft)','var(--teal-soft)','var(--violet-soft)','var(--lime-soft)'];
+function renderEmojiPick(){
+  var el=document.getElementById('emojiPick');el.innerHTML='';
+  EMOJIS.forEach(function(e){
+    var b=document.createElement('button');b.type='button';b.textContent=e;
+    if(e===selEmoji)b.classList.add('sel');
+    b.addEventListener('click',function(){selEmoji=e;renderEmojiPick();});
+    el.appendChild(b);
+  });
+}
+function renderVision(){
+  var el=document.getElementById('visionBoard');el.innerHTML='';
+  if(!state.vision.length){el.innerHTML='<div class="empty" style="grid-column:1/-1">Your board is blank — pin your first dream above. ✨</div>';return;}
+  state.vision.forEach(function(v,i){
+    var div=document.createElement('div');div.className='vcard';
+    div.style.background=VCOLORS[i%VCOLORS.length];
+    div.innerHTML='<button class="vdel" aria-label="remove">✕</button><div class="ve">'+v.emoji+'</div><div class="vt">'+esc(v.text)+'</div>';
+    div.querySelector('.vdel').addEventListener('click',function(){state.vision=state.vision.filter(function(x){return x.id!==v.id;});save();renderVision();refreshStats();});
+    el.appendChild(div);
+  });
+}
+document.getElementById('visionAdd').addEventListener('click',function(){
+  var v=document.getElementById('visionText').value.trim();
+  if(!v){toast('Add a word or affirmation first ✍️');return;}
+  state.vision.push({id:uid(),emoji:selEmoji,text:v.slice(0,60)});
+  document.getElementById('visionText').value='';
+  save();renderVision();refreshStats();toast('Pinned to your board ✨');
+});
+document.getElementById('visionText').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('visionAdd').click();});
+
+/* ---------- money ---------- */
+function renderMoney(){
+  var tgt=document.getElementById('saveTarget');
+  if(document.activeElement!==tgt)tgt.value=state.target||'';
+  var pct=state.target>0?Math.min(100,Math.round(state.saved/state.target*100)):0;
+  document.getElementById('saveBar').style.width=pct+'%';
+  document.getElementById('savePct').textContent=pct+'%';
+  document.getElementById('saveLine').textContent='$'+Number(state.saved).toLocaleString()+' saved of $'+Number(state.target||0).toLocaleString()+' target';
+  var el=document.getElementById('saveLog');el.innerHTML='';
+  if(!state.log.length){el.innerHTML='<div class="empty">No savings logged yet — every dollar counts. 💵</div>';return;}
+  state.log.slice().reverse().slice(0,12).forEach(function(en){
+    var div=document.createElement('div');div.className='item';
+    div.innerHTML='<div class="item-body"><div class="item-text">+$'+Number(en.amt).toLocaleString()+'</div><div class="item-meta">'+esc(en.date)+'</div></div>';
+    el.appendChild(div);
+  });
+}
+document.getElementById('saveTarget').addEventListener('change',function(){
+  state.target=Math.max(0,Math.round(Number(this.value)||0));save();renderMoney();refreshStats();
+});
+document.getElementById('saveBtn').addEventListener('click',function(){
+  var amt=Math.round(Number(document.getElementById('saveAdd').value)||0);
+  if(amt<=0){toast('Enter an amount first 💵');return;}
+  state.saved+=amt;
+  state.log.push({amt:amt,date:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})});
+  document.getElementById('saveAdd').value='';
+  save();renderMoney();refreshStats();toast('+$'+amt.toLocaleString()+' saved 🎉');
+});
+
+/* ---------- reflections ---------- */
+var MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+var PROMPTS=[
+  'What is your ONE word for 2027, and why?',
+  'What habit will make the biggest difference this year?',
+  'What are you most grateful for right now?',
+  'What is one thing you will do differently this quarter?',
+  'Who do you want to spend more time with?',
+  'Halfway check: which goal needs more attention?',
+  'What small win are you proud of this month?',
+  'What is draining your energy? What will you change?',
+  'What skill do you want to be better at by December?',
+  'What are you looking forward to in the final stretch?',
+  'What will you finish before the year ends?',
+  'Write a letter to yourself: how was 2027?'
+];
+var saveDeb=null;
+function renderReflect(){
+  var g=document.getElementById('monthGrid');g.innerHTML='';
+  var cur=new Date().getFullYear()===2027?new Date().getMonth():-1;
+  MONTHS.forEach(function(m,i){
+    var div=document.createElement('div');div.className='month-card'+(i===cur?' current':'');
+    div.innerHTML='<h3>'+m+' 2027'+(i===cur?' <span class="chip chip-money">now</span>':'')+'</h3>'+
+      '<div class="prompt">“'+PROMPTS[i]+'”</div>'+
+      '<textarea data-m="'+i+'" placeholder="Write a few honest lines…">'+esc(state.reflect[i]||'')+'</textarea>';
+    g.appendChild(div);
+  });
+  g.querySelectorAll('textarea').forEach(function(t){
+    t.addEventListener('input',function(){
+      var m=t.getAttribute('data-m');
+      clearTimeout(saveDeb);
+      saveDeb=setTimeout(function(){state.reflect[m]=t.value;save();refreshStats();},500);
+    });
+  });
+}
+
+/* ---------- init ---------- */
+document.getElementById('todayLine').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+renderEmojiPick();renderGoals();renderHabits();renderWeek();renderVision();renderMoney();renderReflect();refreshStats();tick();
+})();
+</script>
+</body>
+</html>
