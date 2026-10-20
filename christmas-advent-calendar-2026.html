@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10241a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Advent Calendar 2026">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='42' fill='%2310241a'/%3E%3Ctext x='90' y='125' font-size='96' text-anchor='middle'%3E%F0%9F%8E%84%3C/text%3E%3C/svg%3E">
+<title>Christmas Advent Calendar 2026</title>
+<style>
+:root{
+  --bg0:#0a1710;
+  --bg1:#10241a;
+  --card:#14261c;
+  --card2:#182e22;
+  --ink:#f6f1e6;
+  --muted:#cbbfae;
+  --faint:#8a9a8e;
+  --line:rgba(255,255,255,.09);
+  --gold:#f0b429;
+  --gold-soft:rgba(240,180,41,.14);
+  --red:#d6455b;
+  --red-soft:rgba(214,69,91,.14);
+  --pine:#2e8b5f;
+  --green:#7bd88f;
+  --green-soft:rgba(123,216,143,.14);
+  --violet:#b388ff;
+  --violet-soft:rgba(179,136,255,.14);
+  --radius:18px;
+  --shadow:0 12px 32px rgba(0,0,0,.35);
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font);
+  color:var(--ink);
+  background:
+    radial-gradient(1100px 500px at 85% -5%, rgba(240,180,41,.10), transparent 60%),
+    radial-gradient(900px 480px at -10% 10%, rgba(214,69,91,.09), transparent 60%),
+    radial-gradient(700px 600px at 50% 110%, rgba(46,139,95,.10), transparent 60%),
+    linear-gradient(180deg,var(--bg1),var(--bg0));
+  min-height:100vh;
+  padding:26px 22px 60px;
+}
+.wrap{max-width:1180px;margin:0 auto}
+
+/* ---------- sticky header ---------- */
+.sticky-head{position:sticky;top:14px;z-index:20}
+.topbar{
+  display:flex;justify-content:space-between;align-items:center;gap:14px;
+  padding:14px 18px;flex-wrap:wrap;
+  background:rgba(20,38,28,.82);border:1px solid var(--line);
+  border-radius:var(--radius) var(--radius) 0 0;box-shadow:var(--shadow);
+  backdrop-filter:blur(8px);
+}
+.brand{display:flex;align-items:center;gap:13px}
+.logo{
+  width:46px;height:46px;border-radius:14px;flex:0 0 46px;
+  background:conic-gradient(from 200deg,var(--gold),var(--red),var(--pine),var(--gold));
+  display:flex;align-items:center;justify-content:center;
+  font-size:25px;
+  box-shadow:0 4px 14px rgba(240,180,41,.35);
+}
+.brand h1{font-size:21px;letter-spacing:.2px}
+.brand h1 .accent{background:linear-gradient(90deg,var(--gold),var(--red));-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand p{font-size:13px;color:var(--muted);margin-top:2px}
+.top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.count-pill{
+  display:flex;align-items:center;gap:7px;
+  background:var(--gold-soft);border:1px solid rgba(240,180,41,.35);
+  color:var(--gold);font-weight:700;font-size:14px;
+  padding:9px 14px;border-radius:999px;white-space:nowrap;
+}
+.shop-btn{
+  font-size:13px;font-weight:700;text-decoration:none;white-space:nowrap;
+  padding:9px 14px;border-radius:999px;
+  border:1px solid var(--line);color:var(--ink);background:rgba(255,255,255,.04);
+  transition:border-color .15s ease, background .15s ease;
+}
+.shop-btn:hover{border-color:rgba(240,180,41,.55);background:rgba(240,180,41,.08)}
+.tabbar{
+  display:flex;gap:8px;padding:10px 14px;margin-bottom:22px;
+  background:rgba(20,38,28,.82);border:1px solid var(--line);border-top:none;
+  border-radius:0 0 var(--radius) var(--radius);box-shadow:var(--shadow);
+  backdrop-filter:blur(8px);
+  overflow-x:auto;
+}
+.tab-btn{
+  flex:1 0 auto;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;
+  padding:10px 14px;border-radius:12px;border:1px solid transparent;
+  background:transparent;color:var(--muted);white-space:nowrap;
+  transition:all .16s ease;
+}
+.tab-btn:hover{color:var(--ink);background:rgba(255,255,255,.05)}
+.tab-btn.active{background:var(--gold-soft);border-color:rgba(240,180,41,.45);color:var(--gold)}
+
+/* ---------- generic ---------- */
+.btn{
+  font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;
+  border:none;border-radius:12px;padding:10px 16px;
+  background:linear-gradient(135deg,var(--gold),var(--red));color:#241206;
+  box-shadow:0 4px 14px rgba(214,69,91,.30);
+  transition:transform .12s ease, box-shadow .12s ease;
+}
+.btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(214,69,91,.38)}
+.btn:active{transform:scale(.96)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.btn.ghost:hover{border-color:rgba(240,180,41,.5);box-shadow:none}
+.btn.small{padding:7px 12px;font-size:13px;border-radius:10px}
+.btn.danger{background:transparent;color:var(--red);border:1px solid rgba(214,69,91,.5);box-shadow:none}
+.btn.danger:hover{border-color:var(--red);box-shadow:none}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+.card{
+  background:linear-gradient(180deg,var(--card2),var(--card));
+  border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:22px;margin-bottom:20px;
+}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px;flex-wrap:wrap}
+.card-head h2{font-size:16px;letter-spacing:.4px;display:flex;align-items:center;gap:9px}
+.hint{font-size:13px;color:var(--faint);line-height:1.5}
+input[type=text],textarea,select{
+  font-family:var(--font);font-size:14px;color:var(--ink);
+  background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:10px;
+  padding:10px 12px;width:100%;
+}
+input[type=text]:focus,textarea:focus{outline:none;border-color:rgba(240,180,41,.55)}
+textarea{resize:vertical;min-height:76px}
+label.f{display:block;font-size:13px;font-weight:700;color:var(--muted);margin:12px 0 6px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.tabpane{display:none}
+.tabpane.active{display:block}
+
+/* ---------- doors ---------- */
+.door-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:12px;margin-top:6px}
+.door{
+  font-family:var(--font);cursor:pointer;position:relative;
+  border-radius:16px;border:1px solid var(--line);
+  background:linear-gradient(180deg,var(--card2),var(--card));
+  box-shadow:var(--shadow);color:var(--ink);
+  aspect-ratio:1/1.12;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  transition:transform .14s ease, border-color .14s ease;
+  padding:8px;
+}
+.door:hover{transform:translateY(-3px);border-color:rgba(240,180,41,.5)}
+.door .num{font-size:24px;font-weight:800;letter-spacing:.5px}
+.door .em{font-size:26px}
+.door.locked{opacity:.55;cursor:not-allowed;filter:grayscale(.5)}
+.door.locked:hover{transform:none;border-color:var(--line)}
+.door.opened{border-color:rgba(123,216,143,.55);background:linear-gradient(180deg,rgba(123,216,143,.12),var(--card))}
+.door.today{border-color:rgba(240,180,41,.6);box-shadow:0 0 0 2px rgba(240,180,41,.25),var(--shadow)}
+.door .tick{position:absolute;top:7px;right:9px;font-size:14px;color:var(--green)}
+.planbar{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  margin:16px 0 4px;padding:12px 16px;border-radius:14px;
+  background:var(--violet-soft);border:1px solid rgba(179,136,255,.35);
+  font-size:13.5px;color:var(--muted);
+}
+.switch{position:relative;width:46px;height:26px;flex:0 0 46px;cursor:pointer}
+.switch input{opacity:0;width:0;height:0}
+.sl{position:absolute;inset:0;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid var(--line);transition:.18s}
+.sl:before{content:"";position:absolute;width:18px;height:18px;left:3px;top:3px;border-radius:50%;background:var(--muted);transition:.18s}
+.switch input:checked + .sl{background:rgba(179,136,255,.4);border-color:rgba(179,136,255,.6)}
+.switch input:checked + .sl:before{transform:translateX(20px);background:var(--violet)}
+
+/* ---------- activities ---------- */
+.act{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--line)}
+.act:last-child{border-bottom:none}
+.act .em{font-size:30px;flex:0 0 40px;text-align:center}
+.act .tx{flex:1}
+.act .tx b{font-size:15px}
+.act .tx p{font-size:13px;color:var(--muted);margin-top:3px;line-height:1.5}
+.act .day{font-size:12px;font-weight:800;color:var(--gold);letter-spacing:.6px}
+
+/* ---------- modal / toast ---------- */
+.modal-ov{
+  position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;
+  background:rgba(4,10,7,.72);backdrop-filter:blur(4px);padding:18px;
+}
+.modal-ov.show{display:flex}
+.modal{
+  width:100%;max-width:520px;max-height:88vh;overflow-y:auto;
+  background:linear-gradient(180deg,var(--card2),var(--card));
+  border:1px solid rgba(240,180,41,.35);border-radius:20px;box-shadow:var(--shadow);
+  padding:26px;position:relative;
+  animation:pop .18s ease;
+}
+@keyframes pop{from{transform:scale(.94);opacity:0}to{transform:scale(1);opacity:1}}
+.modal .mday{font-size:13px;font-weight:800;color:var(--gold);letter-spacing:1px}
+.modal h3{font-size:22px;margin:6px 0 4px}
+.modal .mem{font-size:44px;margin:8px 0}
+.modal p.desc{font-size:14.5px;color:var(--muted);line-height:1.6;margin-bottom:6px}
+.mclose{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--faint);font-size:22px;cursor:pointer}
+.mclose:hover{color:var(--ink)}
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);z-index:60;
+  background:#1d3327;border:1px solid rgba(240,180,41,.4);color:var(--ink);
+  padding:12px 20px;border-radius:999px;font-size:14px;font-weight:600;
+  opacity:0;pointer-events:none;transition:all .25s ease;box-shadow:var(--shadow);
+  max-width:90vw;text-align:center;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ---------- progress ---------- */
+.pbar{height:14px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;margin:10px 0 4px}
+.pbar > div{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--gold),var(--red));transition:width .4s ease}
+.stat{display:flex;gap:12px;flex-wrap:wrap;margin:14px 0}
+.stat .s{flex:1;min-width:120px;background:rgba(0,0,0,.22);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center}
+.stat .s .v{font-size:26px;font-weight:800;color:var(--gold)}
+.stat .s .l{font-size:12px;color:var(--faint);margin-top:4px}
+
+/* ---------- prep checklist ---------- */
+.chk{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.chk:last-child{border-bottom:none}
+.chk input{width:20px;height:20px;margin-top:2px;accent-color:var(--gold);cursor:pointer}
+.chk.done .t{color:var(--faint);text-decoration:line-through}
+.chk .t{font-size:14.5px;line-height:1.55}
+.chk .t small{display:block;color:var(--faint);font-size:12.5px;margin-top:2px}
+
+/* ---------- guide ---------- */
+.guide-ol{margin:6px 0 0 20px;font-size:14.5px;line-height:1.75;color:var(--muted)}
+.guide-ol li{margin-bottom:10px}
+.guide-ol b{color:var(--ink)}
+
+#printView{display:none}
+@media print{
+  body{background:#fff;color:#111;padding:0}
+  .sticky-head,.tabbar,.no-print,.modal-ov,.toast{display:none!important}
+  #printView{display:block!important}
+  #printView h1{font-size:22px;margin-bottom:10px}
+  #printView .pa{margin-bottom:8px;font-size:13px}
+}
+@media(max-width:640px){
+  body{padding:16px 12px 48px}
+  .brand h1{font-size:18px}
+  .door-grid{grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:9px}
+  .door .num{font-size:20px}
+  .top-actions{width:100%}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="sticky-head">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">🎄</div>
+        <div>
+          <h1>Christmas Advent <span class="accent">Calendar 2026</span></h1>
+          <p>25 days of family magic — no printing needed</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <div class="count-pill" id="countPill">🎄 —</div>
+        <a class="shop-btn" href="https://digieman.etsy.com" target="_blank" rel="noopener">🛍️ Etsy shop</a>
+        <a class="shop-btn" href="https://digieman.gumroad.com" target="_blank" rel="noopener">💎 Gumroad</a>
+      </div>
+    </div>
+    <div class="tabbar" id="tabbar">
+      <button class="tab-btn active" data-tab="doors">🚪 Doors</button>
+      <button class="tab-btn" data-tab="activities">⭐ Activities</button>
+      <button class="tab-btn" data-tab="notes">📝 Notes</button>
+      <button class="tab-btn" data-tab="progress">🔥 Progress</button>
+      <button class="tab-btn" data-tab="prep">✅ Prep list</button>
+      <button class="tab-btn" data-tab="guide">ℹ️ How to use</button>
+    </div>
+  </div>
+
+  <main>
+    <section class="tabpane active" id="tab-doors">
+      <div class="card">
+        <div class="card-head">
+          <h2>🚪 The 25 Doors</h2>
+          <span class="hint" id="doorHint"></span>
+        </div>
+        <p class="hint" style="margin-bottom:14px">A new door unlocks every morning from <b style="color:var(--ink)">December 1</b>. Tap a door to reveal the day's family activity, add your notes, and mark it done. Everything saves on your device automatically.</p>
+        <div class="planbar no-print">
+          <span>✨ <b style="color:var(--ink)">Planning mode</b> — peek at every door early so you can shop &amp; prepare before December 1.</span>
+          <label class="switch"><input type="checkbox" id="planToggle"><span class="sl"></span></label>
+        </div>
+        <div class="door-grid" id="doorGrid"></div>
+      </div>
+    </section>
+
+    <section class="tabpane" id="tab-activities">
+      <div class="card">
+        <div class="card-head"><h2>⭐ 25 Family Activities</h2></div>
+        <p class="hint" style="margin-bottom:6px">One cozy activity for each day, Dec 1–25. Tap <b style="color:var(--ink)">Edit</b> to make any day your own — swap in your family's traditions.</p>
+        <div id="actList"></div>
+      </div>
+    </section>
+
+    <section class="tabpane" id="tab-notes">
+      <div class="card">
+        <div class="card-head"><h2>📝 My December Notes</h2></div>
+        <p class="hint" style="margin-bottom:6px">Notes you add inside each door appear here — a little diary of your family's December.</p>
+        <div id="notesList"></div>
+      </div>
+    </section>
+
+    <section class="tabpane" id="tab-progress">
+      <div class="card">
+        <div class="card-head"><h2>🔥 December Progress</h2></div>
+        <div class="stat">
+          <div class="s"><div class="v" id="stOpened">0</div><div class="l">doors opened</div></div>
+          <div class="s"><div class="v" id="stStreak">0</div><div class="l">day streak</div></div>
+          <div class="s"><div class="v" id="stLeft">25</div><div class="l">days to go</div></div>
+        </div>
+        <div class="pbar"><div id="progBar" style="width:0%"></div></div>
+        <p class="hint" id="progHint"></p>
+        <div class="row no-print" style="margin-top:16px">
+          <button class="btn ghost" id="exportBtn">⬇️ Export my December (JSON)</button>
+          <button class="btn ghost" id="printBtn">🖨️ Print activity list</button>
+          <button class="btn danger" id="resetBtn">Reset everything</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="tabpane" id="tab-prep">
+      <div class="card">
+        <div class="card-head"><h2>✅ Before December 1 — Prep List</h2></div>
+        <p class="hint" style="margin-bottom:6px">Advent starts December 1 — buyers should finish this list in November so day 1 is pure magic, zero stress.</p>
+        <div id="prepList"></div>
+      </div>
+    </section>
+
+    <section class="tabpane" id="tab-guide">
+      <div class="card">
+        <div class="card-head"><h2>ℹ️ How to use your advent calendar</h2></div>
+        <ol class="guide-ol">
+          <li><b>Finish the Prep list in November</b> — gather treats, check the ✅ Prep list tab, and edit any activities (⭐ Activities tab) to fit your family's traditions.</li>
+          <li><b>From December 1, open one door each morning</b> — tap the 🚪 Doors tab, open today's door, and read the family activity together (breakfast table works perfectly).</li>
+          <li><b>Do the activity, then mark it done</b> — tap "Mark as done ✓" inside the door. Your streak grows each consecutive day — kids love keeping it alive.</li>
+          <li><b>Jot a note or memory</b> — each door has a notes box. One line a day ("Mia loved the snowflake walk ❄️") becomes your family's December diary.</li>
+          <li><b>Planning ahead?</b> — switch on ✨ Planning mode on the Doors tab to peek at all 25 days early and shop for anything you need.</li>
+          <li><b>Keep it on your phone</b> — use your browser's "Add to Home Screen" so the calendar is one tap away every morning. Your data stays on your device — no account, no printing.</li>
+        </ol>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal-ov" id="doorModalOv">
+    <div class="modal">
+      <button class="mclose" id="modalClose" aria-label="Close">✕</button>
+      <div class="mday" id="mDay"></div>
+      <h3 id="mTitle"></h3>
+      <div class="mem" id="mEmoji"></div>
+      <p class="desc" id="mDesc"></p>
+      <label class="f" for="mNote">📝 Our memory of this day</label>
+      <textarea id="mNote" placeholder="One line is enough — e.g. &quot;Dad burned the first batch 😄&quot;"></textarea>
+      <div class="row" style="margin-top:14px">
+        <button class="btn" id="mDone">Mark as done ✓</button>
+        <button class="btn ghost" id="mSave">Save note</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <div id="printView"></div>
+</div>
+<script>
+(function(){
+"use strict";
+var LS_KEY = "digieman-advent-calendar-2026-v1";
+var CHRISTMAS = new Date(2026, 11, 25, 0, 0, 0); // Dec 25 2026
+
+var DEFAULT_ACTS = [
+  {e:"🍪", t:"Bake Christmas cookies", d:"Pick one simple recipe and let everyone decorate their own. Wonky icing is mandatory."},
+  {e:"✉️", t:"Write wish lists & letters", d:"Everyone writes what they hope for — and one kind wish for someone else in the family."},
+  {e:"🎬", t:"Christmas movie + cocoa night", d:"Blankets, hot chocolate, and one classic film. Phones stay in another room."},
+  {e:"🚗", t:"Christmas lights drive", d:"Pile into the car with warm drinks and find the brightest street in town."},
+  {e:"❄️", t:"Paper snowflake afternoon", d:"Fold, snip, unfold — tape them to the windows. Little kids can do this one solo."},
+  {e:"🎁", t:"Donate a toy", d:"Each person picks one good toy to give away. Drop it at a donation box together."},
+  {e:"🏠", t:"Gingerbread house build", d:"Kit or homemade — the roof will slide, the candy will disappear, it will be perfect."},
+  {e:"📞", t:"Call someone you miss", d:"Grandparents, an old friend, anyone far away. A 10-minute call counts double in December."},
+  {e:"🎨", t:"Make homemade ornaments", d:"Salt dough, pinecones, or paper stars — one ornament per person for the tree."},
+  {e:"🛋️", t:"Christmas pajama party", d:"New (or oldest) pajamas, popcorn, and breakfast-for-dinner. No one gets dressed today."},
+  {e:"🤫", t:"Secret kindness mission", d:"Do one secret kind thing for a neighbor — a note, cookies on the doorstep, shoveled path."},
+  {e:"📖", t:"Read a Christmas story", d:"Take turns reading aloud. One chapter or one picture book — snuggled up, lights low."},
+  {e:"🌲", t:"Ornament night", d:"Each person hangs one special ornament and tells the story behind it."},
+  {e:"☕", t:"Hot chocolate bar", d:"Mugs out, toppings lined up: marshmallows, candy canes, whipped cream, sprinkles."},
+  {e:"🥾", t:"Winter nature walk", d:"Boots on. Collect pinecones, spot animal tracks, breathe the cold air."},
+  {e:"💌", t:"Thank-you card writing", d:"Write cards for teachers, mail carriers, anyone who made your year better."},
+  {e:"🎶", t:"Christmas dance party", d:"Playlist on, volume up, 20 minutes of extremely unserious dancing."},
+  {e:"🍿", t:"Popcorn garland craft", d:"String popcorn and cranberries for the tree. Eat one for every three you string."},
+  {e:"🌅", t:"Sunset cocoa walk", d:"Catch the early winter sunset with a thermos. Notice how quiet everything gets."},
+  {e:"🧩", t:"Family puzzle night", d:"Dump 500 pieces on the table and work it together. No screens allowed at the table."},
+  {e:"🦌", t:"Make reindeer food", d:"Oats + glitter (biodegradable!) in little bags, ready to sprinkle on Christmas Eve."},
+  {e:"📸", t:"Silly Christmas photo", d:"Timer on, everyone jumps / pulls a face / wears tinsel. Frame the best one."},
+  {e:"🎀", t:"Wrap one gift with love", d:"Pick the gift you're most excited to give and wrap it beautifully together."},
+  {e:"🥛", t:"Cookies & milk for Santa", d:"Set out the plate tonight. Write Santa a thank-you note for the reindeer too."},
+  {e:"🎄", t:"Merry Christmas!", d:"Open presents slowly, one at a time. End the day sharing what you're each grateful for."}
+];
+
+var PREP = [
+  {t:"Bookmark this calendar on your phone's home screen", s:"One tap every morning — no digging through tabs."},
+  {t:"Skim all 25 activities in ⭐ Activities", s:"Swap any that don't fit your family — make it yours before December."},
+  {t:"Stock a treat box for 25 days", s:"Small chocolates, stickers, or notes — one surprise per door if you like."},
+  {t:"Buy cookie & gingerbread ingredients", s:"Flour, icing sugar, sprinkles — December baking days sneak up fast."},
+  {t:"Plan one big outing", s:"Lights drive, market visit, or show — book tickets now before they sell out."},
+  {t:"Pick your donation toys", s:"Declutter before the new gifts arrive — one bag ready by Dec 6."},
+  {t:"Charge the camera & clear phone storage", s:"You'll want the silly Christmas photo on Dec 22."}
+];
+
+function blankState(){
+  return { opened:{}, notes:{}, acts:DEFAULT_ACTS.map(function(a){return {e:a.e,t:a.t,d:a.d};}), prep:{}, planning:false };
+}
+function load(){
+  try{
+    var raw = localStorage.getItem(LS_KEY);
+    if(!raw) return blankState();
+    var s = JSON.parse(raw);
+    if(!s.acts || s.acts.length !== 25) s.acts = blankState().acts;
+    if(!s.opened) s.opened = {};
+    if(!s.notes) s.notes = {};
+    if(!s.prep) s.prep = {};
+    return s;
+  }catch(e){ return blankState(); }
+}
+var S = load();
+function save(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(S)); }catch(e){} }
+
+function decStart(day){ return new Date(2026, 11, day, 0, 0, 0); }
+function nowMs(){ return Date.now(); }
+function isUnlocked(day){
+  if(S.planning) return true;
+  return nowMs() >= decStart(day).getTime();
+}
+function isToday(day){
+  var n = new Date();
+  return n.getFullYear()===2026 && n.getMonth()===11 && n.getDate()===day;
+}
+function dayLabel(day){
+  var names=["","Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+  var dt = new Date(2026, 11, day);
+  var dow = dt.getDay(); // 0=Sun
+  var map=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  return map[dow] + ", Dec " + day;
+}
+
+var toastT=null;
+function toast(msg){
+  var el=document.getElementById("toast");
+  el.textContent=msg; el.classList.add("show");
+  clearTimeout(toastT);
+  toastT=setTimeout(function(){ el.classList.remove("show"); },2600);
+}
+
+/* ---------- tabs ---------- */
+var tabbtns = document.querySelectorAll("#tabbar .tab-btn");
+tabbtns.forEach(function(b){
+  b.addEventListener("click", function(){
+    tabbtns.forEach(function(x){x.classList.remove("active");});
+    b.classList.add("active");
+    document.querySelectorAll(".tabpane").forEach(function(p){p.classList.remove("active");});
+    document.getElementById("tab-"+b.dataset.tab).classList.add("active");
+  });
+});
+
+/* ---------- doors ---------- */
+var doorGrid = document.getElementById("doorGrid");
+var doorHint = document.getElementById("doorHint");
+var currentDoor = 0;
+
+function openedCount(){ return Object.keys(S.opened).filter(function(k){return S.opened[k];}).length; }
+
+function renderDoors(){
+  doorGrid.innerHTML="";
+  var n = new Date();
+  var inSeason = (n.getFullYear()===2026 && n.getMonth()===11) || n > CHRISTMAS;
+  var unlockedN = 0;
+  for(var day=1; day<=25; day++){
+    (function(day){
+      var un = isUnlocked(day);
+      if(un) unlockedN++;
+      var opened = !!S.opened[day];
+      var a = S.acts[day-1];
+      var d = document.createElement("button");
+      d.className = "door" + (un?"":" locked") + (opened?" opened":"") + ((un && !opened && isToday(day))?" today":"");
+      d.innerHTML = (opened?'<span class="tick">✓</span>':"") +
+        '<span class="num">'+day+'</span>' +
+        '<span class="em">'+(un? a.e : "🔒")+'</span>';
+      d.setAttribute("aria-label","Door "+day+(un?"":" (locked)"));
+      d.addEventListener("click", function(){
+        if(!isUnlocked(day)){ toast("🔒 Door "+day+" opens on December "+day+" 🎄"); return; }
+        openModal(day);
+      });
+      doorGrid.appendChild(d);
+    })(day);
+  }
+  if(S.planning){
+    doorHint.textContent = "✨ Planning mode ON — all doors peekable";
+  } else if(inSeason && n <= CHRISTMAS){
+    doorHint.textContent = unlockedN + " of 25 doors unlocked";
+  } else if(n > CHRISTMAS){
+    doorHint.textContent = "🎄 Merry Christmas — all doors open!";
+  } else {
+    doorHint.textContent = "Doors unlock from December 1 — or switch on ✨ Planning mode";
+  }
+}
+
+/* ---------- modal ---------- */
+var ov = document.getElementById("doorModalOv");
+function openModal(day){
+  currentDoor = day;
+  var a = S.acts[day-1];
+  document.getElementById("mDay").textContent = "🚪 DOOR " + day + " · " + dayLabel(day).toUpperCase();
+  document.getElementById("mTitle").textContent = a.t;
+  document.getElementById("mEmoji").textContent = a.e;
+  document.getElementById("mDesc").textContent = a.d;
+  document.getElementById("mNote").value = S.notes[day] || "";
+  document.getElementById("mDone").textContent = S.opened[day] ? "Done ✓ (tap to undo)" : "Mark as done ✓";
+  ov.classList.add("show");
+}
+function closeModal(){ ov.classList.remove("show"); currentDoor=0; }
+document.getElementById("modalClose").addEventListener("click", closeModal);
+ov.addEventListener("click", function(e){ if(e.target===ov) closeModal(); });
+document.addEventListener("keydown", function(e){ if(e.key==="Escape") closeModal(); });
+document.getElementById("mSave").addEventListener("click", function(){
+  if(!currentDoor) return;
+  var v = document.getElementById("mNote").value.trim();
+  if(v) S.notes[currentDoor]=v; else delete S.notes[currentDoor];
+  save(); renderNotes(); renderProgress();
+  toast("📝 Note saved");
+});
+document.getElementById("mDone").addEventListener("click", function(){
+  if(!currentDoor) return;
+  if(S.opened[currentDoor]){ delete S.opened[currentDoor]; toast("Door "+currentDoor+" unmarked"); }
+  else{ S.opened[currentDoor]=true; toast("🎉 Door "+currentDoor+" done!"); }
+  save(); renderDoors(); renderProgress();
+  closeModal();
+});
+
+/* ---------- activities ---------- */
+function renderActivities(){
+  var box = document.getElementById("actList");
+  box.innerHTML="";
+  S.acts.forEach(function(a,i){
+    var day=i+1;
+    var div=document.createElement("div");
+    div.className="act";
+    div.innerHTML =
+      '<div class="em">'+a.e+'</div>'+
+      '<div class="tx"><div class="day">DEC '+day+'</div><b>'+escapeHtml(a.t)+'</b><p>'+escapeHtml(a.d)+'</p></div>'+
+      '<div><button class="btn ghost small" data-edit="'+i+'">Edit</button></div>';
+    box.appendChild(div);
+  });
+  box.querySelectorAll("[data-edit]").forEach(function(btn){
+    btn.addEventListener("click", function(){ editActivity(parseInt(btn.dataset.edit,10), btn); });
+  });
+}
+function editActivity(i, btn){
+  var a = S.acts[i];
+  var wrap = btn.closest(".act").querySelector(".tx");
+  wrap.innerHTML =
+    '<div class="day">DEC '+(i+1)+'</div>'+
+    '<label class="f">Emoji</label><input type="text" id="ea-e" value="'+escapeAttr(a.e)+'" maxlength="4">'+
+    '<label class="f">Title</label><input type="text" id="ea-t" value="'+escapeAttr(a.t)+'">'+
+    '<label class="f">Description</label><textarea id="ea-d">'+escapeHtml(a.d)+'</textarea>'+
+    '<div class="row" style="margin-top:10px"><button class="btn small" id="ea-save">Save</button>'+
+    '<button class="btn ghost small" id="ea-cancel">Cancel</button></div>';
+  wrap.querySelector("#ea-save").addEventListener("click", function(){
+    var e=wrap.querySelector("#ea-e").value.trim()||"⭐";
+    var t=wrap.querySelector("#ea-t").value.trim()||("Day "+(i+1));
+    var d=wrap.querySelector("#ea-d").value.trim();
+    S.acts[i]={e:e,t:t,d:d}; save();
+    renderActivities(); renderDoors();
+    toast("⭐ Day "+(i+1)+" updated");
+  });
+  wrap.querySelector("#ea-cancel").addEventListener("click", renderActivities);
+}
+function escapeHtml(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function escapeAttr(s){ return escapeHtml(s).replace(/"/g,"&quot;"); }
+
+/* ---------- notes ---------- */
+function renderNotes(){
+  var box=document.getElementById("notesList");
+  var days=Object.keys(S.notes).map(Number).sort(function(a,b){return a-b;});
+  if(!days.length){ box.innerHTML='<p class="hint">No notes yet — open a door and write your first December memory. 📝</p>'; return; }
+  box.innerHTML="";
+  days.forEach(function(day){
+    var a=S.acts[day-1];
+    var div=document.createElement("div");
+    div.className="act";
+    div.innerHTML='<div class="em">'+a.e+'</div><div class="tx"><div class="day">DEC '+day+' · '+escapeHtml(a.t)+'</div><p style="color:var(--ink)">“'+escapeHtml(S.notes[day])+'”</p></div>';
+    box.appendChild(div);
+  });
+}
+
+/* ---------- progress ---------- */
+function calcStreak(){
+  var n=new Date();
+  var startDay;
+  if(n.getFullYear()===2026 && n.getMonth()===11 && n.getDate()>=1 && n.getDate()<=25){
+    startDay = S.opened[n.getDate()] ? n.getDate() : n.getDate()-1;
+  } else if(n > CHRISTMAS){ startDay = 25; }
+  else { startDay = 0; }
+  var s=0;
+  for(var d=startDay; d>=1; d--){ if(S.opened[d]) s++; else break; }
+  return s;
+}
+function renderProgress(){
+  var oc=openedCount();
+  document.getElementById("stOpened").textContent=oc;
+  document.getElementById("stStreak").textContent=calcStreak();
+  document.getElementById("stLeft").textContent=25-oc;
+  document.getElementById("progBar").style.width=(oc/25*100)+"%";
+  document.getElementById("progHint").textContent =
+    oc===0 ? "Open your first door on December 1 to start the magic. 🎄" :
+    oc===25 ? "🎉 All 25 doors opened — what a December! Merry Christmas!" :
+    oc+" of 25 doors opened — "+(25-oc)+" magical days still ahead. ✨";
+}
+document.getElementById("exportBtn").addEventListener("click", function(){
+  var blob=new Blob([JSON.stringify(S,null,2)],{type:"application/json"});
+  var a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="my-december-2026.json";
+  document.body.appendChild(a); a.click(); a.remove();
+  toast("⬇️ Exported!");
+});
+document.getElementById("printBtn").addEventListener("click", function(){
+  var pv=document.getElementById("printView");
+  var h='<h1>🎄 Christmas Advent Calendar 2026 — 25 Family Activities</h1>';
+  S.acts.forEach(function(a,i){ h+='<div class="pa"><b>Dec '+(i+1)+':</b> '+a.e+' '+escapeHtml(a.t)+' — '+escapeHtml(a.d)+'</div>'; });
+  pv.innerHTML=h;
+  window.print();
+});
+document.getElementById("resetBtn").addEventListener("click", function(){
+  if(confirm("Reset everything? Doors, notes, prep list and activities go back to fresh.")){
+    S=blankState(); save();
+    document.getElementById("planToggle").checked=false;
+    renderAll(); toast("Fresh start! 🎄");
+  }
+});
+
+/* ---------- prep ---------- */
+function renderPrep(){
+  var box=document.getElementById("prepList");
+  box.innerHTML="";
+  PREP.forEach(function(p,i){
+    var done=!!S.prep[i];
+    var div=document.createElement("div");
+    div.className="chk"+(done?" done":"");
+    div.innerHTML='<input type="checkbox"'+(done?" checked":"")+'><div class="t">'+escapeHtml(p.t)+'<small>'+escapeHtml(p.s)+'</small></div>';
+    div.querySelector("input").addEventListener("change", function(e){
+      S.prep[i]=e.target.checked; save(); renderPrep();
+    });
+    box.appendChild(div);
+  });
+}
+
+/* ---------- planning toggle ---------- */
+var planToggle=document.getElementById("planToggle");
+planToggle.checked=!!S.planning;
+planToggle.addEventListener("change", function(){
+  S.planning=planToggle.checked; save(); renderDoors();
+  toast(S.planning ? "✨ Planning mode ON — peek away!" : "Planning mode OFF — doors follow the calendar");
+});
+
+/* ---------- countdown ---------- */
+function tick(){
+  var diff=CHRISTMAS.getTime()-Date.now();
+  var pill=document.getElementById("countPill");
+  if(diff<=0){ pill.textContent="🎄 Merry Christmas!"; return; }
+  var d=Math.floor(diff/864e5), h=Math.floor(diff/36e5)%24, m=Math.floor(diff/6e4)%60, s=Math.floor(diff/1e3)%60;
+  function p(x){ return String(x).padStart(2,"0"); }
+  pill.textContent="🎄 "+d+"d "+p(h)+":"+p(m)+":"+p(s)+" to Christmas";
+}
+setInterval(tick,1000); tick();
+
+function renderAll(){ renderDoors(); renderActivities(); renderNotes(); renderProgress(); renderPrep(); }
+renderAll();
+})();
+</script>
+</body>
+</html>
