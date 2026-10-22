@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#241014">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Memory Book 2026">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='42' fill='%23241014'/%3E%3Ctext x='90' y='125' font-size='96' text-anchor='middle'%3E%F0%9F%93%95%3C/text%3E%3C/svg%3E">
+<title>Christmas Memory Book 2026</title>
+<style>
+:root{
+  --bg0:#16090d;
+  --bg1:#241014;
+  --chrome:#2b1418;
+  --ink:#f7f0dd;
+  --muted:#d9cbb0;
+  --faint:#a89a80;
+  --line:rgba(255,255,255,.10);
+  --page:#f8f1de;
+  --page2:#f3ead2;
+  --pageink:#43301c;
+  --pagemuted:#7a6752;
+  --pageline:rgba(67,48,28,.16);
+  --gold:#e6b83d;
+  --gold-deep:#c9972f;
+  --gold-soft:rgba(230,184,61,.14);
+  --red:#c93b4e;
+  --red-deep:#8f2434;
+  --red-soft:rgba(201,59,78,.14);
+  --pine:#2e8b5f;
+  --green:#3fae72;
+  --green-soft:rgba(63,174,114,.14);
+  --radius:18px;
+  --shadow:0 12px 32px rgba(0,0,0,.45);
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --serif:Georgia,"Times New Roman",serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font);
+  color:var(--ink);
+  background:
+    radial-gradient(1000px 480px at 90% -5%, rgba(230,184,61,.10), transparent 60%),
+    radial-gradient(900px 500px at -10% 8%, rgba(201,59,78,.10), transparent 60%),
+    radial-gradient(800px 600px at 50% 115%, rgba(46,139,95,.12), transparent 60%),
+    linear-gradient(180deg,var(--bg1),var(--bg0));
+  min-height:100vh;
+  padding:26px 22px 60px;
+}
+.wrap{max-width:1080px;margin:0 auto}
+
+/* ---------- sticky header ---------- */
+.sticky-head{position:sticky;top:14px;z-index:20}
+.topbar{
+  display:flex;justify-content:space-between;align-items:center;gap:14px;
+  padding:14px 18px;flex-wrap:wrap;
+  background:rgba(43,20,24,.86);border:1px solid var(--line);
+  border-radius:var(--radius) var(--radius) 0 0;box-shadow:var(--shadow);
+  backdrop-filter:blur(8px);
+}
+.brand{display:flex;align-items:center;gap:13px}
+.logo{
+  width:46px;height:46px;border-radius:14px;flex:0 0 46px;
+  background:conic-gradient(from 200deg,var(--gold),var(--red),var(--pine),var(--gold));
+  display:flex;align-items:center;justify-content:center;
+  font-size:25px;box-shadow:0 4px 14px rgba(230,184,61,.35);
+}
+.brand h1{font-size:21px;letter-spacing:.2px}
+.brand h1 .accent{background:linear-gradient(90deg,var(--gold),var(--red));-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand p{font-size:13px;color:var(--muted);margin-top:2px}
+.top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.count-pill{
+  display:flex;align-items:center;gap:7px;
+  background:var(--gold-soft);border:1px solid rgba(230,184,61,.4);
+  color:var(--gold);font-weight:700;font-size:14px;
+  padding:9px 14px;border-radius:999px;white-space:nowrap;
+}
+.shop-btn{
+  font-size:13px;font-weight:700;text-decoration:none;white-space:nowrap;
+  padding:9px 14px;border-radius:999px;
+  border:1px solid var(--line);color:var(--ink);background:rgba(255,255,255,.04);
+  transition:border-color .15s ease, background .15s ease;
+}
+.shop-btn:hover{border-color:rgba(230,184,61,.55);background:rgba(230,184,61,.08)}
+.tabbar{
+  display:flex;gap:8px;padding:10px 14px;margin-bottom:22px;
+  background:rgba(43,20,24,.86);border:1px solid var(--line);border-top:none;
+  border-radius:0 0 var(--radius) var(--radius);box-shadow:var(--shadow);
+  backdrop-filter:blur(8px);
+  overflow-x:auto;
+}
+.tab-btn{
+  flex:1 0 auto;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;
+  padding:10px 14px;border-radius:12px;border:1px solid transparent;
+  background:transparent;color:var(--muted);white-space:nowrap;
+  transition:all .16s ease;
+}
+.tab-btn:hover{color:var(--ink);background:rgba(255,255,255,.05)}
+.tab-btn.active{background:var(--gold-soft);border-color:rgba(230,184,61,.45);color:var(--gold)}
+
+/* ---------- hero ---------- */
+.hero{
+  text-align:center;margin:2px auto 22px;max-width:720px;
+}
+.hero .no-print-band{
+  display:inline-block;font-size:13px;font-weight:800;letter-spacing:1px;
+  color:var(--gold);background:var(--gold-soft);border:1px solid rgba(230,184,61,.4);
+  padding:9px 18px;border-radius:999px;margin-bottom:14px;
+}
+.hero h2{font-family:var(--serif);font-size:30px;font-weight:700;line-height:1.25}
+.hero h2 .accent{background:linear-gradient(90deg,var(--gold),var(--red));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{font-size:14.5px;color:var(--muted);margin-top:10px;line-height:1.6}
+
+/* ---------- book page cards ---------- */
+.btn{
+  font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;
+  border:none;border-radius:12px;padding:10px 16px;
+  background:linear-gradient(135deg,var(--gold-deep),var(--red));color:#fff8ea;
+  box-shadow:0 4px 14px rgba(143,36,52,.35);
+  transition:transform .12s ease, box-shadow .12s ease;
+}
+.btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(143,36,52,.45)}
+.btn:active{transform:scale(.96)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.btn.ghost:hover{border-color:rgba(230,184,61,.5);box-shadow:none}
+.btn.ghost.dark{color:var(--pageink);border-color:var(--pageline)}
+.btn.ghost.dark:hover{border-color:rgba(201,151,47,.55)}
+.btn.small{padding:7px 12px;font-size:13px;border-radius:10px}
+.btn.danger{background:transparent;color:var(--red);border:1px solid rgba(201,59,78,.5);box-shadow:none}
+.btn.danger:hover{border-color:var(--red);box-shadow:none}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+.page{
+  background:
+    repeating-linear-gradient(180deg,transparent,transparent 31px,rgba(201,151,47,.10) 31px,rgba(201,151,47,.10) 32px),
+    linear-gradient(180deg,var(--page),var(--page2));
+  color:var(--pageink);
+  border:1px solid rgba(201,151,47,.45);border-radius:14px;
+  box-shadow:var(--shadow), inset 0 0 60px rgba(143,90,20,.08);
+  padding:24px;margin-bottom:20px;position:relative;
+}
+.page:before{
+  content:"";position:absolute;left:14px;top:0;bottom:0;width:2px;
+  background:linear-gradient(180deg,transparent,rgba(201,59,78,.5),transparent);
+  opacity:.55;
+}
+.page-in{position:relative}
+.card{
+  background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.015));
+  border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:22px;margin-bottom:20px;
+}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px;flex-wrap:wrap}
+.card-head h2{font-size:17px;letter-spacing:.3px;display:flex;align-items:center;gap:9px;font-family:var(--serif)}
+.hint{font-size:13px;color:var(--faint);line-height:1.55}
+.page .hint{color:var(--pagemuted)}
+.page h2.pagetitle{font-family:var(--serif);font-size:21px;color:var(--red-deep);margin-bottom:6px;display:flex;align-items:center;gap:9px}
+input[type=text],textarea,select{
+  font-family:var(--font);font-size:14px;color:var(--ink);
+  background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:10px;
+  padding:10px 12px;width:100%;
+}
+input[type=text]:focus,textarea:focus{outline:none;border-color:rgba(230,184,61,.55)}
+textarea{resize:vertical;min-height:76px}
+.page input[type=text],.page textarea{
+  color:var(--pageink);background:rgba(255,255,255,.55);border-color:var(--pageline);
+}
+.page input[type=text]:focus,.page textarea:focus{border-color:rgba(201,151,47,.7)}
+label.f{display:block;font-size:13px;font-weight:700;color:var(--muted);margin:12px 0 6px}
+.page label.f{color:var(--pagemuted)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.tabpane{display:none}
+.tabpane.active{display:block}
+
+/* ---------- calendar ---------- */
+.cal-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin:12px 0 6px}
+.cal-dow span{text-align:center;font-size:11.5px;font-weight:800;letter-spacing:1px;color:var(--gold-deep);text-transform:uppercase}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.day{
+  font-family:var(--font);cursor:pointer;position:relative;
+  border-radius:14px;border:1px solid var(--pageline);
+  background:rgba(255,255,255,.55);color:var(--pageink);
+  min-height:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  transition:transform .14s ease, border-color .14s ease, box-shadow .14s ease;
+  padding:6px 4px;
+}
+.day:hover{transform:translateY(-2px);border-color:rgba(201,151,47,.65);box-shadow:0 6px 16px rgba(120,80,20,.18)}
+.day .n{font-size:16px;font-weight:800}
+.day .marks{font-size:13px;line-height:1;min-height:16px}
+.day.blank{background:transparent;border:none;cursor:default;box-shadow:none}
+.day.blank:hover{transform:none;border:none;box-shadow:none}
+.day.today{border-color:var(--red);box-shadow:0 0 0 2px rgba(201,59,78,.35)}
+.day.has-memory{border-color:rgba(201,151,47,.8);background:linear-gradient(180deg,rgba(230,184,61,.28),rgba(255,255,255,.55))}
+.day .star{color:var(--gold-deep);font-size:15px}
+.day .photo-dot{color:var(--pine);font-size:11px}
+
+/* ---------- modal / toast ---------- */
+.modal-ov{
+  position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;
+  background:rgba(10,4,6,.72);backdrop-filter:blur(4px);padding:18px;
+}
+.modal-ov.show{display:flex}
+.modal{
+  width:100%;max-width:540px;max-height:88vh;overflow-y:auto;
+  background:linear-gradient(180deg,var(--page),var(--page2));
+  color:var(--pageink);
+  border:1px solid rgba(201,151,47,.6);border-radius:20px;box-shadow:var(--shadow);
+  padding:26px;position:relative;
+  animation:pop .18s ease;
+}
+@keyframes pop{from{transform:scale(.94);opacity:0}to{transform:scale(1);opacity:1}}
+.modal .mday{font-size:13px;font-weight:800;color:var(--gold-deep);letter-spacing:1px}
+.modal h3{font-family:var(--serif);font-size:22px;margin:6px 0 4px;color:var(--red-deep)}
+.modal p.desc{font-size:14px;color:var(--pagemuted);line-height:1.6;margin-bottom:6px}
+.mclose{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--pagemuted);font-size:22px;cursor:pointer}
+.mclose:hover{color:var(--pageink)}
+.photo-thumb{max-width:100%;max-height:220px;border-radius:12px;border:1px solid var(--pageline);display:block;margin-top:8px}
+.photo-zone{margin-top:6px}
+input[type=file]{font-size:13px;color:var(--pagemuted);margin-top:6px}
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);z-index:60;
+  background:#33231a;border:1px solid rgba(230,184,61,.45);color:var(--ink);
+  padding:12px 20px;border-radius:999px;font-size:14px;font-weight:600;
+  opacity:0;pointer-events:none;transition:all .25s ease;box-shadow:var(--shadow);
+  max-width:90vw;text-align:center;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ---------- traditions ---------- */
+.trad{display:flex;gap:12px;align-items:flex-start;padding:13px 0;border-bottom:1px solid var(--pageline)}
+.trad:last-child{border-bottom:none}
+.trad input[type=checkbox]{width:21px;height:21px;margin-top:3px;accent-color:var(--gold-deep);cursor:pointer;flex:0 0 21px}
+.trad .em{font-size:26px;flex:0 0 34px;text-align:center}
+.trad .tx{flex:1}
+.trad .tx b{font-size:15px}
+.trad.done .tx b{color:var(--pagemuted);text-decoration:line-through}
+.trad .tx input{margin-top:8px;font-size:13px;padding:7px 10px}
+.add-row{display:flex;gap:10px;margin-top:14px}
+.add-row input{flex:1}
+
+/* ---------- progress ---------- */
+.pbar{height:14px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;margin:10px 0 4px}
+.pbar > div{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--gold),var(--red));transition:width .4s ease}
+.stat{display:flex;gap:12px;flex-wrap:wrap;margin:14px 0}
+.stat .s{flex:1;min-width:120px;background:rgba(0,0,0,.22);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center}
+.stat .s .v{font-size:26px;font-weight:800;color:var(--gold)}
+.stat .s .l{font-size:12px;color:var(--faint);margin-top:4px}
+.milestone{
+  margin:10px 0;padding:13px 16px;border-radius:14px;font-size:14px;line-height:1.6;
+  background:var(--gold-soft);border:1px solid rgba(230,184,61,.4);color:var(--ink);
+}
+.milestone b{color:var(--gold)}
+
+/* ---------- guide ---------- */
+.guide-ol{margin:6px 0 0 20px;font-size:14.5px;line-height:1.75;color:var(--muted)}
+.guide-ol li{margin-bottom:10px}
+.guide-ol b{color:var(--ink)}
+
+@media(max-width:640px){
+  body{padding:16px 12px 48px}
+  .brand h1{font-size:18px}
+  .day{min-height:54px}
+  .day .n{font-size:14px}
+  .top-actions{width:100%}
+  .hero h2{font-size:24px}
+  .cal-grid{gap:6px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="sticky-head">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">📕</div>
+        <div>
+          <h1>Christmas <span class="accent">Memory Book 2026</span></h1>
+          <p>Your family's December keepsake — no printing needed</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <div class="count-pill" id="countPill">🎄 —</div>
+        <a class="shop-btn" href="https://digieman.etsy.com" target="_blank" rel="noopener">🛍️ Etsy shop</a>
+        <a class="shop-btn" href="https://digieman.gumroad.com" target="_blank" rel="noopener">💎 Gumroad</a>
+      </div>
+    </div>
+    <div class="tabbar" id="tabbar">
+      <button class="tab-btn active" data-tab="days">📅 December Days</button>
+      <button class="tab-btn" data-tab="traditions">🎄 Traditions</button>
+      <button class="tab-btn" data-tab="review">💌 Year in Review</button>
+      <button class="tab-btn" data-tab="progress">📊 Progress</button>
+      <button class="tab-btn" data-tab="guide">📖 How to use</button>
+      <button class="tab-btn" data-tab="export">⬇️ Export</button>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="no-print-band">🎄 NO PRINTING NEEDED — AN INTERACTIVE APP, NOT A PDF 🎄</div>
+    <h2>One line a day. One photo a week.<br>A <span class="accent">lifetime</span> of December memories.</h2>
+    <p>Open this book in any browser — phone, tablet, or computer. Record each December day, keep your family's traditions, and write your Christmas 2026 review. Everything saves on your device automatically. No app store, no account, no printer.</p>
+  </div>
+
+  <main>
+    <!-- ============ TAB 1: DECEMBER DAYS ============ -->
+    <section class="tabpane active" id="tab-days">
+      <div class="page">
+        <div class="page-in">
+          <h2 class="pagetitle">📅 December 2026</h2>
+          <p class="hint" style="margin-bottom:6px">Tap any day to open its memory page — write one line about the day and add a photo. Days with a memory earn a <b>★ gold star</b>. Everything saves on your device automatically.</p>
+          <div class="cal-dow" aria-hidden="true"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div>
+          <div class="cal-grid" id="calGrid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ TAB 2: TRADITIONS ============ -->
+    <section class="tabpane" id="tab-traditions">
+      <div class="page">
+        <div class="page-in">
+          <div class="card-head" style="margin-bottom:8px">
+            <h2 class="pagetitle">🎄 Our Christmas Traditions</h2>
+            <span class="hint" id="tradCount"></span>
+          </div>
+          <p class="hint" style="margin-bottom:6px">Tick off each tradition as you do it this December. Add a note (who loved it, what changed) and add your own family traditions below.</p>
+          <div id="tradList"></div>
+          <div class="add-row">
+            <input type="text" id="newTradName" placeholder="Add your own tradition — e.g. “Reindeer pancake breakfast”" maxlength="80">
+            <button class="btn" id="addTradBtn">Add</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ TAB 3: REVIEW ============ -->
+    <section class="tabpane" id="tab-review">
+      <div class="page">
+        <div class="page-in">
+          <h2 class="pagetitle">💌 Christmas in Review — 2026</h2>
+          <p class="hint" style="margin-bottom:6px">Fill this in after Christmas Day (a mug of cocoa helps). It becomes the closing chapter of your memory book. Everything saves automatically.</p>
+          <div id="reviewForm"></div>
+          <div class="row" style="margin-top:16px;align-items:center">
+            <button class="btn" id="reviewSaveBtn">Save review</button>
+            <span class="hint" id="reviewSavedTag"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ TAB 4: PROGRESS ============ -->
+    <section class="tabpane" id="tab-progress">
+      <div class="card">
+        <div class="card-head"><h2>📊 Our December in Numbers</h2></div>
+        <div class="stat">
+          <div class="s"><div class="v" id="stDays">0</div><div class="l">days with memories</div></div>
+          <div class="s"><div class="v" id="stPhotos">0</div><div class="l">photos added</div></div>
+          <div class="s"><div class="v" id="stTrads">0</div><div class="l">traditions kept</div></div>
+          <div class="s"><div class="v" id="stStreak">0</div><div class="l">memory streak</div></div>
+        </div>
+        <div class="pbar"><div id="progBar" style="width:0%"></div></div>
+        <p class="hint" id="progHint"></p>
+        <div id="milestones"></div>
+      </div>
+    </section>
+
+    <!-- ============ TAB 5: GUIDE ============ -->
+    <section class="tabpane" id="tab-guide">
+      <div class="card">
+        <div class="card-head"><h2>📖 How to use your memory book</h2></div>
+        <ol class="guide-ol">
+          <li><b>Start December 1</b> — open the 📅 December Days tab each evening and tap that day. Write one line about the day ("First snow! Built a snowman with Mia ❄️"). One line is enough — future-you will thank present-you.</li>
+          <li><b>Add a photo</b> — inside any day's memory page, tap "Choose photo" to attach one picture. Photos are stored right in the book on your device — no cloud, no account.</li>
+          <li><b>Keep your traditions</b> — the 🎄 Traditions tab lists classic family traditions. Tick each one as you do it and jot a note ("The lights drive was Leo's favourite part"). Add your own traditions at the bottom.</li>
+          <li><b>Watch your streak grow</b> — the 📊 Progress tab shows days recorded, photos, traditions kept, and your memory streak. Try not to break it — the book is best complete.</li>
+          <li><b>After Christmas, write the review</b> — open 💌 Year in Review on Boxing Day, fill in the highlights (favourite gifts, funniest moment, a letter to your future selves), and save it. This is the closing chapter.</li>
+          <li><b>Export your keepsake</b> — the ⬇️ Export tab downloads your whole memory book as one beautiful printable file to keep forever.</li>
+          <li><b>Keep it on your phone</b> — use your browser's "Add to Home Screen" so the book is one tap away. Your data stays on your device — private, offline, yours.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============ TAB 6: EXPORT ============ -->
+    <section class="tabpane" id="tab-export">
+      <div class="card">
+        <div class="card-head"><h2>⬇️ Export Your Keepsake</h2></div>
+        <p class="hint" style="margin-bottom:14px">Download your entire memory book — all 31 December memories, photos, traditions and your Christmas review — as one beautiful printable HTML file. Keep it forever, share it with family, print it if you like.</p>
+        <div class="row">
+          <button class="btn" id="exportBtn">⬇️ Download keepsake file</button>
+          <button class="btn danger" id="resetBtn">Reset everything</button>
+        </div>
+        <p class="hint" style="margin-top:12px" id="exportSummary"></p>
+      </div>
+    </section>
+  </main>
+
+  <!-- day memory modal -->
+  <div class="modal-ov" id="dayModalOv">
+    <div class="modal">
+      <button class="mclose" id="modalClose" aria-label="Close">✕</button>
+      <div class="mday" id="mDay"></div>
+      <h3 id="mTitle"></h3>
+      <p class="desc">One line about today — small moments are the ones you'll want to remember.</p>
+      <label class="f" for="mNote">📝 Our memory of this day</label>
+      <textarea id="mNote" placeholder="e.g. “First snow! Mia ate half the snowman’s carrot nose ❄️”"></textarea>
+      <div class="photo-zone">
+        <label class="f">📷 One photo for this day</label>
+        <img class="photo-thumb" id="mPhoto" alt="Day photo" style="display:none">
+        <div class="row" style="margin-top:8px">
+          <label class="btn small ghost dark" style="cursor:pointer;margin:0">
+            Choose photo
+            <input type="file" id="mPhotoInput" accept="image/*" style="display:none">
+          </label>
+          <button class="btn small ghost dark" id="mPhotoRemove" style="display:none">Remove photo</button>
+        </div>
+        <p class="hint" id="mPhotoHint" style="margin-top:6px">Photos are resized and stored inside the book on this device.</p>
+      </div>
+      <div class="row" style="margin-top:16px">
+        <button class="btn" id="mSave">Save memory</button>
+        <button class="btn ghost dark" id="mDelete">Delete day</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+<script>
+(function(){
+"use strict";
+var LS_KEY = "cmb2026_v1";
+var CHRISTMAS = new Date(2026, 11, 25, 0, 0, 0); // Friday Dec 25 2026
+
+var SEED_TRADITIONS = [
+  {e:"🌲", name:"Decorate the Christmas tree together"},
+  {e:"🧦", name:"Hang the stockings"},
+  {e:"🍪", name:"Bake Christmas cookies"},
+  {e:"🚗", name:"Drive around to see the Christmas lights"},
+  {e:"🎬", name:"Christmas movie night"},
+  {e:"✉️", name:"Write & send Christmas cards"},
+  {e:"🎁", name:"Donate a toy to a child in need"},
+  {e:"🍫", name:"Make hot chocolate with all the toppings"},
+  {e:"🕯️", name:"Light a candle & read a Christmas story"},
+  {e:"🤫", name:"Do one secret kindness for a neighbour"},
+  {e:"📸", name:"Take the annual silly family Christmas photo"},
+  {e:"🥛", name:"Leave cookies & milk for Santa on Christmas Eve"}
+];
+
+var REVIEW_FIELDS = [
+  {k:"giftGiven",    l:"🎁 Favourite gift you GAVE this year",        t:"text"},
+  {k:"giftReceived", l:"🎀 Favourite gift you RECEIVED",               t:"text"},
+  {k:"bestMemory",   l:"⭐ Favourite Christmas memory of 2026",        t:"text"},
+  {k:"funniest",     l:"😂 Funniest moment",                            t:"text"},
+  {k:"surprise",     l:"🤯 Biggest surprise",                           t:"text"},
+  {k:"newTradition", l:"🌱 New tradition started this year",           t:"text"},
+  {k:"wish",         l:"🌟 One wish for next Christmas",               t:"text"},
+  {k:"letter",       l:"💌 Letter to our future selves",               t:"area"}
+];
+
+function blankState(){
+  return {
+    days:{},
+    traditions: SEED_TRADITIONS.map(function(t){ return {e:t.e, name:t.name, done:false, note:"", custom:false}; }),
+    review:{},
+    reviewSaved:false
+  };
+}
+function load(){
+  try{
+    var raw = localStorage.getItem(LS_KEY);
+    if(!raw) return blankState();
+    var s = JSON.parse(raw);
+    if(!s.days) s.days = {};
+    if(!s.traditions || !s.traditions.length) s.traditions = blankState().traditions;
+    if(!s.review) s.review = {};
+    return s;
+  }catch(e){ return blankState(); }
+}
+var S = load();
+function save(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(S)); }catch(e){ toast("⚠️ Could not save — storage may be full"); } }
+
+function dayName(day){
+  var names=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  return names[new Date(2026, 11, day).getDay()];
+}
+function shortDayName(day){
+  var names=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  return names[new Date(2026, 11, day).getDay()];
+}
+
+var toastT=null;
+function toast(msg){
+  var el=document.getElementById("toast");
+  el.textContent=msg; el.classList.add("show");
+  clearTimeout(toastT);
+  toastT=setTimeout(function(){ el.classList.remove("show"); },2600);
+}
+function escapeHtml(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function escapeAttr(s){ return escapeHtml(s).replace(/"/g,"&quot;"); }
+
+/* ---------- tabs ---------- */
+var tabbtns = document.querySelectorAll("#tabbar .tab-btn");
+tabbtns.forEach(function(b){
+  b.addEventListener("click", function(){
+    tabbtns.forEach(function(x){x.classList.remove("active");});
+    b.classList.add("active");
+    document.querySelectorAll(".tabpane").forEach(function(p){p.classList.remove("active");});
+    document.getElementById("tab-"+b.dataset.tab).classList.add("active");
+  });
+});
+
+/* ---------- December calendar ---------- */
+var calGrid = document.getElementById("calGrid");
+var currentDay = 0;
+
+function hasMemory(day){ var d=S.days[day]; return !!(d && d.note && d.note.trim()); }
+function hasPhoto(day){ var d=S.days[day]; return !!(d && d.photo); }
+
+function renderCalendar(){
+  calGrid.innerHTML="";
+  var firstDow = new Date(2026, 11, 1).getDay(); // 2 = Tuesday
+  var n = new Date();
+  var todayDay = (n.getFullYear()===2026 && n.getMonth()===11) ? n.getDate() : 0;
+  for(var i=0;i<firstDow;i++){
+    var blank=document.createElement("div");
+    blank.className="day blank";
+    blank.setAttribute("aria-hidden","true");
+    calGrid.appendChild(blank);
+  }
+  for(var day=1; day<=31; day++){
+    (function(day){
+      var mem=hasMemory(day), ph=hasPhoto(day);
+      var d=document.createElement("button");
+      d.className="day"+(mem?" has-memory":"")+(day===todayDay?" today":"");
+      d.innerHTML='<span class="n">'+day+'</span>'+
+        '<span class="marks">'+(mem?'<span class="star">★</span> ':"")+(ph?'<span class="photo-dot">📷</span>':"")+'</span>';
+      d.setAttribute("aria-label", dayName(day)+", December "+day+(mem?" — memory saved":""));
+      d.addEventListener("click", function(){ openModal(day); });
+      calGrid.appendChild(d);
+    })(day);
+  }
+}
+
+/* ---------- day modal ---------- */
+var ov = document.getElementById("dayModalOv");
+function openModal(day){
+  currentDay=day;
+  var d=S.days[day]||{note:"",photo:null};
+  document.getElementById("mDay").textContent="📅 "+dayName(day).toUpperCase()+", DECEMBER "+day;
+  document.getElementById("mTitle").textContent="Day "+day;
+  document.getElementById("mNote").value=d.note||"";
+  showPhoto(d.photo);
+  document.getElementById("mPhotoInput").value="";
+  ov.classList.add("show");
+}
+function closeModal(){ ov.classList.remove("show"); currentDay=0; }
+document.getElementById("modalClose").addEventListener("click", closeModal);
+ov.addEventListener("click", function(e){ if(e.target===ov) closeModal(); });
+document.addEventListener("keydown", function(e){ if(e.key==="Escape") closeModal(); });
+
+function showPhoto(url){
+  var img=document.getElementById("mPhoto");
+  var rm=document.getElementById("mPhotoRemove");
+  if(url){ img.src=url; img.style.display="block"; rm.style.display=""; }
+  else{ img.removeAttribute("src"); img.style.display="none"; rm.style.display="none"; }
+}
+function pendingPhoto(){ var img=document.getElementById("mPhoto"); return img.style.display==="block" ? img.src : null; }
+
+document.getElementById("mSave").addEventListener("click", function(){
+  if(!currentDay) return;
+  var v=document.getElementById("mNote").value.trim();
+  var ph=pendingPhoto();
+  if(v || ph){
+    S.days[currentDay]={note:v, photo:ph};
+    toast("⭐ Day "+currentDay+" saved to your book");
+  } else {
+    delete S.days[currentDay];
+    toast("Day "+currentDay+" cleared");
+  }
+  save(); renderCalendar(); renderProgress(); updateExportSummary();
+});
+document.getElementById("mDelete").addEventListener("click", function(){
+  if(!currentDay) return;
+  if(confirm("Delete the memory for December "+currentDay+"?")){
+    delete S.days[currentDay]; save();
+    renderCalendar(); renderProgress(); updateExportSummary(); closeModal();
+    toast("Day "+currentDay+" removed");
+  }
+});
+
+/* photo: resize before storing so localStorage stays happy */
+document.getElementById("mPhotoInput").addEventListener("change", function(e){
+  var f=e.target.files && e.target.files[0];
+  if(!f) return;
+  if(!/^image\//.test(f.type)){ toast("⚠️ That file is not an image"); return; }
+  var reader=new FileReader();
+  reader.onload=function(){
+    var img=new Image();
+    img.onload=function(){
+      try{
+        var max=480, w=img.width, h=img.height;
+        if(w>max||h>max){ var r=Math.min(max/w,max/h); w=Math.round(w*r); h=Math.round(h*r); }
+        var cv=document.createElement("canvas"); cv.width=w; cv.height=h;
+        cv.getContext("2d").drawImage(img,0,0,w,h);
+        var url=cv.toDataURL("image/jpeg",0.72);
+        showPhoto(url);
+        toast("📷 Photo added — save the memory to keep it");
+      }catch(err){ toast("⚠️ Could not read that photo"); }
+    };
+    img.onerror=function(){ toast("⚠️ Could not read that photo"); };
+    img.src=reader.result;
+  };
+  reader.readAsDataURL(f);
+});
+document.getElementById("mPhotoRemove").addEventListener("click", function(){
+  showPhoto(null);
+  document.getElementById("mPhotoInput").value="";
+  toast("Photo removed — save the memory to confirm");
+});
+
+/* ---------- traditions ---------- */
+function renderTraditions(){
+  var box=document.getElementById("tradList");
+  box.innerHTML="";
+  S.traditions.forEach(function(t,i){
+    var div=document.createElement("div");
+    div.className="trad"+(t.done?" done":"");
+    div.innerHTML=
+      '<input type="checkbox" aria-label="Done"'+(t.done?" checked":"")+'>'+
+      '<div class="em">'+escapeHtml(t.e)+'</div>'+
+      '<div class="tx"><b>'+escapeHtml(t.name)+'</b>'+
+      '<input type="text" placeholder="A note — who loved it, what changed…" value="'+escapeAttr(t.note||"")+'"></div>';
+    var chk=div.querySelector("input[type=checkbox]");
+    var note=div.querySelector(".tx input");
+    chk.addEventListener("change", function(){
+      S.traditions[i].done=chk.checked; save();
+      renderTraditions(); renderProgress();
+      if(chk.checked) toast("🎄 Tradition kept! "+tradCountText());
+    });
+    var noteT=null;
+    note.addEventListener("input", function(){
+      clearTimeout(noteT);
+      noteT=setTimeout(function(){ S.traditions[i].note=note.value; save(); },400);
+    });
+    box.appendChild(div);
+  });
+  updateTradCount();
+}
+function tradCountText(){
+  var kept=S.traditions.filter(function(t){return t.done;}).length;
+  return kept+" of "+S.traditions.length+" kept";
+}
+function updateTradCount(){ document.getElementById("tradCount").textContent="✨ "+tradCountText(); }
+document.getElementById("addTradBtn").addEventListener("click", addTradition);
+document.getElementById("newTradName").addEventListener("keydown", function(e){ if(e.key==="Enter") addTradition(); });
+function addTradition(){
+  var inp=document.getElementById("newTradName");
+  var v=inp.value.trim();
+  if(!v){ toast("Type your tradition first 🎄"); return; }
+  S.traditions.push({e:"✨", name:v, done:false, note:"", custom:true});
+  inp.value=""; save(); renderTraditions(); renderProgress();
+  toast("🎄 Tradition added!");
+}
+
+/* ---------- review ---------- */
+function renderReview(){
+  var box=document.getElementById("reviewForm");
+  box.innerHTML="";
+  REVIEW_FIELDS.forEach(function(f){
+    var lab=document.createElement("label");
+    lab.className="f"; lab.textContent=f.l;
+    box.appendChild(lab);
+    var el;
+    if(f.t==="area"){ el=document.createElement("textarea"); el.rows=5; el.placeholder="Write it like a letter — one day you'll read this together…"; }
+    else{ el=document.createElement("input"); el.type="text"; el.placeholder="…"; }
+    el.value=S.review[f.k]||"";
+    el.dataset.key=f.k;
+    var deb=null;
+    el.addEventListener("input", function(){
+      clearTimeout(deb);
+      deb=setTimeout(function(){ S.review[f.k]=el.value; save(); },400);
+    });
+    box.appendChild(el);
+  });
+  updateReviewTag();
+}
+function reviewFilledCount(){
+  return REVIEW_FIELDS.filter(function(f){ return (S.review[f.k]||"").trim(); }).length;
+}
+function updateReviewTag(){
+  var n=reviewFilledCount();
+  document.getElementById("reviewSavedTag").textContent =
+    n===REVIEW_FIELDS.length ? "💌 Complete — what a beautiful chapter!"+(S.reviewSaved?" ✓":"") :
+    n>0 ? n+" of "+REVIEW_FIELDS.length+" filled — it saves as you type." :
+    "Empty for now — fill it in after Christmas Day.";
+}
+document.getElementById("reviewSaveBtn").addEventListener("click", function(){
+  S.reviewSaved=true; save(); updateReviewTag();
+  toast("💌 Review saved ✓");
+  renderProgress();
+});
+
+/* ---------- progress ---------- */
+function memoryDays(){ return Object.keys(S.days).filter(function(k){ return hasMemory(Number(k)); }).map(Number).sort(function(a,b){return a-b;}); }
+function photoCount(){ return Object.keys(S.days).filter(function(k){ return hasPhoto(Number(k)); }).length; }
+function tradKept(){ return S.traditions.filter(function(t){return t.done;}).length; }
+function calcStreak(){
+  var days=memoryDays();
+  if(!days.length) return 0;
+  var n=new Date();
+  var last=(n.getFullYear()===2026 && n.getMonth()===11 && n.getDate()>=1 && n.getDate()<=31) ? n.getDate() : 31;
+  var have={}; days.forEach(function(d){have[d]=true;});
+  var s=0;
+  for(var d=last; d>=1; d--){ if(have[d]) s++; else break; }
+  return s;
+}
+function renderProgress(){
+  var md=memoryDays().length, ph=photoCount(), tk=tradKept(), streak=calcStreak();
+  document.getElementById("stDays").textContent=md;
+  document.getElementById("stPhotos").textContent=ph;
+  document.getElementById("stTrads").textContent=tk;
+  document.getElementById("stStreak").textContent=streak;
+  var pct=Math.round(md/31*100);
+  document.getElementById("progBar").style.width=pct+"%";
+  document.getElementById("progHint").textContent =
+    md===0 ? "Your book is waiting for its first memory — start on December 1. 📅" :
+    md===31 ? "🎉 All 31 December days recorded — a complete Christmas story!" :
+    md+" of 31 days in the book ("+pct+"%) — "+(31-md)+" days still to write. ✨";
+  var rc=reviewFilledCount();
+  var M=document.getElementById("milestones");
+  var out="";
+  if(md===31) out+='<div class="milestone">🎉 <b>Complete December!</b> All 31 days recorded — this book is a family treasure now.</div>';
+  if(streak>=7) out+='<div class="milestone">🔥 <b>'+streak+'-day memory streak!</b> Incredible dedication — keep the pen (or thumb) moving.</div>';
+  else if(streak>=3) out+='<div class="milestone">✨ <b>'+streak+'-day streak</b> — you\'re building a beautiful habit.</div>';
+  if(ph>=4) out+='<div class="milestone">📷 <b>'+ph+' photos</b> saved in the book — a picture is worth a thousand memories.</div>';
+  if(tk===S.traditions.length && S.traditions.length) out+='<div class="milestone">🎄 <b>Every tradition kept!</b> '+tk+' of '+S.traditions.length+' — what a Christmas.</div>';
+  if(rc===REVIEW_FIELDS.length) out+='<div class="milestone">💌 <b>Year in Review complete!</b> The closing chapter is written.</div>';
+  M.innerHTML=out;
+}
+
+/* ---------- export ---------- */
+function updateExportSummary(){
+  var md=memoryDays().length, ph=photoCount(), tk=tradKept(), rc=reviewFilledCount();
+  document.getElementById("exportSummary").textContent=
+    "Ready to export: "+md+" memories · "+ph+" photos · "+tk+" traditions kept · "+rc+" of "+REVIEW_FIELDS.length+" review answers.";
+}
+function exportKeepsake(){
+  var h='<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'+
+    '<title>Our Christmas Memory Book 2026</title><style>'+
+    'body{font-family:Georgia,serif;background:#fff;color:#3a2a1a;max-width:760px;margin:0 auto;padding:32px 24px}'+
+    'h1{text-align:center;color:#8f2434;border-bottom:3px double #c9972f;padding-bottom:16px}'+
+    'h2{color:#8f2434;margin-top:36px;border-bottom:1px solid #c9972f;padding-bottom:6px}'+
+    '.day{margin:18px 0;padding:14px;border-left:4px solid #c9972f;background:#fdf8ec;border-radius:0 10px 10px 0}'+
+    '.day b{color:#8f2434}.day img{max-width:100%;border-radius:8px;margin-top:8px}'+
+    '.trad{margin:8px 0}.letter{white-space:pre-wrap;background:#fdf8ec;padding:16px;border-radius:10px}'+
+    '.footer{text-align:center;color:#999;margin-top:40px;font-size:13px}'+
+    '</style></head><body>'+
+    '<h1>🎄 Our Christmas Memory Book 2026 🎄</h1>'+
+    '<p style="text-align:center;font-style:italic">A keepsake of our family\'s December — exported from the Christmas Memory Book 2026 app.</p>'+
+    '<h2>📅 December Memories</h2>';
+  var days=memoryDays();
+  if(!days.length) h+='<p><i>No memories recorded yet.</i></p>';
+  days.forEach(function(day){
+    var d=S.days[day];
+    h+='<div class="day"><b>'+dayName(day)+', December '+day+'</b><p>'+escapeHtml(d.note||"")+'</p>'+
+      (d.photo?'<img src="'+d.photo+'" alt="Photo — Dec '+day+'">':"")+'</div>';
+  });
+  h+='<h2>🎄 Traditions We Kept</h2>';
+  var kept=S.traditions.filter(function(t){return t.done;});
+  if(!kept.length) h+='<p><i>No traditions marked done yet.</i></p>';
+  kept.forEach(function(t){ h+='<div class="trad">'+escapeHtml(t.e)+' <b>'+escapeHtml(t.name)+'</b>'+(t.note?'<br><i>'+escapeHtml(t.note)+'</i>':"")+'</div>'; });
+  var notKept=S.traditions.filter(function(t){return !t.done;}).length;
+  if(notKept) h+='<p><i>('+notKept+' more on the list.)</i></p>';
+  h+='<h2>💌 Christmas in Review — 2026</h2>';
+  REVIEW_FIELDS.forEach(function(f){
+    var v=(S.review[f.k]||"").trim();
+    h+='<p><b>'+escapeHtml(f.l)+'</b><br>'+(v?escapeHtml(v):'<i>—</i>')+'</p>';
+  });
+  h+='<div class="footer">Made with ❤️ — Christmas Memory Book 2026</div></body></html>';
+  var blob=new Blob([h],{type:"text/html;charset=utf-8"});
+  var a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="christmas-memory-book-2026-keepsake.html";
+  document.body.appendChild(a); a.click(); a.remove();
+  toast("⬇️ Keepsake downloaded!");
+}
+document.getElementById("exportBtn").addEventListener("click", exportKeepsake);
+document.getElementById("resetBtn").addEventListener("click", function(){
+  if(confirm("Reset everything? All memories, photos, traditions and the review go back to a fresh book.")){
+    S=blankState(); save();
+    renderAll(); updateExportSummary();
+    toast("Fresh book! 📕");
+  }
+});
+
+/* ---------- countdown ---------- */
+function tick(){
+  var diff=CHRISTMAS.getTime()-Date.now();
+  var pill=document.getElementById("countPill");
+  if(diff<=0){ pill.textContent="🎄 Merry Christmas!"; return; }
+  var d=Math.floor(diff/864e5), h=Math.floor(diff/36e5)%24, m=Math.floor(diff/6e4)%60, s=Math.floor(diff/1e3)%60;
+  function p(x){ return String(x).padStart(2,"0"); }
+  pill.textContent="🎄 "+d+"d "+p(h)+":"+p(m)+":"+p(s)+" to Christmas";
+}
+setInterval(tick,1000); tick();
+
+function renderAll(){ renderCalendar(); renderTraditions(); renderReview(); renderProgress(); }
+renderAll(); updateExportSummary();
+})();
+</script>
+</body>
+</html>
